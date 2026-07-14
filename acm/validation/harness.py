@@ -73,6 +73,7 @@ class ValidationHarness:
         self.reconsolidations: list[dict[str, Any]] = []
         self.sleep_events: list[dict[str, Any]] = []
         self.identity_touches: list[dict[str, Any]] = []
+        self.experience_events: list[dict[str, Any]] = []
         # Aggregated identity observables (M1)
         self.identity_metrics: dict[str, float | int] = {
             "growth": 0,
@@ -81,6 +82,17 @@ class ValidationHarness:
             "influence": 0,
             "lineage_events": 0,
             "last_confidence": 0.0,
+        }
+        # Aggregated experience observables (M2)
+        self.experience_metrics: dict[str, float | int] = {
+            "births": 0,
+            "lineage": 0,
+            "salience_evolutions": 0,
+            "temporal_links": 0,
+            "lifecycle": 0,
+            "multimodal": 0,
+            "identity_influenced": 0,
+            "goal_influenced": 0,
         }
 
     def _trim(self, seq: list[Any]) -> None:
@@ -141,10 +153,40 @@ class ValidationHarness:
         elif "confidence_after" in payload:
             self.identity_metrics["last_confidence"] = float(payload["confidence_after"])
 
+    def record_experience(self, **payload: Any) -> None:
+        event = {"timestamp": time(), **payload}
+        self.experience_events.append(event)
+        self._trim(self.experience_events)
+        action = str(payload.get("action", ""))
+        if action == "birth":
+            self.experience_metrics["births"] = int(self.experience_metrics["births"]) + 1
+            if payload.get("lineage"):
+                self.experience_metrics["lineage"] = int(self.experience_metrics["lineage"]) + 1
+            if payload.get("identity_influenced"):
+                self.experience_metrics["identity_influenced"] = (
+                    int(self.experience_metrics["identity_influenced"]) + 1
+                )
+            if int(payload.get("goal_count") or 0) > 0:
+                self.experience_metrics["goal_influenced"] = (
+                    int(self.experience_metrics["goal_influenced"]) + 1
+                )
+        elif action == "salience_evolution":
+            self.experience_metrics["salience_evolutions"] = (
+                int(self.experience_metrics["salience_evolutions"]) + 1
+            )
+        elif action == "temporal_link":
+            self.experience_metrics["temporal_links"] = (
+                int(self.experience_metrics["temporal_links"]) + 1
+            )
+        elif action == "lifecycle":
+            self.experience_metrics["lifecycle"] = int(self.experience_metrics["lifecycle"]) + 1
+        elif action == "envelope" or payload.get("multimodal"):
+            self.experience_metrics["multimodal"] = int(self.experience_metrics["multimodal"]) + 1
+
     def snapshot(self) -> dict[str, Any]:
         """Public validation snapshot — metadata only, no chain-of-thought."""
         return {
-            "schema": "acm.validation/0.2",
+            "schema": "acm.validation/0.3",
             "counts": {
                 "activations": len(self.activations),
                 "confidence_deltas": len(self.confidence_deltas),
@@ -154,6 +196,7 @@ class ValidationHarness:
                 "reconsolidations": len(self.reconsolidations),
                 "sleep_events": len(self.sleep_events),
                 "identity_touches": len(self.identity_touches),
+                "experience_events": len(self.experience_events),
             },
             "identity": {
                 "growth": self.identity_metrics["growth"],
@@ -170,6 +213,19 @@ class ValidationHarness:
                     "influence": self.identity_metrics["influence"],
                 },
             },
+            "experience": {
+                "births": self.experience_metrics["births"],
+                "lineage": self.experience_metrics["lineage"],
+                "salience_evolutions": self.experience_metrics["salience_evolutions"],
+                "temporal_links": self.experience_metrics["temporal_links"],
+                "lifecycle": self.experience_metrics["lifecycle"],
+                "multimodal": self.experience_metrics["multimodal"],
+                "identity_influenced": self.experience_metrics["identity_influenced"],
+                "goal_influenced": self.experience_metrics["goal_influenced"],
+                "context_events": sum(
+                    1 for e in self.experience_events if e.get("context_tags")
+                ),
+            },
             "activations": [asdict(a) for a in self.activations[-40:]],
             "confidence_deltas": [asdict(c) for c in self.confidence_deltas[-40:]],
             "association_changes": [asdict(a) for a in self.association_changes[-40:]],
@@ -178,6 +234,7 @@ class ValidationHarness:
             "reconsolidations": deepcopy(self.reconsolidations[-40:]),
             "sleep_events": deepcopy(self.sleep_events[-40:]),
             "identity_touches": deepcopy(self.identity_touches[-40:]),
+            "experience_events": deepcopy(self.experience_events[-40:]),
         }
 
     def reset(self) -> None:
@@ -189,6 +246,7 @@ class ValidationHarness:
         self.reconsolidations.clear()
         self.sleep_events.clear()
         self.identity_touches.clear()
+        self.experience_events.clear()
         self.identity_metrics = {
             "growth": 0,
             "stability": 0,
@@ -196,4 +254,14 @@ class ValidationHarness:
             "influence": 0,
             "lineage_events": 0,
             "last_confidence": 0.0,
+        }
+        self.experience_metrics = {
+            "births": 0,
+            "lineage": 0,
+            "salience_evolutions": 0,
+            "temporal_links": 0,
+            "lifecycle": 0,
+            "multimodal": 0,
+            "identity_influenced": 0,
+            "goal_influenced": 0,
         }

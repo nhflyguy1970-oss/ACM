@@ -11,6 +11,7 @@ from acm._version import __version__ as acm_version
 from acm.attention.field import classify_attention, encode_weight
 from acm.context.frame import ContextFrame, infer_context
 from acm.core.store import CognitiveStore, Concept
+from acm.experiences import ExperienceOrgan
 from acm.identity import IdentityOrgan
 from acm.observability.trace import CognitiveTraceEvent, TraceLog
 from acm.plugins import ExtensionRegistry
@@ -61,6 +62,7 @@ class CognitiveEngine:
         self.context = ContextFrame()
         self.validation = ValidationHarness()
         self.trace = TraceLog()
+        self.experiences = ExperienceOrgan(store=self.store, validation=self.validation)
         self.identity = IdentityOrgan(
             agent_id=agent_id, store=self.store, validation=self.validation
         )
@@ -115,6 +117,17 @@ class CognitiveEngine:
         self.validation.record_lifecycle(
             LifecycleEvent(time(), "goal_complete", goal_id, goal.title)
         )
+        # Goal completion is itself an Experience — nothing bypasses Experience
+        self.experiences.birth(
+            f"Goal completed: {goal.title}",
+            encode_kind="experience",
+            attention_class=AttentionClass.GOAL.value,
+            attention_weight=0.85,
+            goal_ids=(goal_id,),
+            goal_completed=True,
+            context_tags=self.context.tags,
+            metadata={"goal_id": goal_id},
+        )
 
     def encode(
         self,
@@ -125,6 +138,12 @@ class CognitiveEngine:
         context_tags: tuple[str, ...] | None = None,
         assent: bool = False,
         proposal_id: str | None = None,
+        external_kind: str = "text",
+        envelope_ids: tuple[str, ...] | None = None,
+        revises_id: str | None = None,
+        reflects_on_id: str | None = None,
+        t_start: float | None = None,
+        t_end: float | None = None,
     ) -> dict[str, Any]:
         t0 = perf_counter()
         self.context = infer_context(text, self.context)
@@ -148,26 +167,37 @@ class CognitiveEngine:
         weight = min(1.0, encode_weight(attention) + self.identity.attention_boost(text, kind=kind))
 
         # Low default attention may still encode lightly — pin/preference/identity durable
-        durable = weight >= 0.5 or kind in ("preference", "identity")
+        durable = weight >= 0.5 or kind in ("preference", "identity") or bool(revises_id)
         if not durable:
             self.validation.record_lifecycle(
                 LifecycleEvent(time(), MemoryVerb.ENCODE.value, "", "skipped_low_attention")
             )
             return {"encoded": False, "reason": "low_attention", "attention": attention.value}
 
-        exp = self.store.add_experience(
-            text.strip(),
-            context_tags=self.context.tags,
-            goal_ids=[g.id for g in self.store.active_goals()],
-            attention_class=attention.value,
-            importance=weight,
-        )
-
+        # Concept residue remains M0 substrate — M2 does not build Concepts organ
         concept = self._upsert_concept_from_text(text, kind=kind, weight=weight)
         self.identity.mark_concept_formation(concept, text=text, kind=kind)
-        # Bind concept evidence without degenerate self-edges.
-        if concept.id not in (exp.metadata.get("concept_ids") or []):
-            exp.metadata.setdefault("concept_ids", []).append(concept.id)
+        identity_signal = self.identity.classify_identity_signal(text, kind=kind)
+        identity_influenced = identity_signal in ("agent", "user", "adjacent")
+
+        goal_ids = tuple(g.id for g in self.store.active_goals())
+        exp = self.experiences.birth(
+            text.strip(),
+            external_kind=external_kind,
+            encode_kind=kind,
+            attention_class=attention.value,
+            attention_weight=weight,
+            context_tags=self.context.tags,
+            goal_ids=goal_ids,
+            envelope_ids=tuple(envelope_ids or ()),
+            concept_ids=(concept.id,),
+            t_start=t_start,
+            t_end=t_end,
+            revises_id=revises_id,
+            reflects_on_id=reflects_on_id,
+            identity_influenced=identity_influenced,
+        )
+
         for attr in concept.attributes:
             if exp.id not in attr.evidence_ids:
                 attr.evidence_ids.append(exp.id)
@@ -222,11 +252,19 @@ class CognitiveEngine:
                 verb=MemoryVerb.ENCODE.value,
                 attention_class=attention.value,
                 context_tags=list(self.context.tags),
-                goal_ids=[g.id for g in self.store.active_goals()],
+                goal_ids=list(goal_ids),
                 activated_concept_ids=[concept.id],
                 explanation_class=ExplanationClass.EXPERIENCE.value,
                 latency_ms=latency,
-                metadata={"identity": identity_result},
+                metadata={
+                    "identity": identity_result,
+                    "experience": {
+                        "id": exp.id,
+                        "cognitive_kind": exp.cognitive_kind.value,
+                        "external_kind": exp.external_kind.value,
+                        "sequence": exp.sequence,
+                    },
+                },
             )
         )
         self._encode_count += 1
@@ -237,9 +275,24 @@ class CognitiveEngine:
             "attention": attention.value,
             "importance": weight,
             "identity": identity_result,
+            "experience": self.experiences.public_view(exp),
         }
         self.extensions.emit("after_encode", dict(payload))
         return payload
+
+    def what_happened(self, **kwargs: Any) -> list[dict[str, Any]]:
+        """Cognitive question M2: What happened?"""
+        return self.experiences.what_happened(**kwargs)
+
+    def timeline(self, **kwargs: Any) -> dict[str, Any]:
+        return self.experiences.timeline(**kwargs)
+
+    def revise_experience(self, experience_id: str, text: str, **kwargs: Any) -> dict[str, Any]:
+        """Correction/reflection path — always births a new immutable Experience."""
+        return self.encode(text, revises_id=experience_id, **kwargs)
+
+    def reflect_on(self, experience_id: str, text: str, **kwargs: Any) -> dict[str, Any]:
+        return self.encode(text, reflects_on_id=experience_id, pin=True, **kwargs)
 
     def remember(self, query: str) -> RememberResult:
         t0 = perf_counter()
@@ -460,14 +513,17 @@ class CognitiveEngine:
             if c.confidence < 0.55 or any(a.confidence < 0.55 for a in c.attributes if a.active)
         ]
         ident = self.identity.observables()
+        exobs = self.experiences.observables()
         return {
             "agent_id": self.agent_id,
             "what_i_know_count": len(active_concepts),
             "what_i_do_not_know_well_count": len(uncertain),
             "experiences": len(self.store.experiences),
+            "what_happened_count": exobs["experience_count"],
             "active_goals": [g.title for g in self.store.active_goals()],
             "identity_concepts": [c.labels[0] for c in active_concepts if c.identity],
             "identity": ident,
+            "experience": exobs,
             "encode_count": self._encode_count,
             "remember_count": self._remember_count,
             "buffer_occupancy": len(self.buffer),

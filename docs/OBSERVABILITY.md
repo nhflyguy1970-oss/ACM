@@ -15,7 +15,7 @@ Observable **cognitive state**, not reasoning dumps.
 
 ```python
 report = engine.validation.snapshot()
-assert report["schema"] == "acm.validation/0.2"
+assert report["schema"] == "acm.validation/0.3"
 ```
 
 Recorded streams (trimmed FIFO):
@@ -31,6 +31,8 @@ Recorded streams (trimmed FIFO):
 | `sleep_events` | Prune counts + proposals |
 | `identity_touches` | Identity-concept activity (adopt / strengthen / propose / assent / influence / …) |
 | `identity` (aggregate) | growth · stability · change · confidence · influence · lineage · evolution |
+| `experience_events` | Birth, lineage, salience evolution, temporal links, lifecycle, envelopes |
+| `experience` (aggregate) | births · lineage · salience_evolutions · temporal_links · lifecycle · multimodal · identity/goal influence |
 
 ## Trace log
 

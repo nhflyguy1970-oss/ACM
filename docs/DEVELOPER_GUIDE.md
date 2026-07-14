@@ -19,6 +19,7 @@ acm/
   types/         # Enums, Attribute, EnvelopeRef
   core/          # CognitiveStore (in-memory substrate)
   identity/      # M1 Identity organ + Policy Gate
+  experiences/   # M2 Experience organ (immutable events, timeline)
   plugins/       # Extension registry (non-core capabilities)
   attention/     # Attention classification
   context/       # Context frames

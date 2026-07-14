@@ -23,3 +23,7 @@ Skeleton package `acm.adapters` exists for future *generic* adapter interfaces. 
 Schema nuclei (`agent` / `user` / `project`) are organizational anchors. Attribute content is experience-driven. High-impact conflicts become proposals (D009). Preference encodes may create **adjacent** links without rewriting schema statements.
 
 Architecture freeze still mentions “Aria-self”; ACM interprets this as host-agnostic **agent-self** (D008).
+
+## M2 Experience
+
+Encode always births Experiences through `ExperienceOrgan` when durable. Concept upsert remains provisional M0 substrate — Concepts organ is not M2. Lifecycle/salience overlays preserve immutability (D012). Roadmap renumber: Experience before Working-memory depth (D011).

@@ -6,9 +6,10 @@ Milestones are cognitive, not storage-tech. Each milestone requires: design revi
 |-----------|--------|--------|
 | **Foundation** | Standalone repo, docs suite, public API scaffold, independence rules | **Done (v0.1.0)** |
 | **M0** | Validation Harness + cognitive observables + CI | **Done (minimal stubs)** |
-| **M1** | Identity schemas (emergent; foundations only) | **Done (v0.2.0)** |
-| **M2** | Working memory interference + attention field | Planned (M0 stubs exist) |
-| **M3** | Concept formation + attribute versions | Planned (M0 stubs exist) |
+| **M1** | Identity schemas — *Who am I?* | **Done (v0.2.0)** |
+| **M2** | Experience organ — *What happened?* | **Done (v0.3.0)** |
+| **M3** | Concept formation + attribute versions | Planned (substrate stubs only) |
+| **M3b** | Working memory interference + attention field | Planned (M0 stubs exist; renumbered after Experience prioritized) |
 | **M4** | Association graph growth / spreading activation | Planned |
 | **M5** | Goal Space bias on encode/remember | Planned (M0 stubs exist) |
 | **M6** | Context frames & contextual recall | Planned (M0 stubs exist) |

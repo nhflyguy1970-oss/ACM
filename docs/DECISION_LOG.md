@@ -81,3 +81,27 @@ Significant architectural and implementation decisions. Deviations from the desi
 **Why:** Distinguishes structural privilege from prohibited profile-blob identity.
 
 **Status:** Accepted.
+
+## D011 — M2 is Experience, not Working Memory (2026-07-14)
+
+**Decision:** Implementation milestone M2 answers *What happened?* via the Experience organ. Working-memory depth previously listed as roadmap M2 is deferred (now M3b) so Experiences become the foundation before Concepts/Associations/Remembering expansion.
+
+**Why:** Architecture: nothing bypasses Experience; Concepts must grow from lived events.
+
+**Status:** Accepted. Cross-ref `EXPERIENCE_MODEL.md`, `COGNITIVE_TIMELINE.md`.
+
+## D012 — Experience content immutable; lifecycle/salience in overlays (2026-07-14)
+
+**Decision:** Experience records are frozen. Corrections/reflections birth new Experiences with lineage links. Circulation lifecycle and current salience live in runtime overlays — never mutate birth content.
+
+**Why:** History is never rewritten; relevance may still evolve for future remembering.
+
+**Status:** Accepted.
+
+## D013 — Self-improvement reserved, not implemented (2026-07-14)
+
+**Decision:** M2 may record experiences that *describe* architectural ideas, but applying self-modification to ACM’s own cognitive architecture/policies requires future explicit user authorization. M2 does not implement self-mod.
+
+**Why:** Learning evolves automatically; architecture change must remain assent-gated.
+
+**Status:** Accepted (forward constraint).

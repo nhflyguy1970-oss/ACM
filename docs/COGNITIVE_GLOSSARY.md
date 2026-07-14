@@ -2,7 +2,10 @@
 
 | Term | Meaning in ACM |
 |------|----------------|
-| **Experience** | Episode of encountering something; raw material for concepts |
+| **Experience** | Immutable cognitive event (*What happened?*); dual external/internal identity |
+| **Salience vector** | Multidimensional relevance (attention, novelty, importance, …) |
+| **Temporal link** | Chronology/causality/lineage edge among Experiences |
+| **Experience overlay** | Mutable lifecycle/current salience — never rewrites birth content |
 | **Concept** | Structured durable meaning with attributes, strength, confidence |
 | **Association** | Weighted typed edge between cognitive objects |
 | **Goal Space** | Active / completed goals that bias attention and recall |

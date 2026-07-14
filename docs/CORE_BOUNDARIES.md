@@ -11,7 +11,7 @@ These are cognitive organs or irreducible platform mechanics:
 | Inside | Why |
 |--------|-----|
 | Identity schemas | Privileged self/user/project continuity (P10) |
-| Experiences | Autobiographical raw material |
+| Experiences | Immutable cognitive events (*What happened?*) |
 | Concepts & attributes | Structured meaning |
 | Associations | Relational understanding |
 | Remembering | Cue-driven activation + reconsolidation |

@@ -1,8 +1,8 @@
-# API — ACM v0.2
+# API — ACM v0.3
 
 Public surface is intentionally small. Hosts integrate through `CognitiveEngine`; adapters and storage backends may evolve underneath without expanding the verb set casually.
 
-See also: [`PLUGIN_ARCHITECTURE.md`](PLUGIN_ARCHITECTURE.md) · [`CORE_BOUNDARIES.md`](CORE_BOUNDARIES.md)
+See also: [`PLUGIN_ARCHITECTURE.md`](PLUGIN_ARCHITECTURE.md) · [`CORE_BOUNDARIES.md`](CORE_BOUNDARIES.md) · [`EXPERIENCE_MODEL.md`](EXPERIENCE_MODEL.md) · [`COGNITIVE_TIMELINE.md`](COGNITIVE_TIMELINE.md)
 
 ## Install
 
@@ -35,13 +35,15 @@ CognitiveEngine(*, agent_id: str = "agent", buffer_capacity: int = 7)
 
 ### Cognitive verbs
 
-#### `encode(text, *, kind="experience", pin=False, context_tags=None, assent=False, proposal_id=None) -> dict`
+#### `encode(text, *, kind="experience", pin=False, context_tags=None, assent=False, proposal_id=None, external_kind="text", envelope_ids=None, revises_id=None, reflects_on_id=None, t_start=None, t_end=None) -> dict`
 
-Encodes an experience into lasting structure when attention / kind warrants durability.
+Births an **immutable Experience** (and may update identity / provisional concept residue) when attention / kind warrants durability.
 
-Typical `kind` values: `experience`, `preference`, `identity`.
+Typical encode `kind` values: `experience`, `preference`, `identity`.
 
-Returns at least: `encoded`, and on success `experience_id`, `concept_id`, `attention`, `importance`, `identity` (integration result when identity-relevant).
+Optional: `external_kind` (modality), `envelope_ids`, `revises_id` / `reflects_on_id` (lineage), temporal bounds.
+
+Returns at least: `encoded`, and on success `experience_id`, `concept_id`, `attention`, `importance`, `identity`, `experience` (public view).
 
 High-impact identity conflicts return `identity.status == "proposed"` with a `proposal_id` unless `assent=True`.
 
@@ -66,6 +68,16 @@ Consolidation pass: prune weak edges (optional); record merge *proposals* withou
 
 Foundations for self-modeling: counts of known / uncertain concepts, experiences, goals, identity observables, extensions, encode/remember counts, buffer occupancy, context. **Not** consciousness.
 
+### Experience
+
+| Method | Purpose |
+|--------|---------|
+| `what_happened(**filters)` | Chronological answer to *What happened?* |
+| `timeline()` | Events + temporal links + observables |
+| `revise_experience(id, text, …)` | Correction → new Experience + lineage |
+| `reflect_on(id, text, …)` | Reflection → new Experience + lineage |
+| `engine.experiences` | Experience organ (envelopes, salience touch, retire/awaken) |
+
 ### Identity
 
 | Method | Purpose |
@@ -88,7 +100,7 @@ Foundations for self-modeling: counts of known / uncertain concepts, experiences
 |-----------|---------|
 | `engine.validation` | `ValidationHarness` — milestone observables |
 | `engine.trace` | `TraceLog` of `CognitiveTraceEvent` |
-| `engine.validation.snapshot()` | JSON-safe cognitive validation report (`acm.validation/0.2`) |
+| `engine.validation.snapshot()` | JSON-safe cognitive validation report (`acm.validation/0.3`) |
 | `engine.identity` | Identity organ (advanced; prefer public methods above) |
 
 ## Non-goals (public API)

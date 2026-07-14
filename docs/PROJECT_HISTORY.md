@@ -10,6 +10,18 @@ Implementation was authorized as a **new standalone engine**, not a rename of Ar
 
 - **2026-07:** ACM repository bootstrapped; M0 Validation Harness and `CognitiveEngine` foundation landed as v0.1.0.
 - **2026-07:** M1 Identity — first true cognitive organ. Emergent schemas, lineage, Policy Gate assent, plugin/core boundary docs. Released as v0.2.0.
+- **2026-07:** M2 Experience — immutable cognitive events with dual identity, salience, temporal links, and lineage. Released as v0.3.0.
+
+## Milestone cognitive questions
+
+| Milestone | Question | Capability |
+|-----------|----------|------------|
+| M1 | Who am I? | Emergent Identity schemas |
+| M2 | What happened? | Immutable Experience chronology |
+
+### What new cognitive capability exists today that did not exist yesterday?
+
+**ACM can now answer “What happened?” from an immutable Experience log:** every durable encode/correction/reflection/goal-completion becomes a cognitive event with external modality, internal cognitive kind, multidimensional salience, temporal relations, and lineage — without rewriting history and without depending on Aria or host stacks.
 
 ## Relationship to Aria
 

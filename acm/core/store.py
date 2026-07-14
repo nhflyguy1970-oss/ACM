@@ -6,22 +6,8 @@ from dataclasses import dataclass, field
 from time import time
 from typing import Any
 
+from acm.experiences.model import Experience
 from acm.types import Attribute, ConceptRole, EdgeType, EnvelopeRef, new_id
-
-
-@dataclass
-class Experience:
-    id: str
-    summary: str
-    timestamp: float
-    context_tags: tuple[str, ...] = ()
-    goal_ids: list[str] = field(default_factory=list)
-    envelope_ids: list[str] = field(default_factory=list)
-    attention_class: str = "default"
-    importance: float = 0.5
-    version: int = 1
-    active: bool = True
-    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
@@ -65,7 +51,7 @@ class Goal:
 
 
 class CognitiveStore:
-    """Minimal durable-feeling store kept in process for M0–M3 foundations."""
+    """Minimal durable-feeling store kept in process for foundational milestones."""
 
     def __init__(self) -> None:
         self.experiences: dict[str, Experience] = {}
@@ -73,16 +59,6 @@ class CognitiveStore:
         self.associations: dict[str, Association] = {}
         self.goals: dict[str, Goal] = {}
         self.envelopes: dict[str, EnvelopeRef] = {}
-
-    def add_experience(self, summary: str, **kwargs: Any) -> Experience:
-        exp = Experience(
-            id=new_id("exp"),
-            summary=summary,
-            timestamp=time(),
-            **kwargs,
-        )
-        self.experiences[exp.id] = exp
-        return exp
 
     def add_concept(
         self, label: str, role: ConceptRole = ConceptRole.ENTITY, **kwargs: Any
@@ -111,7 +87,6 @@ class CognitiveStore:
                 if attr.active and (q in attr.value.lower() or q in attr.key.lower()):
                     hits.append(c)
                     break
-        # unique preserve order
         seen: set[str] = set()
         out: list[Concept] = []
         for h in hits:
