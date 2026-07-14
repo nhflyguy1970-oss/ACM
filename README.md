@@ -8,7 +8,7 @@ ACM is **not** Aria. Aria (and any other agent) may become a *consumer* of ACM t
 
 ## Status
 
-**v0.3.0 — M2 Experience Organ**
+**v0.4.0 — M3 Concept Organ**
 
 | Layer | State |
 |-------|--------|
@@ -17,10 +17,12 @@ ACM is **not** Aria. Aria (and any other agent) may become a *consumer* of ACM t
 | Validation strategy | Complete (`docs/COGNITIVE_MEMORY_TEST_STRATEGY.md`) |
 | Plugin / core boundaries | Complete (`docs/PLUGIN_ARCHITECTURE.md`, `CORE_BOUNDARIES.md`) |
 | Experience model / timeline | Complete (`docs/EXPERIENCE_MODEL.md`, `COGNITIVE_TIMELINE.md`) |
+| Concept architecture | Complete (`docs/CONCEPT_ARCHITECTURE.md`, abstraction + lifecycle) |
 | M0 Validation Harness | Implemented |
 | M1 Identity | Implemented — *Who am I?* |
-| M2 Experience | **Implemented** — *What happened?* |
-| M3+ Concepts / … | Roadmapped — not started |
+| M2 Experience | Implemented — *What happened?* |
+| M3 Concept | **Implemented** — *What is this?* |
+| M4+ Associations / … | Roadmapped — not started |
 | Host migration (Aria, etc.) | **Not started** — ACM must mature first |
 
 ## Install
@@ -42,10 +44,11 @@ engine.encode("I am a research assistant.", kind="identity")
 engine.encode("My favorite coffee is dark roast.", kind="preference")
 print(engine.who_am_i()["answer"])
 print(engine.what_happened())
+print(engine.what_is_this("coffee"))
 result = engine.remember("What is my favorite coffee?")
 print(result.answer)
 report = engine.validation.snapshot()
-print(report["experience"])
+print(report["concept"])
 ```
 
 No host framework required. See `examples/hello_acm.py`.
@@ -61,6 +64,9 @@ No host framework required. See `examples/hello_acm.py`.
 | [docs/COGNITIVE_MEMORY_TEST_STRATEGY.md](docs/COGNITIVE_MEMORY_TEST_STRATEGY.md) | Validation (*proof*) |
 | [docs/EXPERIENCE_MODEL.md](docs/EXPERIENCE_MODEL.md) | What an Experience is |
 | [docs/COGNITIVE_TIMELINE.md](docs/COGNITIVE_TIMELINE.md) | Time as cognitive organizer |
+| [docs/CONCEPT_ARCHITECTURE.md](docs/CONCEPT_ARCHITECTURE.md) | Concept emergence & meaning |
+| [docs/COGNITIVE_ABSTRACTION.md](docs/COGNITIVE_ABSTRACTION.md) | Hierarchy / prototypes |
+| [docs/CONCEPT_LIFECYCLE.md](docs/CONCEPT_LIFECYCLE.md) | Nucleus → mature → dormancy |
 | [docs/PLUGIN_ARCHITECTURE.md](docs/PLUGIN_ARCHITECTURE.md) | Extension points |
 | [docs/CORE_BOUNDARIES.md](docs/CORE_BOUNDARIES.md) | What stays in/out of ACM |
 | [docs/API.md](docs/API.md) | Public API |

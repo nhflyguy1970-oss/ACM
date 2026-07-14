@@ -74,6 +74,7 @@ class ValidationHarness:
         self.sleep_events: list[dict[str, Any]] = []
         self.identity_touches: list[dict[str, Any]] = []
         self.experience_events: list[dict[str, Any]] = []
+        self.concept_events: list[dict[str, Any]] = []
         # Aggregated identity observables (M1)
         self.identity_metrics: dict[str, float | int] = {
             "growth": 0,
@@ -93,6 +94,19 @@ class ValidationHarness:
             "multimodal": 0,
             "identity_influenced": 0,
             "goal_influenced": 0,
+        }
+        # Aggregated concept observables (M3)
+        self.concept_metrics: dict[str, float | int] = {
+            "births": 0,
+            "nuclei": 0,
+            "strengthenings": 0,
+            "weakenings": 0,
+            "maturity_changes": 0,
+            "abstractions": 0,
+            "hierarchy": 0,
+            "merges": 0,
+            "splits": 0,
+            "prototypes": 0,
         }
 
     def _trim(self, seq: list[Any]) -> None:
@@ -183,10 +197,39 @@ class ValidationHarness:
         elif action == "envelope" or payload.get("multimodal"):
             self.experience_metrics["multimodal"] = int(self.experience_metrics["multimodal"]) + 1
 
+    def record_concept(self, **payload: Any) -> None:
+        event = {"timestamp": time(), **payload}
+        self.concept_events.append(event)
+        self._trim(self.concept_events)
+        if payload.get("birth") or payload.get("action") == "birth":
+            self.concept_metrics["births"] = int(self.concept_metrics["births"]) + 1
+        if payload.get("nucleus"):
+            self.concept_metrics["nuclei"] = int(self.concept_metrics["nuclei"]) + 1
+        if payload.get("strengthening"):
+            self.concept_metrics["strengthenings"] = (
+                int(self.concept_metrics["strengthenings"]) + 1
+            )
+        if payload.get("weakening"):
+            self.concept_metrics["weakenings"] = int(self.concept_metrics["weakenings"]) + 1
+        if payload.get("maturity") or payload.get("lifecycle"):
+            self.concept_metrics["maturity_changes"] = (
+                int(self.concept_metrics["maturity_changes"]) + 1
+            )
+        if payload.get("abstraction"):
+            self.concept_metrics["abstractions"] = int(self.concept_metrics["abstractions"]) + 1
+        if payload.get("hierarchy"):
+            self.concept_metrics["hierarchy"] = int(self.concept_metrics["hierarchy"]) + 1
+        if payload.get("merge"):
+            self.concept_metrics["merges"] = int(self.concept_metrics["merges"]) + 1
+        if payload.get("split"):
+            self.concept_metrics["splits"] = int(self.concept_metrics["splits"]) + 1
+        if payload.get("prototype"):
+            self.concept_metrics["prototypes"] = int(self.concept_metrics["prototypes"]) + 1
+
     def snapshot(self) -> dict[str, Any]:
         """Public validation snapshot — metadata only, no chain-of-thought."""
         return {
-            "schema": "acm.validation/0.3",
+            "schema": "acm.validation/0.4",
             "counts": {
                 "activations": len(self.activations),
                 "confidence_deltas": len(self.confidence_deltas),
@@ -197,6 +240,7 @@ class ValidationHarness:
                 "sleep_events": len(self.sleep_events),
                 "identity_touches": len(self.identity_touches),
                 "experience_events": len(self.experience_events),
+                "concept_events": len(self.concept_events),
             },
             "identity": {
                 "growth": self.identity_metrics["growth"],
@@ -226,6 +270,24 @@ class ValidationHarness:
                     1 for e in self.experience_events if e.get("context_tags")
                 ),
             },
+            "concept": {
+                "births": self.concept_metrics["births"],
+                "nuclei": self.concept_metrics["nuclei"],
+                "strengthenings": self.concept_metrics["strengthenings"],
+                "weakenings": self.concept_metrics["weakenings"],
+                "maturity": self.concept_metrics["maturity_changes"],
+                "hierarchy": self.concept_metrics["hierarchy"],
+                "abstraction": self.concept_metrics["abstractions"],
+                "merge_proposals": self.concept_metrics["merges"],
+                "split_proposals": self.concept_metrics["splits"],
+                "prototypes": self.concept_metrics["prototypes"],
+                "evolution": {
+                    "touches": len(self.concept_events),
+                    "births": self.concept_metrics["births"],
+                    "strengthenings": self.concept_metrics["strengthenings"],
+                    "weakenings": self.concept_metrics["weakenings"],
+                },
+            },
             "activations": [asdict(a) for a in self.activations[-40:]],
             "confidence_deltas": [asdict(c) for c in self.confidence_deltas[-40:]],
             "association_changes": [asdict(a) for a in self.association_changes[-40:]],
@@ -235,6 +297,7 @@ class ValidationHarness:
             "sleep_events": deepcopy(self.sleep_events[-40:]),
             "identity_touches": deepcopy(self.identity_touches[-40:]),
             "experience_events": deepcopy(self.experience_events[-40:]),
+            "concept_events": deepcopy(self.concept_events[-40:]),
         }
 
     def reset(self) -> None:
@@ -247,6 +310,7 @@ class ValidationHarness:
         self.sleep_events.clear()
         self.identity_touches.clear()
         self.experience_events.clear()
+        self.concept_events.clear()
         self.identity_metrics = {
             "growth": 0,
             "stability": 0,
@@ -264,4 +328,16 @@ class ValidationHarness:
             "multimodal": 0,
             "identity_influenced": 0,
             "goal_influenced": 0,
+        }
+        self.concept_metrics = {
+            "births": 0,
+            "nuclei": 0,
+            "strengthenings": 0,
+            "weakenings": 0,
+            "maturity_changes": 0,
+            "abstractions": 0,
+            "hierarchy": 0,
+            "merges": 0,
+            "splits": 0,
+            "prototypes": 0,
         }

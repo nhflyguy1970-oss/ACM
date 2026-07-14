@@ -6,7 +6,10 @@
 | **Salience vector** | Multidimensional relevance (attention, novelty, importance, …) |
 | **Temporal link** | Chronology/causality/lineage edge among Experiences |
 | **Experience overlay** | Mutable lifecycle/current salience — never rewrites birth content |
-| **Concept** | Structured durable meaning with attributes, strength, confidence |
+| **Concept** | Emergent meaning (*What is this?*) with stage, prototype, exemplars |
+| **Concept nucleus** | Provisional emerging Concept before stabilization |
+| **Prototype** | Central-tendency features of a Concept |
+| **Exemplar** | Anchoring Experience (or instance) under a Concept |
 | **Association** | Weighted typed edge between cognitive objects |
 | **Goal Space** | Active / completed goals that bias attention and recall |
 | **Attention** | Gate that modulates encoding durability |

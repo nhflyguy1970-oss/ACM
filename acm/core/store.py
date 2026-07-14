@@ -6,27 +6,9 @@ from dataclasses import dataclass, field
 from time import time
 from typing import Any
 
+from acm.concepts.model import Concept, ConceptStage
 from acm.experiences.model import Experience
-from acm.types import Attribute, ConceptRole, EdgeType, EnvelopeRef, new_id
-
-
-@dataclass
-class Concept:
-    id: str
-    labels: list[str]
-    role: ConceptRole = ConceptRole.ENTITY
-    attributes: list[Attribute] = field(default_factory=list)
-    envelope_ids: list[str] = field(default_factory=list)
-    strength: float = 0.5
-    importance: float = 0.5
-    confidence: float = 0.6
-    access_count: int = 0
-    first_seen: float = 0.0
-    last_activated: float = 0.0
-    provisional: bool = True
-    active: bool = True
-    identity: bool = False
-    metadata: dict[str, Any] = field(default_factory=dict)
+from acm.types import ConceptRole, EdgeType, EnvelopeRef, new_id
 
 
 @dataclass
@@ -64,12 +46,14 @@ class CognitiveStore:
         self, label: str, role: ConceptRole = ConceptRole.ENTITY, **kwargs: Any
     ) -> Concept:
         now = time()
+        stage = kwargs.pop("stage", ConceptStage.NUCLEUS)
         concept = Concept(
             id=new_id("con"),
             labels=[label],
             role=role,
             first_seen=now,
             last_activated=now,
+            stage=stage,
             **kwargs,
         )
         self.concepts[concept.id] = concept
@@ -79,14 +63,24 @@ class CognitiveStore:
         q = text.lower()
         hits: list[Concept] = []
         for c in self.concepts.values():
-            if not c.active:
+            if c.stage == ConceptStage.RETIRED:
                 continue
-            if any(q in lab.lower() or lab.lower() in q for lab in c.labels):
-                hits.append(c)
-            for attr in c.attributes:
-                if attr.active and (q in attr.value.lower() or q in attr.key.lower()):
+            if not c.active and c.stage != ConceptStage.DORMANT:
+                continue
+            for lab in c.labels:
+                lab_l = lab.lower()
+                if lab_l == q or (len(q) >= 4 and (q in lab_l.split() or lab_l in q.split())):
                     hits.append(c)
                     break
+            else:
+                for attr in c.attributes:
+                    if attr.active and (
+                        attr.value.lower() == q
+                        or (len(q) >= 4 and q in attr.value.lower())
+                        or q in attr.key.lower()
+                    ):
+                        hits.append(c)
+                        break
         seen: set[str] = set()
         out: list[Concept] = []
         for h in hits:
@@ -122,7 +116,7 @@ class CognitiveStore:
                 other = self.concepts.get(edge.target_id)
             elif edge.target_id == concept_id:
                 other = self.concepts.get(edge.source_id)
-            if other and other.active:
+            if other and (other.active or other.stage == ConceptStage.DORMANT):
                 out.append((edge, other))
         out.sort(key=lambda x: x[0].weight, reverse=True)
         return out

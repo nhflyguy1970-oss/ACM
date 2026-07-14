@@ -1,8 +1,8 @@
-# API — ACM v0.3
+# API — ACM v0.4
 
 Public surface is intentionally small. Hosts integrate through `CognitiveEngine`; adapters and storage backends may evolve underneath without expanding the verb set casually.
 
-See also: [`PLUGIN_ARCHITECTURE.md`](PLUGIN_ARCHITECTURE.md) · [`CORE_BOUNDARIES.md`](CORE_BOUNDARIES.md) · [`EXPERIENCE_MODEL.md`](EXPERIENCE_MODEL.md) · [`COGNITIVE_TIMELINE.md`](COGNITIVE_TIMELINE.md)
+See also: [`PLUGIN_ARCHITECTURE.md`](PLUGIN_ARCHITECTURE.md) · [`CORE_BOUNDARIES.md`](CORE_BOUNDARIES.md) · [`EXPERIENCE_MODEL.md`](EXPERIENCE_MODEL.md) · [`CONCEPT_ARCHITECTURE.md`](CONCEPT_ARCHITECTURE.md)
 
 ## Install
 
@@ -78,6 +78,14 @@ Foundations for self-modeling: counts of known / uncertain concepts, experiences
 | `reflect_on(id, text, …)` | Reflection → new Experience + lineage |
 | `engine.experiences` | Experience organ (envelopes, salience touch, retire/awaken) |
 
+### Concepts
+
+| Method | Purpose |
+|--------|---------|
+| `what_is_this(cue)` | Answer *What is this?* from emergent Concepts |
+| `engine.concepts.recognize(cue)` | Similarity / seen-before hook (not Remembering) |
+| `engine.concepts` | Nuclei, hierarchy, prototypes, weaken/resurrect |
+
 ### Identity
 
 | Method | Purpose |
@@ -100,7 +108,7 @@ Foundations for self-modeling: counts of known / uncertain concepts, experiences
 |-----------|---------|
 | `engine.validation` | `ValidationHarness` — milestone observables |
 | `engine.trace` | `TraceLog` of `CognitiveTraceEvent` |
-| `engine.validation.snapshot()` | JSON-safe cognitive validation report (`acm.validation/0.3`) |
+| `engine.validation.snapshot()` | JSON-safe report (`acm.validation/0.4`) including concept metrics |
 | `engine.identity` | Identity organ (advanced; prefer public methods above) |
 
 ## Non-goals (public API)

@@ -14,7 +14,8 @@ from acm.identity.policy import IdentityPolicyGate, IdentityProposal
 from acm.types import Attribute, ConceptRole, EdgeType
 
 if TYPE_CHECKING:
-    from acm.core.store import CognitiveStore, Concept
+    from acm.concepts.model import Concept
+    from acm.core.store import CognitiveStore
     from acm.validation.harness import ValidationHarness
 
 _SELF_ROLE = re.compile(

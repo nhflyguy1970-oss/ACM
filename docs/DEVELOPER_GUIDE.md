@@ -20,6 +20,7 @@ acm/
   core/          # CognitiveStore (in-memory substrate)
   identity/      # M1 Identity organ + Policy Gate
   experiences/   # M2 Experience organ (immutable events, timeline)
+  concepts/      # M3 Concept organ (nuclei, hierarchy, prototypes)
   plugins/       # Extension registry (non-core capabilities)
   attention/     # Attention classification
   context/       # Context frames

@@ -22,7 +22,7 @@ def test_harness_identity_metrics() -> None:
     engine.encode("I am a cartographer.", kind="identity")
     engine.who_am_i()
     snap = engine.validation.snapshot()
-    assert snap["schema"] == "acm.validation/0.3"
+    assert snap["schema"] == "acm.validation/0.4"
     assert snap["identity"]["growth"] >= 1
     assert snap["identity"]["stability"] >= 1
     assert snap["identity"]["change"] >= 1

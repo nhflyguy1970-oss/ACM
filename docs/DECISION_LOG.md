@@ -105,3 +105,27 @@ Significant architectural and implementation decisions. Deviations from the desi
 **Why:** Learning evolves automatically; architecture change must remain assent-gated.
 
 **Status:** Accepted (forward constraint).
+
+## D014 — Future organs prefer Concepts over raw Experiences (2026-07-14)
+
+**Decision:** Long-term direction is Experience → Concept → Association → Remembering → … Future organs should avoid manipulating raw Experiences when Concepts suffice. Recorded as architectural principle in Concept docs; not an M3 hard runtime ban.
+
+**Why:** Meaning vs history separation; scalable cognition.
+
+**Status:** Accepted (directional).
+
+## D015 — Concepts keep prototypes and exemplars (2026-07-14)
+
+**Decision:** Each Concept maintains a prototype (feature central tendency) and a capped exemplar list (Experience anchors). Not prototype-only or exemplar-only.
+
+**Why:** Family resemblance plus lived instances best match experience-grounded cognition for future recognition.
+
+**Status:** Accepted.
+
+## D016 — Hierarchy lives in Concept organ, not Association organ (2026-07-14)
+
+**Decision:** `is_a` / specialization edges are owned by `ConceptOrgan` in M3. M4 Association organ will add broader associative fabric without relocating taxonomy.
+
+**Why:** Abstraction is part of meaning formation; avoids starting Associations early.
+
+**Status:** Accepted.

@@ -9,15 +9,16 @@ from typing import Any
 
 from acm._version import __version__ as acm_version
 from acm.attention.field import classify_attention, encode_weight
+from acm.concepts import ConceptOrgan
+from acm.concepts.model import Concept
 from acm.context.frame import ContextFrame, infer_context
-from acm.core.store import CognitiveStore, Concept
+from acm.core.store import CognitiveStore
 from acm.experiences import ExperienceOrgan
 from acm.identity import IdentityOrgan
 from acm.observability.trace import CognitiveTraceEvent, TraceLog
 from acm.plugins import ExtensionRegistry
 from acm.types import (
     AttentionClass,
-    Attribute,
     ConceptRole,
     EdgeType,
     ExplanationClass,
@@ -63,6 +64,7 @@ class CognitiveEngine:
         self.validation = ValidationHarness()
         self.trace = TraceLog()
         self.experiences = ExperienceOrgan(store=self.store, validation=self.validation)
+        self.concepts = ConceptOrgan(store=self.store, validation=self.validation)
         self.identity = IdentityOrgan(
             agent_id=agent_id, store=self.store, validation=self.validation
         )
@@ -73,6 +75,10 @@ class CognitiveEngine:
         self._remember_count = 0
         # Nuclei exist as organizational anchors; content still arrives via experience
         self.identity.ensure_schemas()
+        for cid in self.identity._schema_ids.values():
+            concept = self.store.concepts.get(cid)
+            if concept is not None:
+                self.concepts.register_existing(concept)
 
     # --- public cognitive verbs -------------------------------------------------
 
@@ -174,8 +180,13 @@ class CognitiveEngine:
             )
             return {"encoded": False, "reason": "low_attention", "attention": attention.value}
 
-        # Concept residue remains M0 substrate — M2 does not build Concepts organ
-        concept = self._upsert_concept_from_text(text, kind=kind, weight=weight)
+        # M3 Concept organ — meaning emerges from encode cues, then binds Experience evidence
+        concept, concept_ids = self.concepts.ingest_from_encode(
+            text,
+            encode_kind=kind,
+            weight=weight,
+            context_tags=self.context.tags,
+        )
         self.identity.mark_concept_formation(concept, text=text, kind=kind)
         identity_signal = self.identity.classify_identity_signal(text, kind=kind)
         identity_influenced = identity_signal in ("agent", "user", "adjacent")
@@ -190,13 +201,14 @@ class CognitiveEngine:
             context_tags=self.context.tags,
             goal_ids=goal_ids,
             envelope_ids=tuple(envelope_ids or ()),
-            concept_ids=(concept.id,),
+            concept_ids=tuple(concept_ids),
             t_start=t_start,
             t_end=t_end,
             revises_id=revises_id,
             reflects_on_id=reflects_on_id,
             identity_influenced=identity_influenced,
         )
+        self.concepts.bind_experience(exp, concept_ids=concept_ids)
 
         for attr in concept.attributes:
             if exp.id not in attr.evidence_ids:
@@ -264,6 +276,8 @@ class CognitiveEngine:
                         "external_kind": exp.external_kind.value,
                         "sequence": exp.sequence,
                     },
+                    "concept_ids": concept_ids,
+                    "concept_stage": concept.stage.value,
                 },
             )
         )
@@ -272,6 +286,8 @@ class CognitiveEngine:
             "encoded": True,
             "experience_id": exp.id,
             "concept_id": concept.id,
+            "concept_ids": concept_ids,
+            "concept": concept.to_public(),
             "attention": attention.value,
             "importance": weight,
             "identity": identity_result,
@@ -283,6 +299,10 @@ class CognitiveEngine:
     def what_happened(self, **kwargs: Any) -> list[dict[str, Any]]:
         """Cognitive question M2: What happened?"""
         return self.experiences.what_happened(**kwargs)
+
+    def what_is_this(self, cue: str) -> dict[str, Any]:
+        """Cognitive question M3: What is this?"""
+        return self.concepts.what_is_this(cue)
 
     def timeline(self, **kwargs: Any) -> dict[str, Any]:
         return self.experiences.timeline(**kwargs)
@@ -514,6 +534,7 @@ class CognitiveEngine:
         ]
         ident = self.identity.observables()
         exobs = self.experiences.observables()
+        cob = self.concepts.observables()
         return {
             "agent_id": self.agent_id,
             "what_i_know_count": len(active_concepts),
@@ -524,6 +545,7 @@ class CognitiveEngine:
             "identity_concepts": [c.labels[0] for c in active_concepts if c.identity],
             "identity": ident,
             "experience": exobs,
+            "concept": cob,
             "encode_count": self._encode_count,
             "remember_count": self._remember_count,
             "buffer_occupancy": len(self.buffer),
@@ -539,140 +561,14 @@ class CognitiveEngine:
                 WorkingTransition(time(), "displace", item.ref_id, item.label)
             )
 
-    def _upsert_concept_from_text(self, text: str, *, kind: str, weight: float) -> Concept:
-        role = ConceptRole.ENTITY
-        identity = False
-        label = text.strip()[:80]
-        attr_key = "statement"
-        attr_val = text.strip()
-
-        if kind == "preference" or re.search(r"\b(prefer|favorite|favourite)\b", text, re.I):
-            role = ConceptRole.PREFERENCE
-            m = re.search(
-                r"(?:favorite|favourite)\s+(\w+(?:\s+\w+)?)\s+is\s+(.+?)(?:\.|$)",
-                text,
-                re.I,
-            )
-            if m:
-                attr_key = f"favorite_{m.group(1).strip().lower().replace(' ', '_')}"
-                attr_val = m.group(2).strip().rstrip(".")
-                label = attr_key.replace("_", " ")
-            else:
-                m2 = re.search(r"prefer\s+(.+?)(?:\.|$)", text, re.I)
-                if m2:
-                    attr_key = "preference"
-                    attr_val = m2.group(1).strip().rstrip(".")
-                    label = "preference"
-        elif kind == "identity":
-            role = ConceptRole.IDENTITY
-            identity = True
-            label = "identity"
-
-        existing = self.store.find_concepts_by_label(label)
-        # Prefer matching preference key
-        concept = None
-        for cand in existing:
-            if any(a.key == attr_key and a.active for a in cand.attributes):
-                concept = cand
-                break
-            if label.lower() in " ".join(cand.labels).lower():
-                concept = cand
-                break
-
-        if concept is None:
-            concept = self.store.add_concept(
-                label,
-                role=role,
-                identity=identity,
-                provisional=weight < 0.9,
-                importance=weight,
-                confidence=min(0.9, 0.5 + weight / 2),
-                strength=weight,
-            )
-            concept.attributes.append(
-                Attribute(
-                    key=attr_key,
-                    value=attr_val,
-                    confidence=min(0.9, 0.55 + weight / 2),
-                    importance=weight,
-                    context_tags=self.context.tags,
-                )
-            )
-        else:
-            # strengthen existing
-            before_c = concept.confidence
-            concept.strength = min(1.0, concept.strength + 0.08)
-            concept.importance = max(concept.importance, weight)
-            concept.confidence = min(1.0, concept.confidence + 0.05)
-            concept.access_count += 1
-            concept.last_activated = time()
-            concept.provisional = concept.strength < 0.75
-            matched = False
-            for attr in concept.attributes:
-                if attr.key == attr_key and attr.active:
-                    if attr.value.lower() != attr_val.lower():
-                        # prediction error path — supersede
-                        attr.active = False
-                        concept.attributes.append(
-                            Attribute(
-                                key=attr_key,
-                                value=attr_val,
-                                confidence=min(0.95, attr.confidence + 0.1),
-                                importance=weight,
-                                context_tags=self.context.tags,
-                                version=attr.version + 1,
-                            )
-                        )
-                        self.validation.record_reconsolidation(
-                            concept_id=concept.id,
-                            attribute_key=attr_key,
-                            kind="supersede",
-                            previous=attr.value,
-                            current=attr_val,
-                        )
-                    else:
-                        before = attr.confidence
-                        attr.confidence = min(1.0, attr.confidence + 0.05)
-                        self.validation.record_confidence(
-                            ConfidenceDelta(
-                                time(),
-                                concept.id,
-                                attr_key,
-                                before,
-                                attr.confidence,
-                                "repeated_encode",
-                            )
-                        )
-                    matched = True
-                    break
-            if not matched:
-                concept.attributes.append(
-                    Attribute(
-                        key=attr_key,
-                        value=attr_val,
-                        confidence=min(0.9, 0.55 + weight / 2),
-                        importance=weight,
-                        context_tags=self.context.tags,
-                    )
-                )
-            self.validation.record_confidence(
-                ConfidenceDelta(
-                    time(),
-                    concept.id,
-                    "concept",
-                    before_c,
-                    concept.confidence,
-                    "strengthen",
-                )
-            )
-        return concept
-
     def _rank_concepts(self, query: str) -> list[Concept]:
         q = query.lower()
         scored: list[tuple[float, Concept]] = []
         active_goal_ids = {g.id for g in self.store.active_goals()}
         for concept in self.store.concepts.values():
             if not concept.active:
+                continue
+            if getattr(concept, "stage", None) and concept.stage.value == "retired":
                 continue
             score = 0.0
             blob = " ".join(concept.labels).lower()

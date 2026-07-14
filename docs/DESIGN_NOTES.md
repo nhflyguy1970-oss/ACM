@@ -26,4 +26,8 @@ Architecture freeze still mentions “Aria-self”; ACM interprets this as host-
 
 ## M2 Experience
 
-Encode always births Experiences through `ExperienceOrgan` when durable. Concept upsert remains provisional M0 substrate — Concepts organ is not M2. Lifecycle/salience overlays preserve immutability (D012). Roadmap renumber: Experience before Working-memory depth (D011).
+Encode always births Experiences through `ExperienceOrgan` when durable. Lifecycle/salience overlays preserve immutability (D012). Roadmap renumber: Experience before Working-memory depth (D011).
+
+## M3 Concept
+
+Encode cues → `ConceptOrgan.ingest_from_encode` → Experience birth → `bind_experience` evidence. Hierarchy `is_a` is Concept-owned (D016). Preference `favorite_*` keys are the only global attribute-key upserts (prevents token collapse). Merge/split are proposals only.

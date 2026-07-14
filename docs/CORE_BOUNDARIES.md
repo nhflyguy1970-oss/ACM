@@ -12,7 +12,7 @@ These are cognitive organs or irreducible platform mechanics:
 |--------|-----|
 | Identity schemas | Privileged self/user/project continuity (P10) |
 | Experiences | Immutable cognitive events (*What happened?*) |
-| Concepts & attributes | Structured meaning |
+| Concepts & attributes | Emergent meaning (*What is this?*) |
 | Associations | Relational understanding |
 | Remembering | Cue-driven activation + reconsolidation |
 | Attention & context | Meaning and durability gates |
