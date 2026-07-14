@@ -27,7 +27,11 @@ pytest --cov=acm --cov-report=term-missing
 - [ ] Working buffer displaces under capacity pressure
 - [ ] `sleep` prunes weak edges; merge proposals are not silently applied
 - [ ] Explanations are template classes only
-- [ ] `validation.snapshot()` contains schema `acm.validation/0.1`
+- [ ] `validation.snapshot()` contains schema `acm.validation/0.2`
+- [ ] Identity emerges from encode experiences (not manual profile fields)
+- [ ] Identity conflict proposes; assent supersedes with lineage
+- [ ] `who_am_i` / remember(“Who am I?”) reconstruct from schemas + goals
+- [ ] Identity metrics: growth, stability, change, confidence, influence, lineage
 
 ## What not to assert
 

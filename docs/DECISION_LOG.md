@@ -49,3 +49,35 @@ Significant architectural and implementation decisions. Deviations from the desi
 **Why:** Project mission for Foundation Build.
 
 **Status:** Accepted.
+
+## D007 — Plugin architecture before Identity (2026-07-14)
+
+**Decision:** Document and ship a minimal `ExtensionRegistry` / hook protocol before Identity organ work; add `PLUGIN_ARCHITECTURE.md` and `CORE_BOUNDARIES.md`.
+
+**Why:** Future modalities (vision, robotics, web) must attach without enlarging the cognitive core into a monolith.
+
+**Status:** Accepted.
+
+## D008 — Host-agnostic identity schema roles (2026-07-14)
+
+**Decision:** ACM Identity uses roles `agent`, `user`, and `project` instead of Aria-named schemas. Architecture freeze text that says “Aria-self” is interpreted as **agent-self** for this host-agnostic engine (cross-ref `ARCHITECTURE.md` Identity Schema; contradiction recorded rather than silent rewrite of freeze narrative).
+
+**Why:** ACM must never assume Aria exists (P10 still holds: identity emerges through experience under policy).
+
+**Status:** Accepted.
+
+## D009 — High-impact identity flips require assent (2026-07-14)
+
+**Decision:** Conflicting identity attribute writes create pending proposals; active schema attributes change only via `assent_identity` or `encode(..., assent=True)`.
+
+**Why:** Architecture Policy Gate / Sleep identity rules; prevents silent identity overwrite (test strategy §5.1).
+
+**Status:** Accepted for M1.
+
+## D010 — Schema nuclei vs content (2026-07-14)
+
+**Decision:** Empty organizational schema concepts may exist as anchors; *content* attributes still arrive only through encode/experience (or assented proposals).
+
+**Why:** Distinguishes structural privilege from prohibited profile-blob identity.
+
+**Status:** Accepted.

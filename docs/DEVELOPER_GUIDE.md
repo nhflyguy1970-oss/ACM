@@ -17,14 +17,16 @@ ruff check acm tests
 acm/
   api/           # Public CognitiveEngine
   types/         # Enums, Attribute, EnvelopeRef
-  core/          # CognitiveStore (in-memory M0 substrate)
+  core/          # CognitiveStore (in-memory substrate)
+  identity/      # M1 Identity organ + Policy Gate
+  plugins/       # Extension registry (non-core capabilities)
   attention/     # Attention classification
   context/       # Context frames
   working/       # Working buffer
-  validation/    # M0 harness
+  validation/    # Validation harness
   observability/ # Cognitive traces
-  …              # Milestone modules (stubs growing into organs)
-docs/            # Constitution, architecture, validation, API
+  …              # Later milestone organs
+docs/            # Constitution, architecture, plugins, boundaries, API
 tests/
   unit/
   behavioral/
@@ -35,11 +37,12 @@ examples/
 
 ## Rules of engagement
 
-1. **Independence** — never import Aria, Mission Control, Capability Bus, or AI-Platform.
+1. **Independence** — never import Aria, Mission Control, Capability Bus, AI-Platform, or Conversation Trace.
 2. **Cognition first** — justify changes against `MEMORY_DESIGN_PRINCIPLES.md`.
 3. **Emergence** — do not hard-code identity, preferences, or confidence scripts.
-4. **Observability** — cognitive state changes should land in ValidationHarness / TraceLog.
-5. **Deviations** — record in `DECISION_LOG.md`; do not silently rewrite architecture.
+4. **Boundaries** — see `CORE_BOUNDARIES.md`; extensions use `PLUGIN_ARCHITECTURE.md`.
+5. **Observability** — cognitive state changes should land in ValidationHarness / TraceLog.
+6. **Deviations** — record in `DECISION_LOG.md`; do not silently rewrite architecture.
 
 ## Adding a milestone slice
 

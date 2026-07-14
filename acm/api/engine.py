@@ -7,10 +7,13 @@ from dataclasses import dataclass
 from time import perf_counter, time
 from typing import Any
 
+from acm._version import __version__ as acm_version
 from acm.attention.field import classify_attention, encode_weight
 from acm.context.frame import ContextFrame, infer_context
 from acm.core.store import CognitiveStore, Concept
+from acm.identity import IdentityOrgan
 from acm.observability.trace import CognitiveTraceEvent, TraceLog
+from acm.plugins import ExtensionRegistry
 from acm.types import (
     AttentionClass,
     Attribute,
@@ -28,12 +31,6 @@ from acm.validation.harness import (
     WorkingTransition,
 )
 from acm.working.buffer import BufferItem, WorkingBuffer
-
-_PREF = re.compile(
-    r"(?:favorite|favourite|prefer(?:ence)?)\s+(\w+(?:\s+\w+)?)|"
-    r"my\s+(\w+)\s+is\s+(.+)$",
-    re.I,
-)
 
 
 @dataclass
@@ -64,9 +61,16 @@ class CognitiveEngine:
         self.context = ContextFrame()
         self.validation = ValidationHarness()
         self.trace = TraceLog()
+        self.identity = IdentityOrgan(
+            agent_id=agent_id, store=self.store, validation=self.validation
+        )
+        self.extensions = ExtensionRegistry(core_version=acm_version)
+        self.extensions.bind_engine(self)
         # Metacognitive sketches — emerge from state; not scripted “consciousness”
         self._encode_count = 0
         self._remember_count = 0
+        # Nuclei exist as organizational anchors; content still arrives via experience
+        self.identity.ensure_schemas()
 
     # --- public cognitive verbs -------------------------------------------------
 
@@ -89,6 +93,17 @@ class CognitiveEngine:
         self.validation.record_lifecycle(
             LifecycleEvent(time(), MemoryVerb.ENCODE.value, goal.id, f"goal_open:{title}")
         )
+        # Goals bias identity reconstruction (active pursuits are part of “who”)
+        agent = self.identity.schema_concept("agent")
+        self.store.add_association(
+            agent.id, goal.id, edge_type=EdgeType.RELATED_TO, weight=0.45 + 0.2 * importance
+        )
+        self.validation.record_identity(
+            action="goal_bind",
+            schema_id=agent.id,
+            goal_id=goal.id,
+            influence=1,
+        )
         return goal.id
 
     def complete_goal(self, goal_id: str) -> None:
@@ -108,6 +123,8 @@ class CognitiveEngine:
         kind: str = "experience",
         pin: bool = False,
         context_tags: tuple[str, ...] | None = None,
+        assent: bool = False,
+        proposal_id: str | None = None,
     ) -> dict[str, Any]:
         t0 = perf_counter()
         self.context = infer_context(text, self.context)
@@ -125,9 +142,12 @@ class CognitiveEngine:
             attention = AttentionClass.NOVELTY
         elif kind == "identity" and attention == AttentionClass.DEFAULT:
             attention = AttentionClass.STAKES
-        weight = encode_weight(attention)
+        elif self.identity.classify_identity_signal(text, kind=kind) in ("agent", "user"):
+            if attention == AttentionClass.DEFAULT:
+                attention = AttentionClass.STAKES
+        weight = min(1.0, encode_weight(attention) + self.identity.attention_boost(text, kind=kind))
 
-        # Low default attention may still encode lightly — pin/preference always durable
+        # Low default attention may still encode lightly — pin/preference/identity durable
         durable = weight >= 0.5 or kind in ("preference", "identity")
         if not durable:
             self.validation.record_lifecycle(
@@ -144,12 +164,24 @@ class CognitiveEngine:
         )
 
         concept = self._upsert_concept_from_text(text, kind=kind, weight=weight)
+        self.identity.mark_concept_formation(concept, text=text, kind=kind)
         # Bind concept evidence without degenerate self-edges.
         if concept.id not in (exp.metadata.get("concept_ids") or []):
             exp.metadata.setdefault("concept_ids", []).append(concept.id)
         for attr in concept.attributes:
             if exp.id not in attr.evidence_ids:
                 attr.evidence_ids.append(exp.id)
+
+        identity_result = self.identity.integrate_encode(
+            text=text,
+            kind=kind,
+            concept=concept,
+            experience_id=exp.id,
+            weight=weight,
+            assent=assent,
+            proposal_id=proposal_id,
+        )
+
         displaced = self.buffer.push(
             BufferItem(
                 kind="concept",
@@ -166,8 +198,6 @@ class CognitiveEngine:
         self.validation.record_lifecycle(
             LifecycleEvent(time(), MemoryVerb.ENCODE.value, concept.id, kind)
         )
-        if concept.identity:
-            self.validation.record_identity(concept_id=concept.id, action="encode")
 
         # Goal bias: associate concept with active goals
         for goal in self.store.active_goals():
@@ -196,16 +226,20 @@ class CognitiveEngine:
                 activated_concept_ids=[concept.id],
                 explanation_class=ExplanationClass.EXPERIENCE.value,
                 latency_ms=latency,
+                metadata={"identity": identity_result},
             )
         )
         self._encode_count += 1
-        return {
+        payload = {
             "encoded": True,
             "experience_id": exp.id,
             "concept_id": concept.id,
             "attention": attention.value,
             "importance": weight,
+            "identity": identity_result,
         }
+        self.extensions.emit("after_encode", dict(payload))
+        return payload
 
     def remember(self, query: str) -> RememberResult:
         t0 = perf_counter()
@@ -213,12 +247,59 @@ class CognitiveEngine:
         has_goal = bool(self.store.active_goals())
         attention = classify_attention(query, has_open_goal=has_goal)
 
+        if self.identity.is_who_query(query):
+            who = self.identity.who_am_i()
+            latency = (perf_counter() - t0) * 1000
+            activated = [c["concept_id"] for c in who.get("central_concepts", [])]
+            event = CognitiveTraceEvent(
+                verb=MemoryVerb.REMEMBER.value,
+                attention_class=attention.value,
+                context_tags=list(self.context.tags),
+                goal_ids=[g.id for g in self.store.active_goals()],
+                activated_concept_ids=activated,
+                explanation_class=ExplanationClass.EXPERIENCE.value,
+                reconsolidation="light",
+                latency_ms=latency,
+                metadata={"identity_query": True, "evolution": who.get("evolution")},
+            )
+            self.trace.append(event)
+            self.validation.record_activation(
+                ActivationRecord(
+                    time(),
+                    query,
+                    activated,
+                    [c["label"] for c in who.get("central_concepts", [])],
+                    ["identity", "reconstruction"],
+                    goal_ids=[g.id for g in self.store.active_goals()],
+                    attention_class=attention.value,
+                    context_tags=list(self.context.tags),
+                )
+            )
+            self._remember_count += 1
+            result = RememberResult(
+                answer=who["answer"],
+                explanation=self._explanation_text(
+                    ExplanationClass.EXPERIENCE, float(who["confidence"])
+                ),
+                explanation_class=ExplanationClass.EXPERIENCE,
+                activated_concept_ids=activated,
+                confidence=float(who["confidence"]),
+                trace=event.to_public(),
+            )
+            self.extensions.emit(
+                "after_remember",
+                {"query": query, "answer": result.answer, "identity_query": True},
+            )
+            return result
+
         hits = self._rank_concepts(query)
         why = ["lexical"]
         if has_goal:
             why.append("goal_bias")
         if self.context.tags:
             why.append("context_match")
+        if any(c.identity for c in hits[:3]):
+            why.append("identity_bias")
 
         activated_ids = [c.id for c in hits[:5]]
         labels = [c.labels[0] for c in hits[:5]]
@@ -287,7 +368,7 @@ class CognitiveEngine:
         )
         self.trace.append(event)
         self._remember_count += 1
-        return RememberResult(
+        result = RememberResult(
             answer=answer,
             explanation=explanation,
             explanation_class=expl_class,
@@ -295,6 +376,11 @@ class CognitiveEngine:
             confidence=confidence,
             trace=event.to_public(),
         )
+        self.extensions.emit(
+            "after_remember",
+            {"query": query, "answer": result.answer, "identity_query": False},
+        )
+        return result
 
     def sleep(self, *, apply_low_impact: bool = True) -> dict[str, Any]:
         """M0 stub Sleep — weak-edge prune proposal; high-impact not auto-applied."""
@@ -317,6 +403,13 @@ class CognitiveEngine:
         for label, ids in label_map.items():
             if len(ids) > 1:
                 proposals.append(f"merge_candidate:{label}:{','.join(ids)}")
+            identity_ids = [
+                i for i in ids if self.store.concepts.get(i) and self.store.concepts[i].identity
+            ]
+            if len(identity_ids) > 1:
+                proposals.append(
+                    f"identity_merge_requires_assent:{label}:{','.join(identity_ids)}"
+                )
 
         payload = {
             "pruned_edges": pruned,
@@ -331,7 +424,32 @@ class CognitiveEngine:
                 metadata={"pruned_edges": pruned, "proposal_count": len(proposals)},
             )
         )
+        self.extensions.emit("after_sleep", dict(payload))
         return payload
+
+    def who_am_i(self) -> dict[str, Any]:
+        """Reconstruct agent identity from schemas + lived structure."""
+        return self.identity.who_am_i()
+
+    def identity_snapshot(self) -> dict[str, Any]:
+        snap = self.identity.snapshot()
+        return {
+            "agent_id": snap.agent_id,
+            "schemas": snap.schemas,
+            "central_concepts": snap.central_concepts,
+            "active_goals": snap.active_goals,
+            "capabilities": snap.capabilities,
+            "uncertainties": snap.uncertainties,
+            "lineage_tail": snap.lineage_tail,
+            "confidence": snap.confidence,
+            "evolution": snap.evolution,
+        }
+
+    def assent_identity(self, proposal_id: str) -> dict[str, Any]:
+        return self.identity.assent(proposal_id)
+
+    def reject_identity(self, proposal_id: str) -> dict[str, Any]:
+        return self.identity.reject(proposal_id)
 
     def metacognitive_sketch(self) -> dict[str, Any]:
         """Foundations for self-modeling — not consciousness."""
@@ -341,6 +459,7 @@ class CognitiveEngine:
             for c in active_concepts
             if c.confidence < 0.55 or any(a.confidence < 0.55 for a in c.attributes if a.active)
         ]
+        ident = self.identity.observables()
         return {
             "agent_id": self.agent_id,
             "what_i_know_count": len(active_concepts),
@@ -348,10 +467,12 @@ class CognitiveEngine:
             "experiences": len(self.store.experiences),
             "active_goals": [g.title for g in self.store.active_goals()],
             "identity_concepts": [c.labels[0] for c in active_concepts if c.identity],
+            "identity": ident,
             "encode_count": self._encode_count,
             "remember_count": self._remember_count,
             "buffer_occupancy": len(self.buffer),
             "context_tags": list(self.context.tags),
+            "extensions": self.extensions.names(),
         }
 
     # --- internals --------------------------------------------------------------
@@ -517,6 +638,9 @@ class CognitiveEngine:
                     score += 0.8 * edge.weight
             score *= 0.5 + 0.5 * concept.importance
             score *= 0.5 + 0.5 * concept.strength
+            # Identity bias only when already cued, or for explicit who-queries
+            if score > 0 or self.identity.is_who_query(query):
+                score += self.identity.rank_bonus(concept, query=query)
             if score > 0:
                 scored.append((score, concept))
         scored.sort(key=lambda x: x[0], reverse=True)

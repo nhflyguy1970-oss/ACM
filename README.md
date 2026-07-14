@@ -8,15 +8,17 @@ ACM is **not** Aria. Aria (and any other agent) may become a *consumer* of ACM t
 
 ## Status
 
-**v0.1.0 — Foundation Build / M0 Validation Harness**
+**v0.2.0 — M1 Cognitive Identity**
 
 | Layer | State |
 |-------|--------|
 | Design constitution | Complete (`docs/MEMORY_DESIGN_PRINCIPLES.md`) |
 | Architecture | Complete (`docs/ARCHITECTURE.md`) |
 | Validation strategy | Complete (`docs/COGNITIVE_MEMORY_TEST_STRATEGY.md`) |
-| M0 Validation Harness | Implemented (in-repo) |
-| M1+ Identity / Concepts / … | Roadmapped — not yet implemented |
+| Plugin / core boundaries | Complete (`docs/PLUGIN_ARCHITECTURE.md`, `CORE_BOUNDARIES.md`) |
+| M0 Validation Harness | Implemented |
+| M1 Identity | **Implemented** — emergent schemas, lineage, assent, influence |
+| M2+ Working memory / … | Roadmapped — not started |
 | Host migration (Aria, etc.) | **Not started** — ACM must mature first |
 
 ## Install
@@ -34,12 +36,14 @@ pytest
 from acm import CognitiveEngine
 
 engine = CognitiveEngine(agent_id="demo-agent")
+engine.encode("I am a research assistant.", kind="identity")
 engine.encode("My favorite coffee is dark roast.", kind="preference")
+print(engine.who_am_i()["answer"])
 result = engine.remember("What is my favorite coffee?")
 print(result.answer)
 print(result.explanation)  # template class only — no chain-of-thought
 report = engine.validation.snapshot()
-print(report["activations"][-1])
+print(report["identity"])
 ```
 
 No host framework required. See `examples/hello_acm.py`.
@@ -51,8 +55,10 @@ No host framework required. See `examples/hello_acm.py`.
 | [VISION.md](VISION.md) | Why ACM exists |
 | [ROADMAP.md](ROADMAP.md) | Cognitive milestones M0–M15 |
 | [docs/MEMORY_DESIGN_PRINCIPLES.md](docs/MEMORY_DESIGN_PRINCIPLES.md) | Constitution (*why*) |
-| [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | Architecture (*how*) |
+| [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | Architecture (*how*) — also referred to historically as Aria Cognitive Memory design |
 | [docs/COGNITIVE_MEMORY_TEST_STRATEGY.md](docs/COGNITIVE_MEMORY_TEST_STRATEGY.md) | Validation (*proof*) |
+| [docs/PLUGIN_ARCHITECTURE.md](docs/PLUGIN_ARCHITECTURE.md) | Extension points |
+| [docs/CORE_BOUNDARIES.md](docs/CORE_BOUNDARIES.md) | What stays in/out of ACM |
 | [docs/API.md](docs/API.md) | Public API |
 | [docs/DEVELOPER_GUIDE.md](docs/DEVELOPER_GUIDE.md) | Develop here |
 | [docs/OBSERVABILITY.md](docs/OBSERVABILITY.md) | Cognitive state visibility |

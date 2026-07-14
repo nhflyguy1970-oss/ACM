@@ -17,3 +17,9 @@ Unmarked experiences may fail the durability gate (`encode_weight(DEFAULT) < 0.5
 ## Host adapters
 
 Skeleton package `acm.adapters` exists for future *generic* adapter interfaces. Concrete Aria / FlyTying / robotics adapters belong outside this repository until governance opens that boundary.
+
+## M1 Identity
+
+Schema nuclei (`agent` / `user` / `project`) are organizational anchors. Attribute content is experience-driven. High-impact conflicts become proposals (D009). Preference encodes may create **adjacent** links without rewriting schema statements.
+
+Architecture freeze still mentions “Aria-self”; ACM interprets this as host-agnostic **agent-self** (D008).

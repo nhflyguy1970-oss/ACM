@@ -1,6 +1,8 @@
-# API — ACM v0.1
+# API — ACM v0.2
 
 Public surface is intentionally small. Hosts integrate through `CognitiveEngine`; adapters and storage backends may evolve underneath without expanding the verb set casually.
+
+See also: [`PLUGIN_ARCHITECTURE.md`](PLUGIN_ARCHITECTURE.md) · [`CORE_BOUNDARIES.md`](CORE_BOUNDARIES.md)
 
 ## Install
 
@@ -33,13 +35,15 @@ CognitiveEngine(*, agent_id: str = "agent", buffer_capacity: int = 7)
 
 ### Cognitive verbs
 
-#### `encode(text, *, kind="experience", pin=False, context_tags=None) -> dict`
+#### `encode(text, *, kind="experience", pin=False, context_tags=None, assent=False, proposal_id=None) -> dict`
 
 Encodes an experience into lasting structure when attention / kind warrants durability.
 
 Typical `kind` values: `experience`, `preference`, `identity`.
 
-Returns at least: `encoded`, and on success `experience_id`, `concept_id`, `attention`, `importance`.
+Returns at least: `encoded`, and on success `experience_id`, `concept_id`, `attention`, `importance`, `identity` (integration result when identity-relevant).
+
+High-impact identity conflicts return `identity.status == "proposed"` with a `proposal_id` unless `assent=True`.
 
 #### `remember(query) -> RememberResult`
 
@@ -60,7 +64,23 @@ Consolidation pass: prune weak edges (optional); record merge *proposals* withou
 
 #### `metacognitive_sketch() -> dict`
 
-Foundations for self-modeling: counts of known / uncertain concepts, experiences, goals, identity labels, encode/remember counts, buffer occupancy, context. **Not** consciousness.
+Foundations for self-modeling: counts of known / uncertain concepts, experiences, goals, identity observables, extensions, encode/remember counts, buffer occupancy, context. **Not** consciousness.
+
+### Identity
+
+| Method | Purpose |
+|--------|---------|
+| `who_am_i()` | Reconstruct agent identity from schemas + goals + central concepts |
+| `identity_snapshot()` | Full derived snapshot (schemas, lineage tail, evolution metrics) |
+| `assent_identity(proposal_id)` | Apply a pending high-impact identity change |
+| `reject_identity(proposal_id)` | Reject a pending change; prior attribute remains |
+
+### Extensions
+
+| Attribute / API | Purpose |
+|-----------------|---------|
+| `engine.extensions.register(ext)` | Attach a `BaseExtension` / `CognitiveExtension` |
+| Hooks | `after_encode`, `after_remember`, `after_sleep` |
 
 ### Observability
 
@@ -68,7 +88,8 @@ Foundations for self-modeling: counts of known / uncertain concepts, experiences
 |-----------|---------|
 | `engine.validation` | `ValidationHarness` — milestone observables |
 | `engine.trace` | `TraceLog` of `CognitiveTraceEvent` |
-| `engine.validation.snapshot()` | JSON-safe cognitive validation report |
+| `engine.validation.snapshot()` | JSON-safe cognitive validation report (`acm.validation/0.2`) |
+| `engine.identity` | Identity organ (advanced; prefer public methods above) |
 
 ## Non-goals (public API)
 

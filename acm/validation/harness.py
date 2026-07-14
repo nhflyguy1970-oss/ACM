@@ -1,4 +1,4 @@
-"""M0 Cognitive Memory Validation Harness — development/validation capability."""
+"""M0/M1 Cognitive Memory Validation Harness — development/validation capability."""
 
 from __future__ import annotations
 
@@ -73,6 +73,15 @@ class ValidationHarness:
         self.reconsolidations: list[dict[str, Any]] = []
         self.sleep_events: list[dict[str, Any]] = []
         self.identity_touches: list[dict[str, Any]] = []
+        # Aggregated identity observables (M1)
+        self.identity_metrics: dict[str, float | int] = {
+            "growth": 0,
+            "stability": 0,
+            "change": 0,
+            "influence": 0,
+            "lineage_events": 0,
+            "last_confidence": 0.0,
+        }
 
     def _trim(self, seq: list[Any]) -> None:
         overflow = len(seq) - self.max_events
@@ -108,13 +117,34 @@ class ValidationHarness:
         self._trim(self.sleep_events)
 
     def record_identity(self, **payload: Any) -> None:
-        self.identity_touches.append({"timestamp": time(), **payload})
+        event = {"timestamp": time(), **payload}
+        self.identity_touches.append(event)
         self._trim(self.identity_touches)
+        # Roll metrics from observable fields
+        for key in ("growth", "stability", "change", "influence"):
+            if key in payload and payload[key]:
+                self.identity_metrics[key] = int(self.identity_metrics[key]) + int(
+                    payload[key]
+                )
+        if payload.get("lineage") or payload.get("lineage_length") is not None:
+            self.identity_metrics["lineage_events"] = int(
+                self.identity_metrics["lineage_events"]
+            ) + (1 if payload.get("lineage") else 0)
+            if payload.get("lineage_length") is not None:
+                # keep max observed lineage length as evolution proxy
+                self.identity_metrics["lineage_events"] = max(
+                    int(self.identity_metrics["lineage_events"]),
+                    int(payload["lineage_length"]),
+                )
+        if "confidence" in payload and payload["confidence"] is not None:
+            self.identity_metrics["last_confidence"] = float(payload["confidence"])
+        elif "confidence_after" in payload:
+            self.identity_metrics["last_confidence"] = float(payload["confidence_after"])
 
     def snapshot(self) -> dict[str, Any]:
         """Public validation snapshot — metadata only, no chain-of-thought."""
         return {
-            "schema": "acm.validation/0.1",
+            "schema": "acm.validation/0.2",
             "counts": {
                 "activations": len(self.activations),
                 "confidence_deltas": len(self.confidence_deltas),
@@ -124,6 +154,21 @@ class ValidationHarness:
                 "reconsolidations": len(self.reconsolidations),
                 "sleep_events": len(self.sleep_events),
                 "identity_touches": len(self.identity_touches),
+            },
+            "identity": {
+                "growth": self.identity_metrics["growth"],
+                "stability": self.identity_metrics["stability"],
+                "change": self.identity_metrics["change"],
+                "confidence": self.identity_metrics["last_confidence"],
+                "influence": self.identity_metrics["influence"],
+                "lineage": self.identity_metrics["lineage_events"],
+                "evolution": {
+                    "touches": len(self.identity_touches),
+                    "growth": self.identity_metrics["growth"],
+                    "stability": self.identity_metrics["stability"],
+                    "change": self.identity_metrics["change"],
+                    "influence": self.identity_metrics["influence"],
+                },
             },
             "activations": [asdict(a) for a in self.activations[-40:]],
             "confidence_deltas": [asdict(c) for c in self.confidence_deltas[-40:]],
@@ -144,3 +189,11 @@ class ValidationHarness:
         self.reconsolidations.clear()
         self.sleep_events.clear()
         self.identity_touches.clear()
+        self.identity_metrics = {
+            "growth": 0,
+            "stability": 0,
+            "change": 0,
+            "influence": 0,
+            "lineage_events": 0,
+            "last_confidence": 0.0,
+        }

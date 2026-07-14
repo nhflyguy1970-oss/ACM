@@ -2,6 +2,24 @@
 
 All notable changes to ACM are documented here.
 
+## [0.2.0] — 2026-07-14
+
+### Added
+
+- **M1 Identity organ** — emergent privileged schemas (`agent` / `user` / `project`)
+- Identity lineage, high-impact Policy Gate (propose / assent / reject)
+- Identity influence on attention, remembering, goals, and concept formation
+- `who_am_i()`, `identity_snapshot()`, `assent_identity()`, `reject_identity()`
+- Minimal **plugin architecture** (`ExtensionRegistry`, `BaseExtension` hooks)
+- Docs: `PLUGIN_ARCHITECTURE.md`, `CORE_BOUNDARIES.md`
+- Validation harness identity metrics (growth, stability, change, confidence, influence, lineage, evolution) — schema `acm.validation/0.2`
+- Behavioral + cognitive identity tests; plugin unit tests
+
+### Notes
+
+- Identity is not personality/consciousness and not a host profile blob
+- Aria / AI-Platform wiring remains out of scope
+
 ## [0.1.0] — 2026-07-14
 
 ### Added

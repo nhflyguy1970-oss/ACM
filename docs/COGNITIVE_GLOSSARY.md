@@ -12,7 +12,10 @@
 | **Remember** | Cue-driven activation that also reconsolidates |
 | **Reconsolidation** | Memory change upon retrieval (strengthen / supersede / contest) |
 | **Sleep** | Offline consolidation: prune, propose merges, strengthen patterns |
-| **Identity** | Emergent self-schemas — not scripted persona |
+| **Identity** | Emergent privileged schemas (`agent` / `user` / `project`) — not scripted persona |
+| **Identity lineage** | Versioned history of identity attribute adoption / supersession |
+| **Policy Gate** | Thin assent layer for high-impact identity / erase / sleep merges |
+| **Extension** | Optional non-core contributor of experiences/services via registry hooks |
 | **Envelope** | Multimodal content pointer (hash + kind); cognition holds the link |
 | **Knowledge ≠ Memory** | External facts are not automatically autobiographical memory |
 | **Explanation class** | Closed template reason for a recollection (not CoT) |
