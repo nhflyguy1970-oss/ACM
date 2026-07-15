@@ -16,6 +16,7 @@ class MemoryVerb(StrEnum):
     ENCODE = "encode"
     REMEMBER = "remember"
     RECONSOLIDATE = "reconsolidate"
+    LEARN = "learn"
     SLEEP = "sleep"
 
 

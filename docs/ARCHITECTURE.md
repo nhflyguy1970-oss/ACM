@@ -14,7 +14,7 @@
 | [`ASSOCIATION_MODEL.md`](ASSOCIATION_MODEL.md) · [`COGNITIVE_NETWORKS.md`](COGNITIVE_NETWORKS.md) · [`ANALOGICAL_FOUNDATIONS.md`](ANALOGICAL_FOUNDATIONS.md) | M4 Association organ companions (implementation) |
 | [`COGNITIVE_ACTIVATION_ARCHITECTURE.md`](COGNITIVE_ACTIVATION_ARCHITECTURE.md) · [`REMEMBERING_MODEL.md`](REMEMBERING_MODEL.md) | M5 activation + Remembering (implementation) |
 | [`REFLECTION_MODEL.md`](REFLECTION_MODEL.md) · [`COGNITIVE_CAPABILITY_MAP.md`](COGNITIVE_CAPABILITY_MAP.md) | M6 Reflection + capability map |
-| [`LEARNING_ARCHITECTURE.md`](LEARNING_ARCHITECTURE.md) · [`COGNITIVE_RESEARCH_FOUNDATIONS.md`](COGNITIVE_RESEARCH_FOUNDATIONS.md) · [`ACM_ARCHITECTURE_REVIEW_M6.md`](ACM_ARCHITECTURE_REVIEW_M6.md) | L0 Learning design + research + review |
+| [`LEARNING_ARCHITECTURE.md`](LEARNING_ARCHITECTURE.md) · [`LEARNING_MODEL.md`](LEARNING_MODEL.md) · [`OFFLINE_COGNITION.md`](OFFLINE_COGNITION.md) · [`ONLINE_OFFLINE_MEMORY.md`](ONLINE_OFFLINE_MEMORY.md) | Learning + Offline Cognition (M7/M8) |
 
 **Governance:** Future work proceeds only under **Daily Use Mode** (Problem Reports → measure → minimal change → regressions → ACM Validation Harness / cognitive traces). This document is the architectural north star, not a speculative feature backlog. Principles decide whether a change is cognitively legitimate; the test strategy decides whether a milestone is done. Implementation deviations must be recorded in [`DECISION_LOG.md`](DECISION_LOG.md), not made silently.
 
@@ -369,9 +369,9 @@ Order optimized for **stable identity first**, then associative life, then futur
 | **M4** | Associative Remembering |
 | **M5** | Multimodal Memory |
 | **M6** | Goal Memory |
-| **M7** | Reconsolidation |
-| **M8** | Concept Evolution |
-| **M9** | Sleep |
+| **M7** | Learning (*What have I learned?*) — **shipped v0.8.0** |
+| **M8** | Offline Cognition / Sleep (*What should become long-term memory?*) — **shipped v0.8.0** |
+| **M9** | Forgetting (accessibility) |
 | **M10** | Inference |
 | **M11** | Reflection |
 | **M12** | Prediction |

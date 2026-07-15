@@ -109,28 +109,50 @@
 | Observability | `reflection` aggregate |
 | Validation | Artifact birth + no silent history mutation |
 
-### Learning — L0 designed / M7 not implemented
+### Learning — M7 implemented
 
 | Field | Content |
 |-------|---------|
 | Question | What have I learned? |
 | Exclusive responsibility | Governed durable adaptation of living structures |
-| Inputs | Reflective Experiences, encode/remember outcomes, Sleep batches |
-| Outputs (future) | `what_have_i_learned`, Adaptation Records, assent proposals |
-| Artifacts | Adaptation Records (designed); never Experience rewrites |
-| Dependencies | M1–M6 + Activation + Policy Gate patterns |
-| Future dependents | Prediction, Planning, Creativity, Forgetting, Self-Improvement governance |
-| Activation | Reuses shared Activation Architecture |
-| Observability | Designed — `learning` harness aggregate at M7 |
-| Validation | Design: [`LEARNING_ARCHITECTURE.md`](LEARNING_ARCHITECTURE.md) · Governance · Lifecycle |
+| Inputs | Reflective Experiences, encode/remember outcomes, Offline batches |
+| Outputs | `what_have_i_learned`, `learn`, assent/reject/rollback |
+| Artifacts | Adaptation Records; never Experience rewrites |
+| Dependencies | Identity, Experiences, Concepts, Associations, Remembering, Reflection |
+| Future dependents | Offline Cognition, Prediction, Planning, Creativity, Forgetting |
+| Activation | Reuses shared Activation Architecture (via neighborhood lessons) |
+| Observability | `learning` harness aggregate |
+| Validation | Adaptation lineage; history immutability; governance caps |
 
-**Implementation status:** Design-only (L0). **No Learning organ code.**
+**Implementation status:** Implemented (v0.8.0). Docs: [`LEARNING_MODEL.md`](LEARNING_MODEL.md) · [`LEARNING_ARCHITECTURE.md`](LEARNING_ARCHITECTURE.md) · [`GENERALIZATION.md`](GENERALIZATION.md).
+
+**Why Learning depends on Reflection:** only Reflective Experiences carry auditable evaluation outcomes (`sufficient`, `contradiction`, …) suitable for explainable adaptation. Encoding/remembering alone must not silently rewrite meaning.
+
+### Offline Cognition — M8 implemented
+
+| Field | Content |
+|-------|---------|
+| Question | What should become long-term memory? |
+| Exclusive responsibility | Sleep-like replay, consolidation, abstraction proposals, confidence/salience stabilization |
+| Inputs | Existing Reflective Experiences + Concepts/Associations (no external world) |
+| Outputs | `sleep` / consolidate batch; proposals; cooled weak edges |
+| Artifacts | Sleep batch ids; Offline observables; Learning Adaptations tagged with `sleep_batch_id` |
+| Dependencies | Learning (applies/proposes adaptations); Activation for neighborhood replay |
+| Future dependents | Forgetting (accessibility cooling schedules); improved Remembering |
+| Observability | `offline` + `sleep_events` harness aggregates |
+| Validation | No invented Experiences; prune/cool accessibility only; merge proposals never auto-applied |
+
+**Implementation status:** Implemented (v0.8.0). Docs: [`OFFLINE_COGNITION.md`](OFFLINE_COGNITION.md) · [`CONSOLIDATION_MODEL.md`](CONSOLIDATION_MODEL.md) · [`ONLINE_OFFLINE_MEMORY.md`](ONLINE_OFFLINE_MEMORY.md).
+
+**Why Offline Cognition depends on Learning:** consolidation strengthens memory by replaying evidence through the Adaptation pipeline — not by inventing new history or bypassing governance.
+
+**How future Forgetting depends on both:** Forgetting will cool accessibility using Learning lessons and Offline schedules so durable understanding is not erased while stale paths fade.
 
 ---
 
 ## Not yet organs (roadmapped)
 
-Prediction · Planning · Creativity · Analogical Reasoning · Forgetting · Sleep consolidation maturity · Full Goal / Attention organs
+Prediction · Planning · Creativity · Analogical Reasoning · Forgetting · Full Goal / Attention organs
 
 ## Ownership rule
 

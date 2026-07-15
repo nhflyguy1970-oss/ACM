@@ -1,7 +1,7 @@
 # Learning Architecture — ACM
 
-**Status:** Canonical architecture for the future Learning organ (**L0 design only — not implemented**)  
-**Cognitive question (future M7):** *What have I learned?*  
+**Status:** Canonical architecture for the Learning organ (**implemented M7 / v0.8.0**)  
+**Cognitive question (M7):** *What have I learned?*  
 **Companions:** [`LEARNING_RESEARCH_FOUNDATIONS.md`](LEARNING_RESEARCH_FOUNDATIONS.md) · [`LEARNING_GOVERNANCE.md`](LEARNING_GOVERNANCE.md) · [`LEARNING_LIFECYCLE.md`](LEARNING_LIFECYCLE.md) · [`COGNITIVE_CAPABILITY_MAP.md`](COGNITIVE_CAPABILITY_MAP.md) · [`COGNITIVE_ACTIVATION_ARCHITECTURE.md`](COGNITIVE_ACTIVATION_ARCHITECTURE.md)
 
 ---
@@ -78,16 +78,16 @@ Future Remembering / Reflection / Prediction
 
 ---
 
-## Proposed public verbs (design — not implemented)
+## Public verbs (implemented M7)
 
 | Verb | Intent |
 |------|--------|
 | `what_have_i_learned(cue?)` | Summarize adaptations / lessons relevant to cue |
-| `learn_from_reflection(reflective_experience_id)` | Apply or propose adaptations from one Reflective Experience |
-| `assent_adaptation(proposal_id)` / `reject_adaptation(proposal_id)` | Governance |
-| `learning_observables()` | Metrics only |
+| `learn(...)` / `learn_from_reflection(...)` | Apply or propose adaptations from one Reflective Experience |
+| `assent_adaptation(proposal_id)` / `reject_adaptation(proposal_id)` / `rollback_adaptation(...)` | Governance |
+| `learning.observables()` | Metrics only |
 
-Internal: `propose_adaptation`, `apply_low_impact`, `batch_for_sleep`.
+Internal: `propose_adaptation`, `apply_low_impact`, Offline Cognition `sleep_batch_id`.
 
 ---
 
@@ -138,13 +138,13 @@ Harness must observe (no CoT):
 
 ---
 
-## Non-goals (L0 / M7 boundary)
+## Non-goals (M7/M8 boundary)
 
 - No Prediction organ  
 - No Planning organ  
 - No Creativity organ  
-- No Forgetting organ (design hooks only)  
+- No Forgetting organ (hooks only — Offline cools weak associations as accessibility)  
 - No neuron simulation  
-- No implementation in L0  
+- No architectural self-improvement  
 
-**M7 Learning is not authorized until this L0 package is accepted and CI documents are merged.**
+**M7 Learning and M8 Offline Cognition are implemented (v0.8.0).** L0 design remains the scientific/governance baseline.

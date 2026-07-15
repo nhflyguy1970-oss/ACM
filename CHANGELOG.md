@@ -2,6 +2,25 @@
 
 All notable changes to ACM are documented here.
 
+## [0.8.0] — 2026-07-15
+
+### Added
+
+- **M7 Learning organ** — *What have I learned?* governed Adaptation Records from Reflective Experiences
+- **M8 Offline Cognition** — *What should become long-term memory?* sleep/consolidation (replay, stabilize, cool, propose)
+- Public APIs: `what_have_i_learned`, `learn`, `assent_adaptation` / `reject_adaptation` / `rollback_adaptation`; `sleep` delegates to Offline organ
+- Validation harness schema `acm.validation/0.8` — `learning` + `offline` aggregates
+- Docs: `LEARNING_MODEL.md`, `OFFLINE_COGNITION.md`, `CONSOLIDATION_MODEL.md`, `GENERALIZATION.md`, `ONLINE_OFFLINE_MEMORY.md`
+- Decisions D021 (separate organs), D022 (confidence triad)
+- Behavioral, cognitive, performance, and long-running learn/sleep tests
+
+### Notes
+
+- Experiences remain immutable; Learning never rewrites history
+- Offline Cognition never invents memories or performs external I/O
+- Forgetting / Prediction / Planning / Creativity / Aria not started
+- Architectural self-improvement remains user-governed
+
 ## [0.7.1] — 2026-07-15
 
 ### Added (design only — no Learning organ)

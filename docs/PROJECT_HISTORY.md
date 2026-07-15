@@ -16,6 +16,7 @@ Implementation was authorized as a **new standalone engine**, not a rename of Ar
 - **2026-07:** M5 Remembering — cue-driven reconstruction via shared Cognitive Activation Architecture. Released as v0.6.0.
 - **2026-07:** M6 Reflection — metacognitive evaluation producing Reflective Experiences. Released as v0.7.0. Capability map: `docs/COGNITIVE_CAPABILITY_MAP.md`.
 - **2026-07:** L0 Learning research & architecture — design-only foundations for M7. Released as v0.7.1. **No Learning organ code.**
+- **2026-07:** M7 Learning + M8 Offline Cognition — first complete adaptive memory cycle (Adaptation Records; sleep replay/consolidation). Released as v0.8.0.
 
 ## Milestone cognitive questions
 
@@ -27,7 +28,9 @@ Implementation was authorized as a **new standalone engine**, not a rename of Ar
 | M4 | How is this related? | Living Associations / cognitive networks |
 | M5 | What do I remember? | Active reconstruction + Activation Architecture |
 | M6 | What do I think about what I remember? | Metacognitive Reflection + Reflective Experiences |
-| L0 / M7 | What have I learned? | L0 design complete; M7 organ **not implemented** |
+| L0 | (design) What have I learned? | Research + architecture authorizing M7 |
+| M7 | What have I learned? | Learning organ + Adaptation Records |
+| M8 | What should become long-term memory? | Offline Cognition (Sleep & Consolidation) |
 
 ### Organ dependency map (ownership)
 
@@ -39,12 +42,13 @@ Implementation was authorized as a **new standalone engine**, not a rename of Ar
 | Association | Concepts (+Experiences) | Remembering+ | Relationships | Meaning / recall evaluation |
 | Remembering | Identity, Experiences, Concepts, Associations, Goals, Attention, WM, Context, **Activation Architecture** | Reflection, Learning, Prediction, Planning, Creativity, Analogy, Metacognition | Activation-for-recall + reconstruction | Reflection, Learning, history rewrite |
 | Reflection | Identity, Experiences, Concepts, Associations, Remembering (+ Activation via Remembering) | Learning, Prediction, Planning, Creativity, Metacognition | Evaluation + Reflective Experiences | Learning / planning / history rewrite |
-| Learning (design) | M1–M6 + governance | Prediction, Planning, Creativity, Forgetting | Durable governed adaptation | History rewrite; architecture self-mod |
+| Learning | M1–M6 + Reflective Experiences + governance | Offline Cognition, Prediction, Planning, Creativity, Forgetting | Durable governed adaptation (Adaptation Records) | History rewrite; architecture self-mod |
+| Offline Cognition | Learning + living structures + Activation (read-only replay) | Forgetting (future), improved Remembering | Replay, consolidation, abstraction proposals | Inventing Experiences; external I/O; architecture change |
 | Activation Architecture | Concepts, Associations, Identity, Goals, WM, Context | Every future active organ | Shared field mechanics | Organ-specific questions |
 
 ### What new cognitive capability exists today that did not exist yesterday?
 
-**ACM now possesses the scientific, architectural, and governance foundation for Learning** — including canonical Learning Architecture, research foundations (graded evidence), Learning Governance (automatic vs assent), Learning Lifecycle, a permanent Cognitive Research Foundations ledger, and a post-M6 Architecture Review with roadmap recommendations — **without implementing the Learning organ**. M7 remains blocked until this L0 package is accepted.
+**ACM now completes its first adaptive memory cycle:** Experience → Remembering → Reflection → Learning → Offline Cognition → improved living memory — without rewriting Experience history. Learning owns governed Adaptation Records; Offline Cognition owns sleep-like replay and consolidation. Forgetting, Prediction, Planning, Creativity, and Aria integration remain out of scope.
 
 ## Relationship to Aria
 

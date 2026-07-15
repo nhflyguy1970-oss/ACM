@@ -93,7 +93,7 @@ This file records, for each cognitive organ (present and planned): scientific ba
 | Competing theories | Multi-memory; pure RL; Hebbian-only; LLM fine-tune-as-memory |
 | Evidence strength | Multi-system durable change: **well-supported**; single-mechanism monopoly: **rejected** |
 | Engineering interpretation | Adaptation Records under governance; lineage Reflection→Learning→structure |
-| Architectural decision | **Accepted as design (L0)**; implementation pending authorization as M7 |
+| Architectural decision | **Accepted and implemented** as M7 (v0.8.0); Offline Cognition as M8 |
 | Rejected | Neuron simulation; silent self-mod; Learning = Reflection |
 
 ## Activation Architecture (shared — implemented)

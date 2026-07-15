@@ -146,6 +146,32 @@ class ValidationHarness:
             "activation_reused": 0,
             "reflective_experiences": 0,
         }
+        self.learning_events: list[dict[str, Any]] = []
+        self.learning_metrics: dict[str, float | int] = {
+            "events": 0,
+            "applied": 0,
+            "proposed": 0,
+            "abstained": 0,
+            "rollbacks": 0,
+            "assents": 0,
+            "rejects": 0,
+            "concept_evolution": 0,
+            "association_evolution": 0,
+            "identity_evolution": 0,
+            "confidence_evolution": 0,
+            "generalization": 0,
+            "transfer": 0,
+        }
+        self.offline_events: list[dict[str, Any]] = []
+        self.offline_metrics: dict[str, float | int] = {
+            "events": 0,
+            "replays": 0,
+            "consolidations": 0,
+            "abstractions": 0,
+            "cools": 0,
+            "stabilizations": 0,
+            "proposals": 0,
+        }
 
     def _trim(self, seq: list[Any]) -> None:
         overflow = len(seq) - self.max_events
@@ -387,10 +413,71 @@ class ValidationHarness:
                 int(self.reflection_metrics["reflective_experiences"]) + 1
             )
 
+    def record_learning(self, **payload: Any) -> None:
+        event = {"timestamp": time(), **payload}
+        self.learning_events.append(event)
+        self._trim(self.learning_events)
+        self.learning_metrics["events"] = int(self.learning_metrics["events"]) + 1
+        if payload.get("apply"):
+            self.learning_metrics["applied"] = int(self.learning_metrics["applied"]) + 1
+        if payload.get("propose"):
+            self.learning_metrics["proposed"] = int(self.learning_metrics["proposed"]) + 1
+        if payload.get("abstain"):
+            self.learning_metrics["abstained"] = int(self.learning_metrics["abstained"]) + 1
+        if payload.get("rollback"):
+            self.learning_metrics["rollbacks"] = int(self.learning_metrics["rollbacks"]) + 1
+        if payload.get("assent"):
+            self.learning_metrics["assents"] = int(self.learning_metrics["assents"]) + 1
+        if payload.get("reject"):
+            self.learning_metrics["rejects"] = int(self.learning_metrics["rejects"]) + 1
+        if payload.get("concept_evolution"):
+            self.learning_metrics["concept_evolution"] = (
+                int(self.learning_metrics["concept_evolution"]) + 1
+            )
+        if payload.get("association_evolution"):
+            self.learning_metrics["association_evolution"] = (
+                int(self.learning_metrics["association_evolution"]) + 1
+            )
+        if payload.get("identity_evolution"):
+            self.learning_metrics["identity_evolution"] = (
+                int(self.learning_metrics["identity_evolution"]) + 1
+            )
+        if payload.get("confidence_evolution"):
+            self.learning_metrics["confidence_evolution"] = (
+                int(self.learning_metrics["confidence_evolution"]) + 1
+            )
+        if payload.get("generalization"):
+            self.learning_metrics["generalization"] = (
+                int(self.learning_metrics["generalization"]) + 1
+            )
+        if payload.get("transfer"):
+            self.learning_metrics["transfer"] = int(self.learning_metrics["transfer"]) + 1
+
+    def record_offline(self, **payload: Any) -> None:
+        event = {"timestamp": time(), **payload}
+        self.offline_events.append(event)
+        self._trim(self.offline_events)
+        self.offline_metrics["events"] = int(self.offline_metrics["events"]) + 1
+        if payload.get("replay"):
+            self.offline_metrics["replays"] = int(self.offline_metrics["replays"]) + 1
+        if payload.get("consolidate"):
+            self.offline_metrics["consolidations"] = (
+                int(self.offline_metrics["consolidations"]) + 1
+            )
+        if payload.get("proposal") or payload.get("action") == "abstraction_proposal":
+            self.offline_metrics["abstractions"] = int(self.offline_metrics["abstractions"]) + 1
+            self.offline_metrics["proposals"] = int(self.offline_metrics["proposals"]) + 1
+        if payload.get("cool"):
+            self.offline_metrics["cools"] = int(self.offline_metrics["cools"]) + 1
+        if payload.get("stabilize"):
+            self.offline_metrics["stabilizations"] = (
+                int(self.offline_metrics["stabilizations"]) + 1
+            )
+
     def snapshot(self) -> dict[str, Any]:
         """Public validation snapshot — metadata only, no chain-of-thought."""
         return {
-            "schema": "acm.validation/0.7",
+            "schema": "acm.validation/0.8",
             "counts": {
                 "activations": len(self.activations),
                 "confidence_deltas": len(self.confidence_deltas),
@@ -405,6 +492,8 @@ class ValidationHarness:
                 "association_events": len(self.association_events),
                 "remembering_events": len(self.remembering_events),
                 "reflection_events": len(self.reflection_events),
+                "learning_events": len(self.learning_events),
+                "offline_events": len(self.offline_events),
             },
             "identity": {
                 "growth": self.identity_metrics["growth"],
@@ -518,6 +607,43 @@ class ValidationHarness:
                 },
             },
             "reflection_events": deepcopy(self.reflection_events[-40:]),
+            "learning": {
+                "events": self.learning_metrics["events"],
+                "applied": self.learning_metrics["applied"],
+                "proposed": self.learning_metrics["proposed"],
+                "abstained": self.learning_metrics["abstained"],
+                "rollbacks": self.learning_metrics["rollbacks"],
+                "assents": self.learning_metrics["assents"],
+                "rejects": self.learning_metrics["rejects"],
+                "concept_evolution": self.learning_metrics["concept_evolution"],
+                "association_evolution": self.learning_metrics["association_evolution"],
+                "identity_evolution": self.learning_metrics["identity_evolution"],
+                "confidence_evolution": self.learning_metrics["confidence_evolution"],
+                "generalization": self.learning_metrics["generalization"],
+                "transfer": self.learning_metrics["transfer"],
+                "evolution": {
+                    "touches": len(self.learning_events),
+                    "applied": self.learning_metrics["applied"],
+                    "proposed": self.learning_metrics["proposed"],
+                    "abstained": self.learning_metrics["abstained"],
+                },
+            },
+            "learning_events": deepcopy(self.learning_events[-40:]),
+            "offline": {
+                "events": self.offline_metrics["events"],
+                "replays": self.offline_metrics["replays"],
+                "consolidations": self.offline_metrics["consolidations"],
+                "abstractions": self.offline_metrics["abstractions"],
+                "cools": self.offline_metrics["cools"],
+                "stabilizations": self.offline_metrics["stabilizations"],
+                "proposals": self.offline_metrics["proposals"],
+                "evolution": {
+                    "touches": len(self.offline_events),
+                    "replays": self.offline_metrics["replays"],
+                    "consolidations": self.offline_metrics["consolidations"],
+                },
+            },
+            "offline_events": deepcopy(self.offline_events[-40:]),
         }
 
     def reset(self) -> None:
@@ -534,6 +660,8 @@ class ValidationHarness:
         self.association_events.clear()
         self.remembering_events.clear()
         self.reflection_events.clear()
+        self.learning_events.clear()
+        self.offline_events.clear()
         self.identity_metrics = {
             "growth": 0,
             "stability": 0,
@@ -598,4 +726,28 @@ class ValidationHarness:
             "insufficient_evidence": 0,
             "activation_reused": 0,
             "reflective_experiences": 0,
+        }
+        self.learning_metrics = {
+            "events": 0,
+            "applied": 0,
+            "proposed": 0,
+            "abstained": 0,
+            "rollbacks": 0,
+            "assents": 0,
+            "rejects": 0,
+            "concept_evolution": 0,
+            "association_evolution": 0,
+            "identity_evolution": 0,
+            "confidence_evolution": 0,
+            "generalization": 0,
+            "transfer": 0,
+        }
+        self.offline_metrics = {
+            "events": 0,
+            "replays": 0,
+            "consolidations": 0,
+            "abstractions": 0,
+            "cools": 0,
+            "stabilizations": 0,
+            "proposals": 0,
         }

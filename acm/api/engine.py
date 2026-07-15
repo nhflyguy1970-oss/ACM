@@ -15,10 +15,12 @@ from acm.context.frame import ContextFrame, infer_context
 from acm.core.store import CognitiveStore
 from acm.experiences import ExperienceOrgan
 from acm.identity import IdentityOrgan
+from acm.learning import LearningOrgan
 from acm.observability.trace import CognitiveTraceEvent, TraceLog
 from acm.plugins import ExtensionRegistry
 from acm.reflection import ReflectionOrgan
 from acm.remembering import RememberingOrgan
+from acm.sleep import OfflineCognitionOrgan
 from acm.types import (
     AttentionClass,
     EdgeType,
@@ -95,12 +97,27 @@ class CognitiveEngine:
             experiences=self.experiences,
             buffer=self.buffer,
         )
+        self.learning = LearningOrgan(
+            store=self.store,
+            validation=self.validation,
+            concepts=self.concepts,
+            associations=self.associations,
+            identity=self.identity,
+        )
+        self.offline = OfflineCognitionOrgan(
+            store=self.store,
+            validation=self.validation,
+            learning=self.learning,
+            activation=self.activation,
+        )
         self.extensions = ExtensionRegistry(core_version=acm_version)
         self.extensions.bind_engine(self)
         # Metacognitive sketches — emerge from state; not scripted “consciousness”
         self._encode_count = 0
         self._remember_count = 0
         self._reflect_count = 0
+        self._learn_count = 0
+        self._sleep_count = 0
         # Nuclei exist as organizational anchors; content still arrives via experience
         self.identity.ensure_schemas()
         for cid in self.identity._schema_ids.values():
@@ -366,6 +383,71 @@ class CognitiveEngine:
         self._reflect_count += 1
         return evaluation.to_public()
 
+    def what_have_i_learned(self, cue: str = "") -> dict[str, Any]:
+        """Cognitive question M7: What have I learned?"""
+        return self.learning.what_have_i_learned(cue)
+
+    def learn(
+        self,
+        *,
+        reflective_experience_id: str = "",
+        cue: str = "",
+    ) -> dict[str, Any]:
+        """Apply Learning from a Reflective Experience (explicit online adaptation)."""
+        rid = reflective_experience_id
+        if not rid and cue:
+            thought = self.what_do_i_think(cue)
+            rid = str(thought.get("reflective_experience_id") or "")
+        if not rid:
+            return {
+                "question": "What have I learned?",
+                "answer": "No Reflective Experience available to learn from.",
+                "adaptations": [],
+            }
+        adaptations = self.learning.learn_from_reflection(rid)
+        self._learn_count += 1
+        self.validation.record_lifecycle(
+            LifecycleEvent(time(), MemoryVerb.LEARN.value, rid, f"adaptations:{len(adaptations)}")
+        )
+        self.trace.append(
+            CognitiveTraceEvent(
+                verb=MemoryVerb.LEARN.value,
+                activated_concept_ids=[],
+                metadata={
+                    "reflective_experience_id": rid,
+                    "adaptation_count": len(adaptations),
+                    "applied": sum(1 for a in adaptations if a.applied),
+                },
+            )
+        )
+        payload = {
+            "question": "What have I learned?",
+            "reflective_experience_id": rid,
+            "adaptations": [a.to_public() for a in adaptations],
+            "applied": sum(1 for a in adaptations if a.applied),
+            "proposed": sum(
+                1 for a in adaptations if a.governance.value == "proposed"
+            ),
+            "abstained": sum(
+                1 for a in adaptations if a.governance.value == "abstained"
+            ),
+            "lessons": self.learning.what_have_i_learned().get("lessons", [])[:10],
+        }
+        self.extensions.emit("after_learn", dict(payload))
+        return payload
+
+    def assent_adaptation(self, adaptation_id: str) -> dict[str, Any]:
+        return self.learning.assent_adaptation(adaptation_id)
+
+    def reject_adaptation(self, adaptation_id: str) -> dict[str, Any]:
+        return self.learning.reject_adaptation(adaptation_id)
+
+    def rollback_adaptation(self, adaptation_id: str) -> dict[str, Any]:
+        rolled = self.learning.rollback_adaptation(adaptation_id)
+        if rolled is None:
+            return {"status": "missing"}
+        return {"status": "rolled_back", "adaptation": rolled.to_public()}
+
     def timeline(self, **kwargs: Any) -> dict[str, Any]:
         return self.experiences.timeline(**kwargs)
 
@@ -464,45 +546,20 @@ class CognitiveEngine:
         return result
 
     def sleep(self, *, apply_low_impact: bool = True) -> dict[str, Any]:
-        """M0 stub Sleep — weak-edge prune proposal; high-impact not auto-applied."""
-        pruned = 0
-        proposals: list[str] = []
-        for edge in list(self.store.associations.values()):
-            if edge.weight < 0.15 and edge.active:
-                if apply_low_impact:
-                    edge.active = False
-                    pruned += 1
-                else:
-                    proposals.append(edge.id)
-        # Alias candidate proposal (not applied): duplicate labels
-        label_map: dict[str, list[str]] = {}
-        for c in self.store.concepts.values():
-            if not c.active:
-                continue
-            key = c.labels[0].lower()
-            label_map.setdefault(key, []).append(c.id)
-        for label, ids in label_map.items():
-            if len(ids) > 1:
-                proposals.append(f"merge_candidate:{label}:{','.join(ids)}")
-            identity_ids = [
-                i for i in ids if self.store.concepts.get(i) and self.store.concepts[i].identity
-            ]
-            if len(identity_ids) > 1:
-                proposals.append(
-                    f"identity_merge_requires_assent:{label}:{','.join(identity_ids)}"
-                )
-
-        payload = {
-            "pruned_edges": pruned,
-            "proposals": proposals,
-            "applied_low_impact": apply_low_impact,
-        }
-        self.validation.record_sleep(**payload)
+        """M8 Offline Cognition — functional consolidation (replay + stabilize)."""
+        payload = self.offline.consolidate(apply_low_impact=apply_low_impact)
+        self._sleep_count += 1
         self.trace.append(
             CognitiveTraceEvent(
                 verb=MemoryVerb.SLEEP.value,
-                reconsolidation="null",
-                metadata={"pruned_edges": pruned, "proposal_count": len(proposals)},
+                reconsolidation="sleep",
+                metadata={
+                    "sleep_batch_id": payload.get("sleep_batch_id"),
+                    "replay_count": payload.get("replay_count", 0),
+                    "pruned_edges": payload.get("pruned_edges", 0),
+                    "proposal_count": len(payload.get("proposals") or []),
+                    "adaptations_applied": payload.get("adaptations_applied", 0),
+                },
             )
         )
         self.extensions.emit("after_sleep", dict(payload))
@@ -546,6 +603,8 @@ class CognitiveEngine:
         aobs = self.associations.observables()
         robs = self.remembering.observables()
         fobs = self.reflection.observables()
+        lobs = self.learning.observables()
+        oobs = self.offline.observables()
         return {
             "agent_id": self.agent_id,
             "what_i_know_count": len(active_concepts),
@@ -560,9 +619,13 @@ class CognitiveEngine:
             "association": aobs,
             "remembering": robs,
             "reflection": fobs,
+            "learning": lobs,
+            "offline": oobs,
             "encode_count": self._encode_count,
             "remember_count": self._remember_count,
             "reflect_count": self._reflect_count,
+            "learn_count": self._learn_count,
+            "sleep_count": self._sleep_count,
             "buffer_occupancy": len(self.buffer),
             "context_tags": list(self.context.tags),
             "extensions": self.extensions.names(),

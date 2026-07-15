@@ -178,4 +178,20 @@ Significant architectural and implementation decisions. Deviations from the desi
 
 **Why:** Learning is the first organ that permanently changes other organs; trust requires lineage, gates, and scientific/engineering clarity before code.
 
-**Status:** Accepted (design). Implementation deferred.
+**Status:** Accepted (design). Implementation authorized and shipped as M7 (v0.8.0).
+
+## D021 — M7 Learning + M8 Offline Cognition as separate organs (2026-07-15)
+
+**Decision:** Implement Learning and Offline Cognition as **two organs** sharing one cognitive lifecycle. Learning answers *What have I learned?* via Adaptation Records consumed from Reflective Experiences. Offline Cognition answers *What should become long-term memory?* via functional consolidation (replay, stabilize, cool, propose) without inventing Experiences or talking to the outside world. They share Adaptation lineage (`sleep_batch_id`) but never merge responsibilities. Forgetting / Prediction / Planning / Creativity / Aria remain out of scope.
+
+**Why:** Human cognitive memory separates online adaptation from offline consolidation; ACM must not collapse sleep into Learning or treat Learning as an offline-only batch job.
+
+**Status:** Accepted.
+
+## D022 — Adaptive confidence triad (2026-07-15)
+
+**Decision:** Confidence evolves as Reflection evaluates → Learning adjusts (capped) → Offline Cognition stabilizes through replay. Experience content remains immutable; confidence lives on living structures and Adaptation before/after vectors.
+
+**Why:** Matches functional consolidation evidence without simulating neural overnight processes.
+
+**Status:** Accepted.
