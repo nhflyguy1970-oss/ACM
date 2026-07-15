@@ -30,5 +30,5 @@ def test_prediction_and_simulation_influence_recombination() -> None:
     result = engine.what_new_memories_can_emerge("morning coffee", blends=2)
     assert any(r.get("prediction_id") or r.get("simulation_id") for r in result["recombinations"])
     snap = engine.validation.snapshot()
-    assert snap["schema"] == "acm.validation/0.11"
+    assert snap["schema"] == "acm.validation/0.12"
     assert snap["recombination"]["recombinations"] >= 1

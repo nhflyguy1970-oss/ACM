@@ -14,7 +14,7 @@ def test_long_running_learn_sleep_cycle_stable() -> None:
         if i % 4 == 0:
             engine.sleep()
     snap = engine.validation.snapshot()
-    assert snap["schema"] == "acm.validation/0.11"
+    assert snap["schema"] == "acm.validation/0.12"
     # Experiences only grow via encode/reflect — not invented by sleep
     assert len(engine.store.experiences) >= 2
     for exp in engine.store.experiences.values():

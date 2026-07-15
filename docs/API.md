@@ -122,6 +122,15 @@ Foundations for self-modeling: counts of known / uncertain concepts, experiences
 | `reflect_on(experience_id, text)` | Host-supplied Reflective Experience lineage helper |
 | `engine.reflection` | Reflection organ |
 
+### Reconciliation & Confidence (M15 / M16)
+
+| Method | Purpose |
+|--------|---------|
+| `how_should_memory_reconcile(cue)` | *When memories disagree…* → ReconciliationRecord lineage |
+| `how_certain_am_i(cue="", *, concept_id="")` | *How certain am I…* → ConfidenceSnapshots + uncertainty |
+| `engine.reconciliation` | Reconciliation organ |
+| `engine.confidence` | Confidence / Uncertainty organ |
+
 ### Identity
 
 | Method | Purpose |
@@ -136,7 +145,7 @@ Foundations for self-modeling: counts of known / uncertain concepts, experiences
 | Attribute / API | Purpose |
 |-----------------|---------|
 | `engine.extensions.register(ext)` | Attach a `BaseExtension` / `CognitiveExtension` |
-| Hooks | `after_encode`, `after_remember`, `after_sleep` |
+| Hooks | `after_encode`, `after_remember`, `after_sleep`, `after_reconcile`, `after_assess`, … |
 
 ### Observability
 
@@ -144,7 +153,7 @@ Foundations for self-modeling: counts of known / uncertain concepts, experiences
 |-----------|---------|
 | `engine.validation` | `ValidationHarness` — milestone observables |
 | `engine.trace` | `TraceLog` of `CognitiveTraceEvent` |
-| `engine.validation.snapshot()` | JSON-safe report (`acm.validation/0.7`) including reflection metrics |
+| `engine.validation.snapshot()` | JSON-safe report (`acm.validation/0.12`) including reconciliation + confidence |
 | `engine.identity` | Identity organ (advanced; prefer public methods above) |
 
 ## Non-goals (public API)
@@ -153,3 +162,4 @@ Foundations for self-modeling: counts of known / uncertain concepts, experiences
 - No prompt logging
 - No chain-of-thought fields
 - No host policy enforcement (hosts may wrap ACM)
+- No Planning / Decision Making / Executive Reasoning APIs

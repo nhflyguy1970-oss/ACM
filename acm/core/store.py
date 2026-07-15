@@ -9,12 +9,14 @@ from typing import Any
 from acm.analogy.model import AnalogyMapping
 from acm.associations.model import Association, RelationKind
 from acm.attention.model import PriorityEvent
+from acm.confidence.model import ConfidenceEvent
 from acm.concepts.model import Concept, ConceptStage
 from acm.experiences.model import Experience
 from acm.forgetting.model import AccessibilityEvent
 from acm.learning.model import Adaptation
 from acm.prediction.model import Prediction
 from acm.recombination.model import RecombinedMemory
+from acm.reconciliation.model import ReconciliationRecord
 from acm.simulation.model import Simulation
 from acm.types import ConceptRole, EdgeType, EnvelopeRef, new_id
 
@@ -61,6 +63,8 @@ class CognitiveStore:
         self.simulations: dict[str, Simulation] = {}
         self.recombinations: dict[str, RecombinedMemory] = {}
         self.analogies: dict[str, AnalogyMapping] = {}
+        self.reconciliations: dict[str, ReconciliationRecord] = {}
+        self.confidence_events: list[ConfidenceEvent] = []
 
     def add_concept(
         self, label: str, role: ConceptRole = ConceptRole.ENTITY, **kwargs: Any

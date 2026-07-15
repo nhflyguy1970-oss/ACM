@@ -23,7 +23,7 @@ def test_prediction_is_probabilistic_and_never_plans() -> None:
     assert all(o["probability"] <= 0.85 for o in result["outcomes"])
     assert result["confidence"] < 1.0
     snap = engine.validation.snapshot()
-    assert snap["schema"] == "acm.validation/0.11"
+    assert snap["schema"] == "acm.validation/0.12"
     assert snap["prediction"]["predictions"] >= 1
 
 

@@ -12,6 +12,7 @@ from acm.analogy import AnalogyOrgan
 from acm.associations import AssociationOrgan
 from acm.attention import AttentionOrgan
 from acm.concepts import ConceptOrgan
+from acm.confidence import ConfidenceOrgan
 from acm.context.frame import ContextFrame, infer_context
 from acm.core.store import CognitiveStore
 from acm.experiences import ExperienceOrgan
@@ -22,6 +23,7 @@ from acm.observability.trace import CognitiveTraceEvent, TraceLog
 from acm.plugins import ExtensionRegistry
 from acm.prediction import PredictionOrgan
 from acm.recombination import RecombinationOrgan
+from acm.reconciliation import ReconciliationOrgan
 from acm.reflection import ReflectionOrgan
 from acm.remembering import RememberingOrgan
 from acm.simulation import SimulationOrgan
@@ -155,6 +157,13 @@ class CognitiveEngine:
             attention=self.attention,
             forgetting=self.forgetting,
         )
+        self.confidence = ConfidenceOrgan(store=self.store, validation=self.validation)
+        self.reconciliation = ReconciliationOrgan(
+            store=self.store,
+            validation=self.validation,
+            activation=self.activation,
+            confidence=self.confidence,
+        )
         self.extensions = ExtensionRegistry(core_version=acm_version)
         self.extensions.bind_engine(self)
         # Metacognitive sketches — emerge from state; not scripted “consciousness”
@@ -167,6 +176,8 @@ class CognitiveEngine:
         self._simulate_count = 0
         self._recombine_count = 0
         self._analogy_count = 0
+        self._reconcile_count = 0
+        self._assess_count = 0
         # Nuclei exist as organizational anchors; content still arrives via experience
         self.identity.ensure_schemas()
         for cid in self.identity._schema_ids.values():
@@ -333,6 +344,7 @@ class CognitiveEngine:
             factors=["novelty", "salience"],
             summary="Encoding invested memory priority.",
         )
+        self.confidence.evolve_from_encode(concept.id, success=True)
         # Prediction accuracy loop — memory outcome feedback, not reward for actions
         recent = sorted(
             self.store.predictions.values(), key=lambda p: p.created, reverse=True
@@ -640,6 +652,78 @@ class CognitiveEngine:
         self.extensions.emit("after_analogy", dict(result))
         return result
 
+    def how_should_memory_reconcile(self, cue: str) -> dict[str, Any]:
+        """Cognitive question M15: When memories disagree, how should memory reconcile them?"""
+        self.context = infer_context(cue, self.context)
+        has_goal = bool(self.store.active_goals())
+        allocation = self.attention.allocate(
+            cue, has_open_goal=has_goal, context_tags=self.context.tags
+        )
+        before = len(self.store.experiences)
+        before_ids = set(self.store.experiences)
+        result = self.reconciliation.how_should_memory_reconcile(
+            cue,
+            context_tags=self.context.tags,
+            attention_weight=allocation.weight,
+        )
+        self._reconcile_count += 1
+        result["experiences_unchanged"] = len(self.store.experiences) == before
+        result["experience_ids_unchanged"] = set(self.store.experiences) == before_ids
+        rid = ""
+        if isinstance(result.get("reconciliation"), dict):
+            rid = str(result["reconciliation"].get("id") or "")
+        self.validation.record_lifecycle(
+            LifecycleEvent(
+                time(),
+                MemoryVerb.RECONCILE.value,
+                rid,
+                f"status:{(result.get('reconciliation') or {}).get('status', '')}",
+            )
+        )
+        self.trace.append(
+            CognitiveTraceEvent(
+                verb=MemoryVerb.RECONCILE.value,
+                attention_class=allocation.attention_class,
+                metadata={
+                    "reconciliation_id": rid,
+                    "status": (result.get("reconciliation") or {}).get("status"),
+                    "historical_rewrite": False,
+                    "deleted": False,
+                    "plans": False,
+                },
+            )
+        )
+        self.extensions.emit("after_reconcile", dict(result))
+        return result
+
+    def how_certain_am_i(self, cue: str = "", *, concept_id: str = "") -> dict[str, Any]:
+        """Cognitive question M16: How certain am I that this memory is accurate?"""
+        if cue:
+            self.context = infer_context(cue, self.context)
+        result = self.confidence.how_certain_am_i(cue, concept_id=concept_id)
+        self._assess_count += 1
+        self.validation.record_lifecycle(
+            LifecycleEvent(
+                time(),
+                MemoryVerb.ASSESS.value,
+                concept_id or "",
+                f"overall:{result.get('overall_confidence', 0)}",
+            )
+        )
+        self.trace.append(
+            CognitiveTraceEvent(
+                verb=MemoryVerb.ASSESS.value,
+                metadata={
+                    "overall_confidence": result.get("overall_confidence"),
+                    "snapshot_count": len(result.get("snapshots") or []),
+                    "plans": False,
+                    "decides": False,
+                },
+            )
+        )
+        self.extensions.emit("after_assess", dict(result))
+        return result
+
     def evaluate_prediction(self, prediction_id: str, realized_concept_id: str) -> dict[str, Any]:
         return self.prediction.evaluate(prediction_id, realized_concept_id)
 
@@ -694,6 +778,7 @@ class CognitiveEngine:
                     summary="Learning invested priority.",
                 )
                 self.forgetting.reactivate(a.target_id, source="learning", steps=1)
+                self.confidence.evolve_from_learning(a.target_id, reinforce=True)
         self.validation.record_lifecycle(
             LifecycleEvent(time(), MemoryVerb.LEARN.value, rid, f"adaptations:{len(adaptations)}")
         )
@@ -902,6 +987,8 @@ class CognitiveEngine:
         sims = self.simulation.observables()
         rcobs = self.recombination.observables()
         anobs = self.analogy.observables()
+        rclobs = self.reconciliation.observables()
+        cfobs = self.confidence.observables()
         return {
             "agent_id": self.agent_id,
             "what_i_know_count": len(active_concepts),
@@ -924,6 +1011,8 @@ class CognitiveEngine:
             "simulation": sims,
             "recombination": rcobs,
             "analogy": anobs,
+            "reconciliation": rclobs,
+            "confidence": cfobs,
             "encode_count": self._encode_count,
             "remember_count": self._remember_count,
             "reflect_count": self._reflect_count,
@@ -933,6 +1022,8 @@ class CognitiveEngine:
             "simulate_count": self._simulate_count,
             "recombine_count": self._recombine_count,
             "analogy_count": self._analogy_count,
+            "reconcile_count": self._reconcile_count,
+            "assess_count": self._assess_count,
             "buffer_occupancy": len(self.buffer),
             "context_tags": list(self.context.tags),
             "extensions": self.extensions.names(),

@@ -377,8 +377,9 @@ Order optimized for **stable identity first**, then associative life, then futur
 | **M12** | Mental Simulation — **shipped v0.10.0** |
 | **M13** | Memory Recombination — **shipped v0.11.0** |
 | **M14** | Analogical Reasoning — **shipped v0.11.0** |
-| **M15** | Planning (consumes ACM) |
-| **M16** | Meta-memory / Creativity orchestration |
+| **M15** | Memory Reconciliation — **shipped v0.12.0** (legacy table had Planning here; Planning remains deferred) |
+| **M16** | Uncertainty & Confidence — **shipped v0.12.0** (legacy table had Creativity orchestration; Creativity remains foundations-only) |
+| **Later** | Planning · Decision Making · Creativity orchestration · Meta-memory polish — **require approval** |
 
 **M0 before M1:** no Identity migration without the ability to observe activation, confidence movement, policy assent, and lifecycle transitions. Planning is late by design.
 

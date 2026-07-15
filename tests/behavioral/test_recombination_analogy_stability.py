@@ -20,6 +20,6 @@ def test_long_running_recombination_analogy_cycle() -> None:
     for r in engine.store.recombinations.values():
         assert r.historical is False
     snap = engine.validation.snapshot()
-    assert snap["schema"] == "acm.validation/0.11"
+    assert snap["schema"] == "acm.validation/0.12"
     meta = engine.metacognitive_sketch()
     assert "recombination" in meta and "analogy" in meta

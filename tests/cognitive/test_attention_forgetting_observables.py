@@ -10,7 +10,7 @@ def test_attention_and_forgetting_observables() -> None:
     engine.cool_memory(enc["concept_id"], steps=2)
     engine.reactivate_memory(enc["concept_id"], steps=1)
     snap = engine.validation.snapshot()
-    assert snap["schema"] == "acm.validation/0.11"
+    assert snap["schema"] == "acm.validation/0.12"
     assert snap["counts"]["attention_events"] >= 1
     assert snap["counts"]["forgetting_events"] >= 1
     assert snap["attention"]["allocations"] >= 1

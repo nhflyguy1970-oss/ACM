@@ -236,6 +236,36 @@
 
 **Implementation status:** Implemented (v0.11.0). Docs: [`ANALOGICAL_REASONING.md`](ANALOGICAL_REASONING.md) · [`ANALOGICAL_FOUNDATIONS.md`](ANALOGICAL_FOUNDATIONS.md).
 
+### Memory Reconciliation — M15 implemented
+
+| Field | Content |
+|-------|---------|
+| Question | When memories disagree, how should memory reconcile them? |
+| Exclusive responsibility | Conflict/corroboration classification + reconciliation lineage |
+| Inputs | Activation, Concept attrs, `conflicts_with`, Reflective outcomes, Predictions, context |
+| Outputs | `how_should_memory_reconcile` |
+| Artifacts | `ReconciliationRecord` (never rewrites Experiences) |
+| Dependencies | M1–M14 + Confidence (collaboration) |
+| Observability | `reconciliation` harness aggregate |
+| Validation | History immutable; competing/context-dependent coexistence |
+
+**Implementation status:** Implemented (v0.12.0). Docs: [`MEMORY_RECONCILIATION.md`](MEMORY_RECONCILIATION.md) · [`EVIDENCE_AND_CORROBORATION.md`](EVIDENCE_AND_CORROBORATION.md) · [`HUMAN_MEMORY_CONFLICTS.md`](HUMAN_MEMORY_CONFLICTS.md).
+
+### Uncertainty & Confidence — M16 implemented
+
+| Field | Content |
+|-------|---------|
+| Question | How certain am I that this memory is accurate? |
+| Exclusive responsibility | Confidence estimation/evolution + uncertainty kinds |
+| Inputs | Concepts, Accessibility, Priority, Learning, Reconciliation |
+| Outputs | `how_certain_am_i` |
+| Artifacts | `ConfidenceSnapshot`, `ConfidenceEvent` |
+| Dependencies | Living memory graph; Reconciliation for corroboration/conflict deltas |
+| Observability | `confidence` harness aggregate |
+| Validation | Confidence evolves; explainable factors; never plans/decides |
+
+**Implementation status:** Implemented (v0.12.0). Docs: [`CONFIDENCE_MODEL.md`](CONFIDENCE_MODEL.md) · [`UNCERTAINTY_MODEL.md`](UNCERTAINTY_MODEL.md) · [`ACM_MATURITY_REVIEW_v1.md`](ACM_MATURITY_REVIEW_v1.md).
+
 ---
 
 ## Not yet organs (roadmapped)
@@ -244,4 +274,4 @@ Planning · Decision Making · Creativity orchestration · Full Goal organ polis
 
 ## Ownership rule
 
-No organ assumes another’s exclusive responsibility. Metacognition emerges from Reflection interacting with Remembering and future Learning — not as a silent monopoly organ.
+No organ assumes another’s exclusive responsibility. Metacognition emerges from Reflection interacting with Remembering and Learning — not as a silent monopoly organ. Reconciliation and Confidence cooperate without merging ownership.

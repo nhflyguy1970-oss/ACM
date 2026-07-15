@@ -217,6 +217,23 @@ class ValidationHarness:
             "transfers": 0,
             "last_confidence": 0.0,
         }
+        self.reconciliation_events: list[dict[str, Any]] = []
+        self.reconciliation_metrics: dict[str, float | int] = {
+            "events": 0,
+            "reconciliations": 0,
+            "conflicts": 0,
+            "corroborations": 0,
+            "last_confidence_before": 0.0,
+            "last_confidence_after": 0.0,
+        }
+        self.confidence_organ_events: list[dict[str, Any]] = []
+        self.confidence_organ_metrics: dict[str, float | int] = {
+            "events": 0,
+            "evolutions": 0,
+            "recalibrations": 0,
+            "last_before": 0.0,
+            "last_after": 0.0,
+        }
 
     def _trim(self, seq: list[Any]) -> None:
         overflow = len(seq) - self.max_events
@@ -626,10 +643,56 @@ class ValidationHarness:
         if payload.get("confidence") is not None:
             self.analogy_metrics["last_confidence"] = float(payload["confidence"])
 
+    def record_reconciliation(self, **payload: Any) -> None:
+        event = {"timestamp": time(), **payload}
+        self.reconciliation_events.append(event)
+        self._trim(self.reconciliation_events)
+        self.reconciliation_metrics["events"] = int(self.reconciliation_metrics["events"]) + 1
+        if payload.get("reconcile"):
+            self.reconciliation_metrics["reconciliations"] = (
+                int(self.reconciliation_metrics["reconciliations"]) + 1
+            )
+        if payload.get("conflict"):
+            self.reconciliation_metrics["conflicts"] = (
+                int(self.reconciliation_metrics["conflicts"]) + 1
+            )
+        if payload.get("corroboration"):
+            self.reconciliation_metrics["corroborations"] = (
+                int(self.reconciliation_metrics["corroborations"]) + 1
+            )
+        if payload.get("confidence_before") is not None:
+            self.reconciliation_metrics["last_confidence_before"] = float(
+                payload["confidence_before"]
+            )
+        if payload.get("confidence_after") is not None:
+            self.reconciliation_metrics["last_confidence_after"] = float(
+                payload["confidence_after"]
+            )
+
+    def record_confidence_organ(self, **payload: Any) -> None:
+        event = {"timestamp": time(), **payload}
+        self.confidence_organ_events.append(event)
+        self._trim(self.confidence_organ_events)
+        self.confidence_organ_metrics["events"] = (
+            int(self.confidence_organ_metrics["events"]) + 1
+        )
+        if payload.get("evolve"):
+            self.confidence_organ_metrics["evolutions"] = (
+                int(self.confidence_organ_metrics["evolutions"]) + 1
+            )
+            if str(payload.get("source", "")) == "reconciliation":
+                self.confidence_organ_metrics["recalibrations"] = (
+                    int(self.confidence_organ_metrics["recalibrations"]) + 1
+                )
+        if payload.get("before") is not None:
+            self.confidence_organ_metrics["last_before"] = float(payload["before"])
+        if payload.get("after") is not None:
+            self.confidence_organ_metrics["last_after"] = float(payload["after"])
+
     def snapshot(self) -> dict[str, Any]:
         """Public validation snapshot — metadata only, no chain-of-thought."""
         return {
-            "schema": "acm.validation/0.11",
+            "schema": "acm.validation/0.12",
             "counts": {
                 "activations": len(self.activations),
                 "confidence_deltas": len(self.confidence_deltas),
@@ -652,6 +715,8 @@ class ValidationHarness:
                 "simulation_events": len(self.simulation_events),
                 "recombination_events": len(self.recombination_events),
                 "analogy_events": len(self.analogy_events),
+                "reconciliation_events": len(self.reconciliation_events),
+                "confidence_organ_events": len(self.confidence_organ_events),
             },
             "identity": {
                 "growth": self.identity_metrics["growth"],
@@ -874,6 +939,33 @@ class ValidationHarness:
                 },
             },
             "analogy_events": deepcopy(self.analogy_events[-40:]),
+            "reconciliation": {
+                "events": self.reconciliation_metrics["events"],
+                "reconciliations": self.reconciliation_metrics["reconciliations"],
+                "conflicts": self.reconciliation_metrics["conflicts"],
+                "corroborations": self.reconciliation_metrics["corroborations"],
+                "confidence_before": self.reconciliation_metrics["last_confidence_before"],
+                "confidence_after": self.reconciliation_metrics["last_confidence_after"],
+                "evolution": {
+                    "touches": len(self.reconciliation_events),
+                    "reconciliations": self.reconciliation_metrics["reconciliations"],
+                    "conflicts": self.reconciliation_metrics["conflicts"],
+                },
+            },
+            "reconciliation_events": deepcopy(self.reconciliation_events[-40:]),
+            "confidence": {
+                "events": self.confidence_organ_metrics["events"],
+                "evolutions": self.confidence_organ_metrics["evolutions"],
+                "recalibrations": self.confidence_organ_metrics["recalibrations"],
+                "before": self.confidence_organ_metrics["last_before"],
+                "after": self.confidence_organ_metrics["last_after"],
+                "evolution": {
+                    "touches": len(self.confidence_organ_events),
+                    "evolutions": self.confidence_organ_metrics["evolutions"],
+                    "recalibrations": self.confidence_organ_metrics["recalibrations"],
+                },
+            },
+            "confidence_organ_events": deepcopy(self.confidence_organ_events[-40:]),
         }
 
     def reset(self) -> None:
@@ -898,6 +990,8 @@ class ValidationHarness:
         self.simulation_events.clear()
         self.recombination_events.clear()
         self.analogy_events.clear()
+        self.reconciliation_events.clear()
+        self.confidence_organ_events.clear()
         self.identity_metrics = {
             "growth": 0,
             "stability": 0,
@@ -1025,4 +1119,19 @@ class ValidationHarness:
             "mappings": 0,
             "transfers": 0,
             "last_confidence": 0.0,
+        }
+        self.reconciliation_metrics = {
+            "events": 0,
+            "reconciliations": 0,
+            "conflicts": 0,
+            "corroborations": 0,
+            "last_confidence_before": 0.0,
+            "last_confidence_after": 0.0,
+        }
+        self.confidence_organ_metrics = {
+            "events": 0,
+            "evolutions": 0,
+            "recalibrations": 0,
+            "last_before": 0.0,
+            "last_after": 0.0,
         }

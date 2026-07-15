@@ -24,6 +24,8 @@ class MemoryVerb(StrEnum):
     SIMULATE = "simulate"
     RECOMBINE = "recombine"
     ANALOGIZE = "analogize"
+    RECONCILE = "reconcile"
+    ASSESS = "assess"
 
 
 class AttentionClass(StrEnum):

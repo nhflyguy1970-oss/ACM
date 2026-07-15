@@ -243,3 +243,19 @@ Significant architectural and implementation decisions. Deviations from the desi
 **Why:** Analogy is memory correspondence, not an executive reasoner.
 
 **Status:** Accepted.
+
+## D029 — Reconciliation never rewrites history (2026-07-15)
+
+**Decision:** M15 Memory Reconciliation owns conflict/corroboration classification and creates new `ReconciliationRecord` lineage. It never deletes Experiences, never edits immutable artifacts, and never silently discards competing traces. Statuses include reinforce, unresolved, context_dependent, competing, and revised (artifact only).
+
+**Why:** Human memory retains conflicting evidence; reconciliation updates living summaries with explainable lineage.
+
+**Status:** Accepted.
+
+## D030 — Confidence/Uncertainty is a memory organ, not executive cognition (2026-07-15)
+
+**Decision:** M16 Uncertainty & Confidence owns estimation, evolution, propagation, and recalibration of living memory confidence (and uncertainty kinds). It recalibrates from Reconciliation but does not own reconciliation lineage. Never plans or decides. Every significant evolution is observable via harness events.
+
+**Why:** Certainty about memory accuracy is metamemory — not planning, decision making, or Aria policy.
+
+**Status:** Accepted.

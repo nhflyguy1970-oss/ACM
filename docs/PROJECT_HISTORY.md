@@ -20,6 +20,7 @@ Implementation was authorized as a **new standalone engine**, not a rename of Ar
 - **2026-07:** M9 Attention & Memory Priority + M10 Accessibility & Forgetting — priority-driven cognition and human-like soft forgetting. Released as v0.9.0.
 - **2026-07:** M11 Prediction + M12 Mental Simulation — memory-driven likelihood and hypothetical futures. Released as v0.10.0.
 - **2026-07:** M13 Memory Recombination + M14 Analogical Reasoning — novel blends and structure-mapping. Released as v0.11.0.
+- **2026-07:** M15 Memory Reconciliation + M16 Uncertainty & Confidence — conflict lineage and evolvable certainty. Released as v0.12.0. Maturity review: `docs/ACM_MATURITY_REVIEW_v1.md`.
 
 ## Milestone cognitive questions
 
@@ -40,6 +41,8 @@ Implementation was authorized as a **new standalone engine**, not a rename of Ar
 | M12 | What possible futures can memory imagine? | Mental Simulation |
 | M13 | What new memories can emerge by recombining existing memories? | Memory Recombination |
 | M14 | What existing memories are analogous even when they appear different? | Analogical Reasoning |
+| M15 | When memories disagree, how should memory reconcile them? | Memory Reconciliation |
+| M16 | How certain am I that this memory is accurate? | Uncertainty & Confidence |
 
 ### Organ dependency map (ownership)
 
@@ -59,11 +62,13 @@ Implementation was authorized as a **new standalone engine**, not a rename of Ar
 | Mental Simulation | Activation + living structures + Prediction hints | Future Planning (consumer); Creativity (later) | Hypothetical sequences | Experience birth; planning; decisions |
 | Memory Recombination | Activation + fragments + Prediction/Simulation hints | Creativity foundations; Analogy (coop) | Temporary RecombinedMemory | Experience birth; planning |
 | Analogical Reasoning | Neighborhoods, resembles, hierarchy, relation patterns | Transfer / Creativity foundations | Explainable AnalogyMapping | Executive reasoning; decisions |
+| Memory Reconciliation | Activation + conflicts/corroboration signals + Confidence collab | Living certainty updates via Confidence | ReconciliationRecord lineage | History rewrite; planning; decisions |
+| Uncertainty & Confidence | Living graph + Reconciliation deltas + Learning/encode | All metacognitive consumers | Confidence evolution + uncertainty kinds | Planning thresholds; decisions |
 | Activation Architecture | Concepts, Associations, Identity, Goals, WM, Context, Attention, Accessibility | Every future active organ | Shared field mechanics | Organ-specific questions |
 
 ### What new cognitive capability exists today that did not exist yesterday?
 
-**ACM recombines and maps analogies from memory:** novel temporary blends and explainable cross-domain correspondences without rewriting history or becoming a planner.
+**ACM reconciles conflicting memories and tracks evolving certainty:** lineage-preserving conflict resolution plus explainable confidence/uncertainty — completing the core cognitive memory lifecycle without planning or Aria.
 
 ## Relationship to Aria
 

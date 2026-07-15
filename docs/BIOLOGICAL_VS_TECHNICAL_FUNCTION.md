@@ -55,6 +55,8 @@ Separate what human cognition appears to do (science) from what ACM implements (
 | Mental Simulation | Episodic future thinking (well-supported) | Hypothetical sequences |
 | Memory Recombination | Constructive / generative episodic blend (well-supported) | Temporary RecombinedMemory artifacts |
 | Analogical Reasoning | Structure-mapping across domains (well-supported) | Explainable AnalogyMapping artifacts |
+| Memory Reconciliation | Conflict retention + corroboration / revision with lineage (well-supported) | ReconciliationRecord artifacts |
+| Uncertainty & Confidence | Metamemory certainty evolves with evidence (well-supported) | ConfidenceOrgan snapshots + events |
 
 ## Applied: Memory Recombination (M13)
 
@@ -71,3 +73,19 @@ Separate what human cognition appears to do (science) from what ACM implements (
 | Biological | Relational alignment across domains (**well-supported**) |
 | Technical | `AnalogyOrgan` source↔target structure maps with observable why-codes |
 | Omissions | Executive inference, decision making, theorem proving |
+
+## Applied: Memory Reconciliation (M15)
+
+| Layer | Content |
+|-------|---------|
+| Biological | Competing traces + corroboration without silent erasure (**well-supported**) |
+| Technical | `ReconciliationOrgan` lineage records; Experience history immutable |
+| Omissions | Forced unique truth; executive action choice |
+
+## Applied: Uncertainty & Confidence (M16)
+
+| Layer | Content |
+|-------|---------|
+| Biological | Feeling-of-knowing / confidence calibration (**well-supported**) |
+| Technical | `ConfidenceOrgan` evolvable estimates + uncertainty kinds |
+| Omissions | Action policies; Bayesian network mandates |

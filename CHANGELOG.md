@@ -2,6 +2,25 @@
 
 All notable changes to ACM are documented here.
 
+## [0.12.0] — 2026-07-15
+
+### Added
+
+- **M15 Memory Reconciliation** — *When memories disagree, how should memory reconcile them?*
+- **M16 Uncertainty & Confidence** — *How certain am I that this memory is accurate?*
+- Public APIs: `how_should_memory_reconcile`, `how_certain_am_i`
+- `ReconciliationRecord` lineage artifacts (never rewrite Experiences)
+- Confidence evolution events + uncertainty kinds; recalibration from corroboration/conflict
+- Validation harness schema `acm.validation/0.12` — `reconciliation` + `confidence` aggregates
+- Docs: `MEMORY_RECONCILIATION.md`, `CONFIDENCE_MODEL.md`, `UNCERTAINTY_MODEL.md`, `EVIDENCE_AND_CORROBORATION.md`, `HUMAN_MEMORY_CONFLICTS.md`, `ACM_MATURITY_REVIEW_v1.md`
+- Decisions D029 (Reconciliation≠history rewrite), D030 (Confidence≠executive cognition)
+
+### Notes
+
+- Core cognitive memory lifecycle complete through M16
+- No Planning / Decision Making / Executive Reasoning / Aria
+- Singular Cognitive Activation Architecture retained
+
 ## [0.11.0] — 2026-07-15
 
 ### Added
