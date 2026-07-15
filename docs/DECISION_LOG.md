@@ -227,3 +227,19 @@ Significant architectural and implementation decisions. Deviations from the desi
 **Why:** Episodic future thinking must not corrupt autobiography or become a planner.
 
 **Status:** Accepted.
+
+## D027 — Recombination blends; never plans or invents history (2026-07-15)
+
+**Decision:** M13 Memory Recombination owns temporary novel blends of existing fragments. Prediction/Simulation may supply hints. Never births Experiences; never plans or decides. Distinct from M12 Simulation (prospective paths).
+
+**Why:** Constructive memory creativity without executive control.
+
+**Status:** Accepted.
+
+## D028 — Analogy maps structure; never executive reasoning (2026-07-15)
+
+**Decision:** M14 Analogical Reasoning owns explainable structure-mapping across domains. Why-codes only. Never decisions, planning, or theorem-proving. Builds on M4 Association foundations.
+
+**Why:** Analogy is memory correspondence, not an executive reasoner.
+
+**Status:** Accepted.

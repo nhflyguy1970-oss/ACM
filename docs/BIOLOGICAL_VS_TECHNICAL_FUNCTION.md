@@ -53,3 +53,21 @@ Separate what human cognition appears to do (science) from what ACM implements (
 | Forgetting | Accessibility change (well-supported) | Accessibility stages; no default delete |
 | Prediction | Prospective expectation (well-supported / emerging mechanisms) | Probabilistic memory outcomes |
 | Mental Simulation | Episodic future thinking (well-supported) | Hypothetical sequences |
+| Memory Recombination | Constructive / generative episodic blend (well-supported) | Temporary RecombinedMemory artifacts |
+| Analogical Reasoning | Structure-mapping across domains (well-supported) | Explainable AnalogyMapping artifacts |
+
+## Applied: Memory Recombination (M13)
+
+| Layer | Content |
+|-------|---------|
+| Biological | Novel blends from existing memory fragments (**well-supported**) |
+| Technical | `RecombinationOrgan` temporary recombined structures; never Experiences |
+| Omissions | Free generative art/LLM creativity; planning |
+
+## Applied: Analogical Reasoning (M14)
+
+| Layer | Content |
+|-------|---------|
+| Biological | Relational alignment across domains (**well-supported**) |
+| Technical | `AnalogyOrgan` source↔target structure maps with observable why-codes |
+| Omissions | Executive inference, decision making, theorem proving |

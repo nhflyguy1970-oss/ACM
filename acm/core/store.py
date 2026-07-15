@@ -6,6 +6,7 @@ from dataclasses import dataclass, field
 from time import time
 from typing import Any
 
+from acm.analogy.model import AnalogyMapping
 from acm.associations.model import Association, RelationKind
 from acm.attention.model import PriorityEvent
 from acm.concepts.model import Concept, ConceptStage
@@ -13,6 +14,7 @@ from acm.experiences.model import Experience
 from acm.forgetting.model import AccessibilityEvent
 from acm.learning.model import Adaptation
 from acm.prediction.model import Prediction
+from acm.recombination.model import RecombinedMemory
 from acm.simulation.model import Simulation
 from acm.types import ConceptRole, EdgeType, EnvelopeRef, new_id
 
@@ -57,6 +59,8 @@ class CognitiveStore:
         self.accessibility_events: list[AccessibilityEvent] = []
         self.predictions: dict[str, Prediction] = {}
         self.simulations: dict[str, Simulation] = {}
+        self.recombinations: dict[str, RecombinedMemory] = {}
+        self.analogies: dict[str, AnalogyMapping] = {}
 
     def add_concept(
         self, label: str, role: ConceptRole = ConceptRole.ENTITY, **kwargs: Any

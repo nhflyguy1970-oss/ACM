@@ -212,11 +212,35 @@
 
 **Implementation status:** Implemented (v0.10.0). Docs: [`MENTAL_SIMULATION.md`](MENTAL_SIMULATION.md) · [`HYPOTHETICAL_MEMORY.md`](HYPOTHETICAL_MEMORY.md).
 
+### Memory Recombination — M13 implemented
+
+| Field | Content |
+|-------|---------|
+| Question | What new memories can emerge by recombining existing memories? |
+| Exclusive responsibility | Novel temporary blends of existing fragments |
+| Outputs | `what_new_memories_can_emerge` |
+| Artifacts | RecombinedMemory (never Experiences) |
+| Observability | `recombination` harness aggregate |
+
+**Implementation status:** Implemented (v0.11.0). Docs: [`MEMORY_RECOMBINATION.md`](MEMORY_RECOMBINATION.md) · [`CREATIVITY_FOUNDATIONS.md`](CREATIVITY_FOUNDATIONS.md).
+
+### Analogical Reasoning — M14 implemented
+
+| Field | Content |
+|-------|---------|
+| Question | What existing memories are analogous even when they appear different? |
+| Exclusive responsibility | Structural similarity / cross-domain mapping |
+| Outputs | `what_is_analogous` |
+| Artifacts | AnalogyMapping with alignments + why-codes |
+| Observability | `analogy` harness aggregate |
+
+**Implementation status:** Implemented (v0.11.0). Docs: [`ANALOGICAL_REASONING.md`](ANALOGICAL_REASONING.md) · [`ANALOGICAL_FOUNDATIONS.md`](ANALOGICAL_FOUNDATIONS.md).
+
 ---
 
 ## Not yet organs (roadmapped)
 
-Planning · Creativity · Analogical Reasoning · Full Goal organ polish
+Planning · Decision Making · Creativity orchestration · Full Goal organ polish
 
 ## Ownership rule
 

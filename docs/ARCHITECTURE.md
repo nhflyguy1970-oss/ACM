@@ -375,10 +375,10 @@ Order optimized for **stable identity first**, then associative life, then futur
 | **M10** | Accessibility & Forgetting — **shipped v0.9.0** |
 | **M11** | Prediction — **shipped v0.10.0** |
 | **M12** | Mental Simulation — **shipped v0.10.0** |
-| **M13** | Planning (consumes ACM) |
-| **M14** | Creativity / Analogy |
-| **M15** | Autobiographical Memory |
-| **M16** | Meta-memory |
+| **M13** | Memory Recombination — **shipped v0.11.0** |
+| **M14** | Analogical Reasoning — **shipped v0.11.0** |
+| **M15** | Planning (consumes ACM) |
+| **M16** | Meta-memory / Creativity orchestration |
 
 **M0 before M1:** no Identity migration without the ability to observe activation, confidence movement, policy assent, and lifecycle transitions. Planning is late by design.
 

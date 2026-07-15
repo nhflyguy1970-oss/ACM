@@ -22,6 +22,6 @@ def test_long_running_predict_simulate_cycle() -> None:
     for sim in engine.store.simulations.values():
         assert sim.hypothetical is True
     snap = engine.validation.snapshot()
-    assert snap["schema"] == "acm.validation/0.10"
+    assert snap["schema"] == "acm.validation/0.11"
     meta = engine.metacognitive_sketch()
     assert "prediction" in meta and "simulation" in meta

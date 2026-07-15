@@ -8,6 +8,7 @@ from typing import Any
 
 from acm._version import __version__ as acm_version
 from acm.activation import ActivationEngine
+from acm.analogy import AnalogyOrgan
 from acm.associations import AssociationOrgan
 from acm.attention import AttentionOrgan
 from acm.concepts import ConceptOrgan
@@ -20,6 +21,7 @@ from acm.learning import LearningOrgan
 from acm.observability.trace import CognitiveTraceEvent, TraceLog
 from acm.plugins import ExtensionRegistry
 from acm.prediction import PredictionOrgan
+from acm.recombination import RecombinationOrgan
 from acm.reflection import ReflectionOrgan
 from acm.remembering import RememberingOrgan
 from acm.simulation import SimulationOrgan
@@ -137,6 +139,22 @@ class CognitiveEngine:
             attention=self.attention,
             prediction=self.prediction,
         )
+        self.recombination = RecombinationOrgan(
+            store=self.store,
+            validation=self.validation,
+            activation=self.activation,
+            attention=self.attention,
+            prediction=self.prediction,
+            simulation=self.simulation,
+        )
+        self.analogy = AnalogyOrgan(
+            store=self.store,
+            validation=self.validation,
+            activation=self.activation,
+            associations=self.associations,
+            attention=self.attention,
+            forgetting=self.forgetting,
+        )
         self.extensions = ExtensionRegistry(core_version=acm_version)
         self.extensions.bind_engine(self)
         # Metacognitive sketches — emerge from state; not scripted “consciousness”
@@ -147,6 +165,8 @@ class CognitiveEngine:
         self._sleep_count = 0
         self._predict_count = 0
         self._simulate_count = 0
+        self._recombine_count = 0
+        self._analogy_count = 0
         # Nuclei exist as organizational anchors; content still arrives via experience
         self.identity.ensure_schemas()
         for cid in self.identity._schema_ids.values():
@@ -546,6 +566,80 @@ class CognitiveEngine:
         self.extensions.emit("after_simulate", dict(result))
         return result
 
+    def what_new_memories_can_emerge(self, cue: str, *, blends: int = 3) -> dict[str, Any]:
+        """Cognitive question M13: What new memories can emerge by recombining existing memories?"""
+        self.context = infer_context(cue, self.context)
+        has_goal = bool(self.store.active_goals())
+        allocation = self.attention.allocate(
+            cue, has_open_goal=has_goal, context_tags=self.context.tags
+        )
+        before = len(self.store.experiences)
+        result = self.recombination.what_new_memories_can_emerge(
+            cue,
+            blends=blends,
+            context_tags=self.context.tags,
+            attention_weight=allocation.weight,
+        )
+        self._recombine_count += 1
+        result["experiences_unchanged"] = len(self.store.experiences) == before
+        self.validation.record_lifecycle(
+            LifecycleEvent(
+                time(),
+                MemoryVerb.RECOMBINE.value,
+                "",
+                f"blends:{len(result.get('recombinations') or [])}",
+            )
+        )
+        self.trace.append(
+            CognitiveTraceEvent(
+                verb=MemoryVerb.RECOMBINE.value,
+                attention_class=allocation.attention_class,
+                metadata={
+                    "count": len(result.get("recombinations") or []),
+                    "historical": False,
+                    "plans": False,
+                },
+            )
+        )
+        self.extensions.emit("after_recombine", dict(result))
+        return result
+
+    def what_is_analogous(self, cue: str, other: str = "") -> dict[str, Any]:
+        """Cognitive question M14: What existing memories are analogous even when different?"""
+        self.context = infer_context(cue, self.context)
+        has_goal = bool(self.store.active_goals())
+        allocation = self.attention.allocate(
+            cue, has_open_goal=has_goal, context_tags=self.context.tags
+        )
+        result = self.analogy.what_is_analogous(
+            cue,
+            other=other,
+            context_tags=self.context.tags,
+            attention_weight=allocation.weight,
+        )
+        self._analogy_count += 1
+        self.validation.record_lifecycle(
+            LifecycleEvent(
+                time(),
+                MemoryVerb.ANALOGIZE.value,
+                "",
+                f"maps:{len(result.get('analogies') or [])}",
+            )
+        )
+        self.trace.append(
+            CognitiveTraceEvent(
+                verb=MemoryVerb.ANALOGIZE.value,
+                attention_class=allocation.attention_class,
+                metadata={
+                    "count": len(result.get("analogies") or []),
+                    "executive": False,
+                    "plans": False,
+                },
+            )
+        )
+        self.extensions.emit("after_analogy", dict(result))
+        return result
+
     def evaluate_prediction(self, prediction_id: str, realized_concept_id: str) -> dict[str, Any]:
         return self.prediction.evaluate(prediction_id, realized_concept_id)
 
@@ -806,6 +900,8 @@ class CognitiveEngine:
         fobs_forget = self.forgetting.observables()
         preds = self.prediction.observables()
         sims = self.simulation.observables()
+        rcobs = self.recombination.observables()
+        anobs = self.analogy.observables()
         return {
             "agent_id": self.agent_id,
             "what_i_know_count": len(active_concepts),
@@ -826,6 +922,8 @@ class CognitiveEngine:
             "forgetting": fobs_forget,
             "prediction": preds,
             "simulation": sims,
+            "recombination": rcobs,
+            "analogy": anobs,
             "encode_count": self._encode_count,
             "remember_count": self._remember_count,
             "reflect_count": self._reflect_count,
@@ -833,6 +931,8 @@ class CognitiveEngine:
             "sleep_count": self._sleep_count,
             "predict_count": self._predict_count,
             "simulate_count": self._simulate_count,
+            "recombine_count": self._recombine_count,
+            "analogy_count": self._analogy_count,
             "buffer_occupancy": len(self.buffer),
             "context_tags": list(self.context.tags),
             "extensions": self.extensions.names(),

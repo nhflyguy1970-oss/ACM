@@ -22,6 +22,8 @@ class MemoryVerb(StrEnum):
     FORGET = "forget"
     PREDICT = "predict"
     SIMULATE = "simulate"
+    RECOMBINE = "recombine"
+    ANALOGIZE = "analogize"
 
 
 class AttentionClass(StrEnum):

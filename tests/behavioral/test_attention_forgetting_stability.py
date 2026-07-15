@@ -28,7 +28,7 @@ def test_long_running_priority_accessibility_cycle() -> None:
         "husky"
     ).answer.lower()
     snap = engine.validation.snapshot()
-    assert snap["schema"] == "acm.validation/0.10"
+    assert snap["schema"] == "acm.validation/0.11"
     assert "attention" in snap and "forgetting" in snap
     meta = engine.metacognitive_sketch()
     assert "attention" in meta and "forgetting" in meta

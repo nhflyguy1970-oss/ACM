@@ -19,6 +19,7 @@ Implementation was authorized as a **new standalone engine**, not a rename of Ar
 - **2026-07:** M7 Learning + M8 Offline Cognition — first complete adaptive memory cycle (Adaptation Records; sleep replay/consolidation). Released as v0.8.0.
 - **2026-07:** M9 Attention & Memory Priority + M10 Accessibility & Forgetting — priority-driven cognition and human-like soft forgetting. Released as v0.9.0.
 - **2026-07:** M11 Prediction + M12 Mental Simulation — memory-driven likelihood and hypothetical futures. Released as v0.10.0.
+- **2026-07:** M13 Memory Recombination + M14 Analogical Reasoning — novel blends and structure-mapping. Released as v0.11.0.
 
 ## Milestone cognitive questions
 
@@ -37,6 +38,8 @@ Implementation was authorized as a **new standalone engine**, not a rename of Ar
 | M10 | What should become harder to remember? | Accessibility & Forgetting |
 | M11 | Based upon memory, what is likely? | Prediction |
 | M12 | What possible futures can memory imagine? | Mental Simulation |
+| M13 | What new memories can emerge by recombining existing memories? | Memory Recombination |
+| M14 | What existing memories are analogous even when they appear different? | Analogical Reasoning |
 
 ### Organ dependency map (ownership)
 
@@ -54,11 +57,13 @@ Implementation was authorized as a **new standalone engine**, not a rename of Ar
 | Accessibility & Forgetting | Neglect, Offline cool requests, host soft-forget | Remembering thresholds; reactivation | Accessibility stages; cool; reactivate | Experience deletion; history rewrite |
 | Prediction | Activation + Associations + Priority + Accessibility + Learning residue | Simulation (optional anchors); future Planning (consumer only) | Probabilistic memory outcomes | Planning; decisions; actions |
 | Mental Simulation | Activation + living structures + Prediction hints | Future Planning (consumer); Creativity (later) | Hypothetical sequences | Experience birth; planning; decisions |
+| Memory Recombination | Activation + fragments + Prediction/Simulation hints | Creativity foundations; Analogy (coop) | Temporary RecombinedMemory | Experience birth; planning |
+| Analogical Reasoning | Neighborhoods, resembles, hierarchy, relation patterns | Transfer / Creativity foundations | Explainable AnalogyMapping | Executive reasoning; decisions |
 | Activation Architecture | Concepts, Associations, Identity, Goals, WM, Context, Attention, Accessibility | Every future active organ | Shared field mechanics | Organ-specific questions |
 
 ### What new cognitive capability exists today that did not exist yesterday?
 
-**ACM now anticipates and imagines from memory:** Prediction estimates likely memory outcomes without planning; Mental Simulation explores hypothetical futures without rewriting history — both via one Activation Architecture.
+**ACM recombines and maps analogies from memory:** novel temporary blends and explainable cross-domain correspondences without rewriting history or becoming a planner.
 
 ## Relationship to Aria
 

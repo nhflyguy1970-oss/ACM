@@ -2,6 +2,24 @@
 
 All notable changes to ACM are documented here.
 
+## [0.11.0] — 2026-07-15
+
+### Added
+
+- **M13 Memory Recombination** — *What new memories can emerge by recombining existing memories?*
+- **M14 Analogical Reasoning** — *What existing memories are analogous even when they appear different?*
+- Public APIs: `what_new_memories_can_emerge`, `what_is_analogous`
+- Temporary `RecombinedMemory` / explainable `AnalogyMapping` artifacts (never Experience history)
+- Recombination may use Prediction/Simulation as hints; Analogy uses structure-mapping why-codes
+- Validation harness schema `acm.validation/0.11`
+- Docs: `MEMORY_RECOMBINATION.md`, `ANALOGICAL_REASONING.md`, `CREATIVITY_FOUNDATIONS.md`
+- Decisions D027 (Recombination≠planning), D028 (Analogy≠executive reasoning)
+
+### Notes
+
+- No Planning / Decision Making / Aria
+- Creativity foundations documented without a separate executive Creativity organ
+
 ## [0.10.0] — 2026-07-15
 
 ### Added

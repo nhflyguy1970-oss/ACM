@@ -204,6 +204,19 @@ class ValidationHarness:
             "hypothetical_steps": 0,
             "branches": 0,
         }
+        self.recombination_events: list[dict[str, Any]] = []
+        self.recombination_metrics: dict[str, float | int] = {
+            "events": 0,
+            "recombinations": 0,
+            "last_novelty": 0.0,
+        }
+        self.analogy_events: list[dict[str, Any]] = []
+        self.analogy_metrics: dict[str, float | int] = {
+            "events": 0,
+            "mappings": 0,
+            "transfers": 0,
+            "last_confidence": 0.0,
+        }
 
     def _trim(self, seq: list[Any]) -> None:
         overflow = len(seq) - self.max_events
@@ -589,10 +602,34 @@ class ValidationHarness:
                 int(self.simulation_metrics["hypothetical_steps"]) + steps
             )
 
+    def record_recombination(self, **payload: Any) -> None:
+        event = {"timestamp": time(), **payload}
+        self.recombination_events.append(event)
+        self._trim(self.recombination_events)
+        self.recombination_metrics["events"] = int(self.recombination_metrics["events"]) + 1
+        if payload.get("recombine"):
+            self.recombination_metrics["recombinations"] = (
+                int(self.recombination_metrics["recombinations"]) + 1
+            )
+        if payload.get("novelty") is not None:
+            self.recombination_metrics["last_novelty"] = float(payload["novelty"])
+
+    def record_analogy(self, **payload: Any) -> None:
+        event = {"timestamp": time(), **payload}
+        self.analogy_events.append(event)
+        self._trim(self.analogy_events)
+        self.analogy_metrics["events"] = int(self.analogy_metrics["events"]) + 1
+        if payload.get("analogy"):
+            self.analogy_metrics["mappings"] = int(self.analogy_metrics["mappings"]) + 1
+        if payload.get("transfer"):
+            self.analogy_metrics["transfers"] = int(self.analogy_metrics["transfers"]) + 1
+        if payload.get("confidence") is not None:
+            self.analogy_metrics["last_confidence"] = float(payload["confidence"])
+
     def snapshot(self) -> dict[str, Any]:
         """Public validation snapshot — metadata only, no chain-of-thought."""
         return {
-            "schema": "acm.validation/0.10",
+            "schema": "acm.validation/0.11",
             "counts": {
                 "activations": len(self.activations),
                 "confidence_deltas": len(self.confidence_deltas),
@@ -613,6 +650,8 @@ class ValidationHarness:
                 "forgetting_events": len(self.forgetting_events),
                 "prediction_events": len(self.prediction_events),
                 "simulation_events": len(self.simulation_events),
+                "recombination_events": len(self.recombination_events),
+                "analogy_events": len(self.analogy_events),
             },
             "identity": {
                 "growth": self.identity_metrics["growth"],
@@ -814,6 +853,27 @@ class ValidationHarness:
                 },
             },
             "simulation_events": deepcopy(self.simulation_events[-40:]),
+            "recombination": {
+                "events": self.recombination_metrics["events"],
+                "recombinations": self.recombination_metrics["recombinations"],
+                "novelty": self.recombination_metrics["last_novelty"],
+                "evolution": {
+                    "touches": len(self.recombination_events),
+                    "recombinations": self.recombination_metrics["recombinations"],
+                },
+            },
+            "recombination_events": deepcopy(self.recombination_events[-40:]),
+            "analogy": {
+                "events": self.analogy_metrics["events"],
+                "mappings": self.analogy_metrics["mappings"],
+                "transfers": self.analogy_metrics["transfers"],
+                "confidence": self.analogy_metrics["last_confidence"],
+                "evolution": {
+                    "touches": len(self.analogy_events),
+                    "mappings": self.analogy_metrics["mappings"],
+                },
+            },
+            "analogy_events": deepcopy(self.analogy_events[-40:]),
         }
 
     def reset(self) -> None:
@@ -836,6 +896,8 @@ class ValidationHarness:
         self.forgetting_events.clear()
         self.prediction_events.clear()
         self.simulation_events.clear()
+        self.recombination_events.clear()
+        self.analogy_events.clear()
         self.identity_metrics = {
             "growth": 0,
             "stability": 0,
@@ -952,4 +1014,15 @@ class ValidationHarness:
             "simulations": 0,
             "hypothetical_steps": 0,
             "branches": 0,
+        }
+        self.recombination_metrics = {
+            "events": 0,
+            "recombinations": 0,
+            "last_novelty": 0.0,
+        }
+        self.analogy_metrics = {
+            "events": 0,
+            "mappings": 0,
+            "transfers": 0,
+            "last_confidence": 0.0,
         }
