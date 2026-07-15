@@ -15,7 +15,7 @@ Observable **cognitive state**, not reasoning dumps.
 
 ```python
 report = engine.validation.snapshot()
-assert report["schema"] == "acm.validation/0.5"
+assert report["schema"] == "acm.validation/0.6"
 ```
 
 Recorded streams (trimmed FIFO):
@@ -29,14 +29,13 @@ Recorded streams (trimmed FIFO):
 | `working_transitions` | Enter / displace |
 | `reconsolidations` | Light / supersede / contest |
 | `sleep_events` | Prune counts + proposals |
-| `identity_touches` | Identity-concept activity (adopt / strengthen / propose / assent / influence / …) |
+| `identity_touches` | Identity-concept activity |
 | `identity` (aggregate) | growth · stability · change · confidence · influence · lineage · evolution |
-| `experience_events` | Birth, lineage, salience evolution, temporal links, lifecycle, envelopes |
-| `experience` (aggregate) | births · lineage · salience_evolutions · temporal_links · lifecycle · multimodal · identity/goal influence |
-| `concept_events` | Birth, strengthen/weaken, stage, hierarchy, prototype, proposals |
-| `concept` (aggregate) | births · nuclei · strengthenings · weakenings · maturity · hierarchy · abstraction · merge/split proposals · prototypes |
-| `association_events` | Birth, strengthen/weaken, dormancy, reactivation, neighborhoods, clusters |
-| `association` (aggregate) | births · strengthenings · weakenings · dormancies · reactivations · neighborhoods · clusters · goal/identity/temporal · asymmetric_births · evolution |
+| `experience_events` / `experience` | M2 metrics |
+| `concept_events` / `concept` | M3 metrics |
+| `association_events` / `association` | M4 metrics |
+| `remembering_events` | Activation fields + reconstructions |
+| `remembering` (aggregate) | reconstructions · activations · ambiguities · propagations · decays · experience_participants · goal/identity/context/working influence · evolution |
 
 ## Trace log
 

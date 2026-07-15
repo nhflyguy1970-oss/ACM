@@ -137,3 +137,20 @@ Significant architectural and implementation decisions. Deviations from the desi
 **Why:** Human activation is often directional (Dog → Animal stronger than Animal → Dog). Symmetric-only edges would erase cognitively meaningful asymmetry and would underprepare analogical / retrieval traversal.
 
 **Status:** Accepted.
+
+## D018 — Remembering reconstructs via shared Activation Architecture (2026-07-15)
+
+**Decision:** M5 introduces a single canonical **Cognitive Activation Architecture** (`acm/activation`) consumed first by the **Remembering organ**. Remembering answers *What do I remember?* by reconstructing from activated Concepts/Associations with Experience participation as evidence. Experiences remain immutable. Competing activations may yield ambiguity rather than forced certainty. Forgetting is not implemented; accessibility may later cool without deletion.
+
+**Organ map for this decision:**
+
+| Item | Content |
+|------|---------|
+| Depends upon | Identity, Experiences, Concepts, Associations, Goals, Attention, WM, Context |
+| Future dependents | Reflection, Learning, Prediction, Planning, Creativity, Analogy, Metacognition |
+| Owns alone | Recall-time activation + reconstruction |
+| Never assumes | History rewrite, Concept meaning, Association typology, Reflection/Learning |
+
+**Why:** Retrieval/search/RAG are insufficient for human-like cognition; one shared activation model prevents each future organ inventing a parallel mechanism.
+
+**Status:** Accepted.

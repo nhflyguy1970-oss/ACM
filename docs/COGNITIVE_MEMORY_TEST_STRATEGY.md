@@ -166,6 +166,13 @@ Each subsection states **success**, **failure**, and **phase relevance** (earlie
 
 See also: [`ASSOCIATION_MODEL.md`](ASSOCIATION_MODEL.md) · [`COGNITIVE_NETWORKS.md`](COGNITIVE_NETWORKS.md) · [`ANALOGICAL_FOUNDATIONS.md`](ANALOGICAL_FOUNDATIONS.md)
 
+### 5.3b Remembering reconstruction — M5+
+
+**Success:** Cue-driven spreading activation reconstructs answers; Experiences immutable under recall; ambiguity allowed; shared Activation Architecture observables present.  
+**Failure:** Keyword/RAG-only lookup; Experience rewrite; hidden CoT as “memory.”  
+
+See also: [`REMEMBERING_MODEL.md`](REMEMBERING_MODEL.md) · [`COGNITIVE_ACTIVATION_ARCHITECTURE.md`](COGNITIVE_ACTIVATION_ARCHITECTURE.md)
+
 ### 5.4 Memory strengthening — M4/M5/M7+
 
 **Success:** Practice, confirmation, multimodal co-activation raise retrieval preference.  

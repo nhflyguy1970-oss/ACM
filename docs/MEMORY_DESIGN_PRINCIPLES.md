@@ -13,6 +13,9 @@
 | [`COGNITIVE_NETWORKS.md`](COGNITIVE_NETWORKS.md) | Neighborhoods / clusters |
 | [`ANALOGICAL_FOUNDATIONS.md`](ANALOGICAL_FOUNDATIONS.md) | Prep for future analogy |
 | [`CONCEPT_ARCHITECTURE.md`](CONCEPT_ARCHITECTURE.md) | Emergent meaning (*What is this?*) |
+| [`COGNITIVE_ACTIVATION_ARCHITECTURE.md`](COGNITIVE_ACTIVATION_ARCHITECTURE.md) | Shared activation for active organs |
+| [`REMEMBERING_MODEL.md`](REMEMBERING_MODEL.md) | Reconstruction (*What do I remember?*) |
+| [`REMEMBERING_DESIGN_PRINCIPLES.md`](REMEMBERING_DESIGN_PRINCIPLES.md) | Remembering constitution companion |
 
 **Governing question:** When someone proposes a Memory change, does it move ACM closer to practical human cognition?
 

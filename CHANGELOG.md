@@ -2,6 +2,28 @@
 
 All notable changes to ACM are documented here.
 
+## [0.6.0] — 2026-07-15
+
+### Added
+
+- **M5 Remembering organ** — first active cognitive process answering *What do I remember?*
+- **Cognitive Activation Architecture** — shared cue → spread → field for all future active organs
+- Spreading activation with decay, thresholds, lateral inhibition, directional Association traversal
+- Reconstruction with confidence, competing recollections / ambiguity, Experience participation (read-only)
+- Public `what_do_i_remember()` / `remember()` delegated to Remembering organ
+- Docs: `REMEMBERING_MODEL.md`, `REMEMBERING_DESIGN_PRINCIPLES.md`, `SPREADING_ACTIVATION.md`, `COGNITIVE_RECONSTRUCTION.md`, `COGNITIVE_ACTIVATION_ARCHITECTURE.md`
+- Validation harness remembering metrics — schema `acm.validation/0.6`
+- Behavioral, cognitive, unit, and performance remembering / activation tests
+- Decision D018 (activation architecture + reconstruction ownership)
+
+### Notes
+
+- Remembering never rewrites Experiences (historical integrity)
+- Forgetting not implemented — accessibility designed for future cooling without deletion
+- Reflection / Learning / Prediction / Planning / Creativity not started
+- Aria / host wiring remains out of scope
+- Structural activation-policy changes remain assent-gated (Learning ≠ self-improvement)
+
 ## [0.5.0] — 2026-07-15
 
 ### Added

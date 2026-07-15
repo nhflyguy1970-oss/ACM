@@ -122,6 +122,19 @@ class ValidationHarness:
             "temporal": 0,
             "asymmetric_births": 0,
         }
+        self.remembering_events: list[dict[str, Any]] = []
+        self.remembering_metrics: dict[str, float | int] = {
+            "reconstructions": 0,
+            "activations": 0,
+            "ambiguities": 0,
+            "propagations": 0,
+            "decays": 0,
+            "experience_participants": 0,
+            "goal_influenced": 0,
+            "identity_influenced": 0,
+            "context_influenced": 0,
+            "working_influenced": 0,
+        }
 
     def _trim(self, seq: list[Any]) -> None:
         overflow = len(seq) - self.max_events
@@ -281,10 +294,59 @@ class ValidationHarness:
         if payload.get("temporal"):
             self.association_metrics["temporal"] = int(self.association_metrics["temporal"]) + 1
 
+    def record_remembering(self, **payload: Any) -> None:
+        event = {"timestamp": time(), **payload}
+        self.remembering_events.append(event)
+        self._trim(self.remembering_events)
+        action = payload.get("action")
+        if action == "activation":
+            self.remembering_metrics["activations"] = (
+                int(self.remembering_metrics["activations"]) + 1
+            )
+            steps = int(payload.get("propagation_steps") or 0)
+            if steps:
+                self.remembering_metrics["propagations"] = (
+                    int(self.remembering_metrics["propagations"]) + steps
+                )
+            decayed = int(payload.get("decayed") or 0)
+            if decayed:
+                self.remembering_metrics["decays"] = (
+                    int(self.remembering_metrics["decays"]) + decayed
+                )
+        if payload.get("reconstruction") or action == "reconstruction":
+            self.remembering_metrics["reconstructions"] = (
+                int(self.remembering_metrics["reconstructions"]) + 1
+            )
+        if payload.get("ambiguity") or payload.get("ambiguous"):
+            self.remembering_metrics["ambiguities"] = (
+                int(self.remembering_metrics["ambiguities"]) + 1
+            )
+        participants = int(payload.get("experience_participants") or 0)
+        if participants:
+            self.remembering_metrics["experience_participants"] = (
+                int(self.remembering_metrics["experience_participants"]) + participants
+            )
+        if payload.get("goal_influenced"):
+            self.remembering_metrics["goal_influenced"] = (
+                int(self.remembering_metrics["goal_influenced"]) + 1
+            )
+        if payload.get("identity_influenced"):
+            self.remembering_metrics["identity_influenced"] = (
+                int(self.remembering_metrics["identity_influenced"]) + 1
+            )
+        if payload.get("context_influenced"):
+            self.remembering_metrics["context_influenced"] = (
+                int(self.remembering_metrics["context_influenced"]) + 1
+            )
+        if payload.get("working_influenced"):
+            self.remembering_metrics["working_influenced"] = (
+                int(self.remembering_metrics["working_influenced"]) + 1
+            )
+
     def snapshot(self) -> dict[str, Any]:
         """Public validation snapshot — metadata only, no chain-of-thought."""
         return {
-            "schema": "acm.validation/0.5",
+            "schema": "acm.validation/0.6",
             "counts": {
                 "activations": len(self.activations),
                 "confidence_deltas": len(self.confidence_deltas),
@@ -297,6 +359,7 @@ class ValidationHarness:
                 "experience_events": len(self.experience_events),
                 "concept_events": len(self.concept_events),
                 "association_events": len(self.association_events),
+                "remembering_events": len(self.remembering_events),
             },
             "identity": {
                 "growth": self.identity_metrics["growth"],
@@ -363,6 +426,24 @@ class ValidationHarness:
                     "weakenings": self.association_metrics["weakenings"],
                 },
             },
+            "remembering": {
+                "reconstructions": self.remembering_metrics["reconstructions"],
+                "activations": self.remembering_metrics["activations"],
+                "ambiguities": self.remembering_metrics["ambiguities"],
+                "propagations": self.remembering_metrics["propagations"],
+                "decays": self.remembering_metrics["decays"],
+                "experience_participants": self.remembering_metrics["experience_participants"],
+                "goal_influenced": self.remembering_metrics["goal_influenced"],
+                "identity_influenced": self.remembering_metrics["identity_influenced"],
+                "context_influenced": self.remembering_metrics["context_influenced"],
+                "working_influenced": self.remembering_metrics["working_influenced"],
+                "evolution": {
+                    "touches": len(self.remembering_events),
+                    "reconstructions": self.remembering_metrics["reconstructions"],
+                    "activations": self.remembering_metrics["activations"],
+                    "ambiguities": self.remembering_metrics["ambiguities"],
+                },
+            },
             "activations": [asdict(a) for a in self.activations[-40:]],
             "confidence_deltas": [asdict(c) for c in self.confidence_deltas[-40:]],
             "association_changes": [asdict(a) for a in self.association_changes[-40:]],
@@ -374,6 +455,7 @@ class ValidationHarness:
             "experience_events": deepcopy(self.experience_events[-40:]),
             "concept_events": deepcopy(self.concept_events[-40:]),
             "association_events": deepcopy(self.association_events[-40:]),
+            "remembering_events": deepcopy(self.remembering_events[-40:]),
         }
 
     def reset(self) -> None:
@@ -388,6 +470,7 @@ class ValidationHarness:
         self.experience_events.clear()
         self.concept_events.clear()
         self.association_events.clear()
+        self.remembering_events.clear()
         self.identity_metrics = {
             "growth": 0,
             "stability": 0,
@@ -430,4 +513,16 @@ class ValidationHarness:
             "identity_influenced": 0,
             "temporal": 0,
             "asymmetric_births": 0,
+        }
+        self.remembering_metrics = {
+            "reconstructions": 0,
+            "activations": 0,
+            "ambiguities": 0,
+            "propagations": 0,
+            "decays": 0,
+            "experience_participants": 0,
+            "goal_influenced": 0,
+            "identity_influenced": 0,
+            "context_influenced": 0,
+            "working_influenced": 0,
         }

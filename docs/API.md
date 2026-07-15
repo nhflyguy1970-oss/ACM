@@ -1,8 +1,8 @@
-# API — ACM v0.5
+# API — ACM v0.6
 
 Public surface is intentionally small. Hosts integrate through `CognitiveEngine`; adapters and storage backends may evolve underneath without expanding the verb set casually.
 
-See also: [`PLUGIN_ARCHITECTURE.md`](PLUGIN_ARCHITECTURE.md) · [`CORE_BOUNDARIES.md`](CORE_BOUNDARIES.md) · [`EXPERIENCE_MODEL.md`](EXPERIENCE_MODEL.md) · [`CONCEPT_ARCHITECTURE.md`](CONCEPT_ARCHITECTURE.md) · [`ASSOCIATION_MODEL.md`](ASSOCIATION_MODEL.md)
+See also: [`PLUGIN_ARCHITECTURE.md`](PLUGIN_ARCHITECTURE.md) · [`CORE_BOUNDARIES.md`](CORE_BOUNDARIES.md) · [`REMEMBERING_MODEL.md`](REMEMBERING_MODEL.md) · [`COGNITIVE_ACTIVATION_ARCHITECTURE.md`](COGNITIVE_ACTIVATION_ARCHITECTURE.md) · [`ASSOCIATION_MODEL.md`](ASSOCIATION_MODEL.md)
 
 ## Install
 
@@ -49,7 +49,7 @@ High-impact identity conflicts return `identity.status == "proposed"` with a `pr
 
 #### `remember(query) -> RememberResult`
 
-Retrieves and lightly reconsolidates. Fields:
+Active **Remembering** — reconstructs via the shared Cognitive Activation Architecture (not search/RAG). Fields:
 
 | Field | Meaning |
 |-------|---------|
@@ -58,7 +58,13 @@ Retrieves and lightly reconsolidates. Fields:
 | `explanation_class` | Enum class (`preference`, `experience`, …) |
 | `activated_concept_ids` | What activated |
 | `confidence` | Recalled confidence |
+| `ambiguous` | Competing recollections nearby |
+| `reconstruction` | Public reconstruction package (activation path metadata) |
 | `trace` | Public cognitive-state metadata |
+
+#### `what_do_i_remember(cue) -> dict`
+
+Cognitive question M5 façade over `remember()` — returns the reconstruction public view.
 
 #### `sleep(*, apply_low_impact=True) -> dict`
 
@@ -95,6 +101,15 @@ Foundations for self-modeling: counts of known / uncertain concepts, experiences
 | `engine.associations.clusters()` | Emergent connected communities |
 | `engine.associations` | Relate / reinforce / weaken / absorb / observables |
 
+### Remembering
+
+| Method | Purpose |
+|--------|---------|
+| `remember(query)` | Reconstruct a recollection (Activation Architecture) |
+| `what_do_i_remember(cue)` | *What do I remember?* public package |
+| `engine.remembering` | Remembering organ |
+| `engine.activation` | Shared Cognitive Activation Engine |
+
 ### Identity
 
 | Method | Purpose |
@@ -117,7 +132,7 @@ Foundations for self-modeling: counts of known / uncertain concepts, experiences
 |-----------|---------|
 | `engine.validation` | `ValidationHarness` — milestone observables |
 | `engine.trace` | `TraceLog` of `CognitiveTraceEvent` |
-| `engine.validation.snapshot()` | JSON-safe report (`acm.validation/0.5`) including association metrics |
+| `engine.validation.snapshot()` | JSON-safe report (`acm.validation/0.6`) including remembering metrics |
 | `engine.identity` | Identity organ (advanced; prefer public methods above) |
 
 ## Non-goals (public API)

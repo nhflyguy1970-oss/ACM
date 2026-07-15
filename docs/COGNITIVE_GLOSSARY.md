@@ -13,6 +13,10 @@
 | **Association** | Living cognitive relationship (*How is this related?*) — directed strengths, distance, context |
 | **Cognitive neighborhood** | Nearby Concept associates of a seed Concept |
 | **Cognitive cluster** | Emergent community of related Concepts |
+| **Remembering** | Cue-driven reconstruction (*What do I remember?*) — not search/RAG |
+| **Activation Architecture** | Shared cue→spread→field model for all active organs |
+| **Reconstruction** | Present-tense recollection package; never rewrites Experience history |
+| **Spreading activation** | Energy propagation along Associations with decay / thresholds |
 | **Goal Space** | Active / completed goals that bias attention and recall |
 | **Attention** | Gate that modulates encoding durability |
 | **Context frame** | Situational tags that modulate meaning and retrieval |

@@ -13,6 +13,7 @@ Implementation was authorized as a **new standalone engine**, not a rename of Ar
 - **2026-07:** M2 Experience — immutable cognitive events with dual identity, salience, temporal links, and lineage. Released as v0.3.0.
 - **2026-07:** M3 Concept — emergent meaning (nuclei, lifecycle, hierarchy, prototypes). Released as v0.4.0.
 - **2026-07:** M4 Association — living cognitive relationships (strength, distance, neighborhoods). Released as v0.5.0.
+- **2026-07:** M5 Remembering — cue-driven reconstruction via shared Cognitive Activation Architecture. Released as v0.6.0.
 
 ## Milestone cognitive questions
 
@@ -22,10 +23,22 @@ Implementation was authorized as a **new standalone engine**, not a rename of Ar
 | M2 | What happened? | Immutable Experience chronology |
 | M3 | What is this? | Emergent Concepts / understanding |
 | M4 | How is this related? | Living Associations / cognitive networks |
+| M5 | What do I remember? | Active reconstruction + Activation Architecture |
+
+### Organ dependency map (ownership)
+
+| Organ | Depends upon | Future dependents | Owns alone | Never assumes |
+|-------|--------------|-------------------|------------|---------------|
+| Identity | Experiences (content) | All | Who am I? | History rewrite |
+| Experience | — | Concepts+ | Immutable history | Meaning / relations / recall |
+| Concept | Experiences | Associations, Remembering+ | Meaning | History / relationships / recall |
+| Association | Concepts (+Experiences) | Remembering+ | Relationships | Meaning / recall evaluation |
+| Remembering | Identity, Experiences, Concepts, Associations, Goals, Attention, WM, Context, **Activation Architecture** | Reflection, Learning, Prediction, Planning, Creativity, Analogy, Metacognition | Activation-for-recall + reconstruction | Reflection, Learning, history rewrite |
+| Activation Architecture | Concepts, Associations, Identity, Goals, WM, Context | Every future active organ | Shared field mechanics | Organ-specific questions |
 
 ### What new cognitive capability exists today that did not exist yesterday?
 
-**ACM can now answer “How is this related?”:** Concepts are joined by living, directed Associations with independent forward/backward strength, cognitive distance, context/goal/identity stamps, and emergent neighborhoods — so future Remembering, Reflection, and Analogy can traverse meaning-relations rather than isolated Concepts or raw Experience streams alone.
+**ACM can now answer “What do I remember?”:** cue-driven spreading activation reconstructs recollections from Identity, Concepts, Associations, Experiences (as evidence), Goals, Context, and Working Memory — without rewriting history — and establishes the shared Cognitive Activation Architecture every future active organ will use.
 
 ## Relationship to Aria
 
