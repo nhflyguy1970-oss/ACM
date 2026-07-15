@@ -14,6 +14,7 @@
 | ValidationHarness | Observable cognitive state (no CoT / prompts) |
 | Cognitive Activation Architecture | Shared cue→spread→field for active organs |
 | Working Buffer · Attention · Context · Goals | Bias & capacity (owned as mechanisms, not full milestone organs yet) |
+| **Memory Authority (v0.15)** | Classify → ACM reconstruct → `CognitiveMemoryResult` → faithful speak; LM never memory authority |
 
 ---
 
@@ -86,13 +87,13 @@
 | Question | What do I remember? |
 | Exclusive responsibility | Cue-driven reconstruction |
 | Inputs | Identity, Experiences, Concepts, Associations, Goals, Attention, WM, Context, Activation |
-| Outputs | `remember` / `what_do_i_remember` |
-| Artifacts | Reconstructions (ephemeral); light reconsolidation of accessibility |
-| Dependencies | M1–M4 + Activation Architecture |
+| Outputs | `remember` / `what_do_i_remember` / `cognitive_respond` (Memory Authority) |
+| Artifacts | Reconstructions (ephemeral); light reconsolidation of accessibility (gated) |
+| Dependencies | M1–M4 + Activation Architecture + Authority gates (v0.15) |
 | Future dependents | Reflection, Learning, Prediction, … |
 | Activation | First consumer |
 | Observability | `remembering` aggregate |
-| Validation | Reconstruction + integrity tests |
+| Validation | Reconstruction + integrity + Memory Authority suites |
 
 ### Reflection — M6
 

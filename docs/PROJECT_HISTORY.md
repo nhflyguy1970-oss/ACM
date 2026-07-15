@@ -24,6 +24,8 @@ Implementation was authorized as a **new standalone engine**, not a rename of Ar
 - **2026-07:** Phase Gate P1 — Integration Readiness + Scientific Gap Analysis (**design only**). Verdict: **READY WITH MINOR CHANGES**. Released as v0.12.1. See `docs/ACM_V1_READINESS_REVIEW.md`.
 - **2026-07:** Phase 2 Operational Readiness (P2.1–P2.5) — durable store, provenance, adapter, shadow, certification framework. **No new cognition.** Released as v0.13.0. See `docs/OPERATIONAL_READINESS.md`.
 - **2026-07:** Phase 2 Operational Certification Execution — measured all gates. Verdict: **CERTIFIED WITH CONDITIONS**. Released as v0.14.0 (evidence docs only). See `docs/ACM_CERTIFIED_v1.md`.
+- **2026-07:** Aria ACM Integration Blueprint (**design only**) — full cognitive memory **replacement** via independent Aria-embedded ACM copy; ACM Supremacy Rules (D036–D037). Docs live under Jarvis `docs/acm_integration/`. Released as ACM v0.14.1 (governance docs only). **No Aria/ACM implementation.**
+- **2026-07:** **Memory Authority** architectural correction (D038) — Cognitive Response Pipeline; LM never determines memory; unknown is knowledge; speech contamination blocked; soft confabulation refused. Released as **v0.15.0**. Standalone only until promotion approval.
 
 ## Milestone cognitive questions
 
@@ -73,8 +75,12 @@ Implementation was authorized as a **new standalone engine**, not a rename of Ar
 
 ### What new cognitive capability exists today that did not exist yesterday?
 
-**None.** Certification execution produced evidence and a **CERTIFIED WITH CONDITIONS** verdict without changing cognition.
+**None.** Aria integration blueprint and Supremacy Rules are design/governance only (v0.14.1). Cognition remains as certified in v0.14.0.
 
 ## Relationship to Aria
 
-Adapter package `aria_memory_adapter` is ready for host wiring. Aria application integration and formal certification remain approval-gated. Migration design: `ARIA_INTEGRATION_ARCHITECTURE.md` · `OPERATIONAL_READINESS.md`.
+**Target architecture (D036):** Aria vendors an independent certified ACM **source copy** as its sole cognitive memory. Standalone ACM remains research/reference — not a pip/runtime shared dependency and not auto-synced. Promotion is explicit only.
+
+**Policy (D037):** ACM Supremacy Rules — single cognitive authority; no lost functionality without mapped disposition; no legacy overrides; no duplicate cognition; migration INTO ACM only; no architectural regression without re-certification.
+
+Reference `aria_memory_adapter` remains a Shadow/translation design aid. Implementation wiring is approval-gated. Blueprint: Jarvis `docs/acm_integration/` (also cites earlier `ARIA_INTEGRATION_ARCHITECTURE.md` · `OPERATIONAL_READINESS.md` · `ACM_CERTIFIED_v1.md`).

@@ -2,6 +2,40 @@
 
 All notable changes to ACM are documented here.
 
+## [0.15.0] — 2026-07-15
+
+### Added — Memory Authority architectural correction
+
+- Package `acm.authority`: classification, `CognitiveMemoryResult`, response pipeline, speak templates, encode protection, confidence/evidence gates
+- Engine APIs: `classify_request`, `cognitive_respond`, `speak_cognitive_result`
+- Docs: `MEMORY_AUTHORITY_MODEL.md`, `COGNITIVE_RESPONSE_PIPELINE.md`, `MEMORY_CLASSIFICATION.md`, `HALLUCINATION_PREVENTION.md`, `UNKNOWN_MEMORY.md`, `MEMORY_PROTECTION.md`, `COGNITIVE_MEMORY_OBJECT.md`
+- Decision **D038**; tests `tests/cognitive/test_memory_authority.py`
+
+### Changed
+
+- Remembering: refuse soft attribute confabulation when cue does not ground; UNKNOWN when ungrounded
+- Reconsolidation: no confidence boost on UNKNOWN / low-confidence reconstructions
+- Encode: reject LM/speech contamination tags and forbidden external kinds
+
+### Notes
+
+- Standalone ACM only — **not** promoted into Aria vendored copy until explicit approval
+- Hosts must call ACM before language generation for memory requests
+- Certification (v0.14.0) unchanged until re-certification after promotion/acceptance
+
+## [0.14.1] — 2026-07-15
+
+### Added (design / governance only — no organ or runtime code)
+
+- Decisions **D036** (Aria full memory replacement via independent ACM copy) and **D037** (ACM Supremacy Rules)
+- Roadmap + project history updates for Aria integration blueprint posture
+- Pointer: Aria/Jarvis blueprint set at `jarvis/docs/acm_integration/`
+
+### Notes
+
+- No new cognition in 0.14.1 itself; cognition lands in **0.15.0** (Memory Authority)
+- Standalone ACM remains research/reference relative to Aria’s vendored copy
+
 ## [0.14.0] — 2026-07-15
 
 ### Certification execution (no functional changes)

@@ -299,3 +299,36 @@ Significant architectural and implementation decisions. Deviations from the desi
 **Why:** Separate readiness tooling from formal certification authority.
 
 **Status:** Accepted.
+
+## D036 — Aria full memory replacement via independent ACM copy (2026-07-15)
+
+**Decision:** Aria’s cognitive memory will be a **vendored, independent source copy** of certified ACM. Standalone ACM remains research/reference only — **not** a runtime dependency, **not** a shared library, **not** auto-synced. Improvements flow only by **explicit promotion** (reference → Aria copy). Goal: **replace Aria cognitive memory with ACM**, not reshape ACM to imitate Aria CRUD. Shadow/dual-write is a **temporary migration phase** only (amends D031/D034 end-state language).
+
+**Why:** Single Cognitive Authority in production; host independence of the ACM research line; prevent forever dual cognition.
+
+**Status:** Accepted (design). Implementation remains approval-gated. Aria blueprint: `jarvis/docs/acm_integration/`.
+
+## D037 — ACM Supremacy Rules for Aria integration (2026-07-15)
+
+**Decision:** Aria ACM integration is governed by first-class **ACM SUPREMACY RULES** (documented in Aria `ARIA_ACM_ARCHITECTURE.md`):
+
+1. **Single Cognitive Authority** — Aria has one cognitive memory = vendored ACM.  
+2. **No Lost Functionality** — migrate into ACM, interface to ACM, or intentional retirement with approval.  
+3. **No Legacy Overrides** — no replace / override / bypass / duplicate / intercept of ACM cognitive functions after cutover.  
+4. **No Duplicate Cognition** — Aria never reimplements ACM cognitive organs/capabilities.  
+5. **Migration Direction INTO ACM only** — cognitive gaps are fixed in standalone ACM then promoted; non-cognitive stays Aria UI/orchestration.  
+6. **No Architectural Regression** — moving cognition from ACM back into Aria is prohibited without explicit approval and re-certification.
+
+Matrix, API, migration, rollback, and test plans must not authorize permanent dual cognitive memory, beside-ACM cognition, or legacy override.
+
+**Why:** Prevent integration from corrupting ACM as the cognitive authority or recreating Aria memory beside it.
+
+**Status:** Accepted (design).
+
+## D038 — Memory Authority: ACM sole reconstruction; LM never determines memory (2026-07-15)
+
+**Decision:** Cognitive memory questions are handled by a formal **Cognitive Memory Response Pipeline** inside standalone ACM. Language models (any host) **never** invent, complete, reconstruct, or become memory. ACM returns a structured `CognitiveMemoryResult`; speech may only express that result. Unknown / low-confidence / insufficient evidence / conflicting are valid cognitive outcomes. Encode rejects speech/LM contamination tags. Soft attribute confabulation in Remembering is refused (cue-grounded attributes or UNKNOWN). Reconsolidation does not boost confidence on unknown/weak recall.
+
+**Why:** Daily Use testing showed hosts can answer memory questions via LM generation, creating hallucinated autobiography and contamination risk. Memory is cognitive, not linguistic.
+
+**Status:** Accepted. Docs: `MEMORY_AUTHORITY_MODEL.md`, `COGNITIVE_RESPONSE_PIPELINE.md`, et al. Version **v0.15.0**. Promotion into Aria vendored copy requires separate approval.
