@@ -172,6 +172,23 @@ class ValidationHarness:
             "stabilizations": 0,
             "proposals": 0,
         }
+        self.attention_events: list[dict[str, Any]] = []
+        self.attention_metrics: dict[str, float | int] = {
+            "events": 0,
+            "allocations": 0,
+            "investments": 0,
+            "priority_evolution": 0,
+        }
+        self.forgetting_events: list[dict[str, Any]] = []
+        self.forgetting_metrics: dict[str, float | int] = {
+            "events": 0,
+            "cools": 0,
+            "reactivations": 0,
+            "dormancies": 0,
+            "accessibility_evolution": 0,
+            "proposals": 0,
+            "resists": 0,
+        }
 
     def _trim(self, seq: list[Any]) -> None:
         overflow = len(seq) - self.max_events
@@ -474,10 +491,55 @@ class ValidationHarness:
                 int(self.offline_metrics["stabilizations"]) + 1
             )
 
+    def record_attention(self, **payload: Any) -> None:
+        event = {"timestamp": time(), **payload}
+        self.attention_events.append(event)
+        self._trim(self.attention_events)
+        self.attention_metrics["events"] = int(self.attention_metrics["events"]) + 1
+        if payload.get("allocate"):
+            self.attention_metrics["allocations"] = (
+                int(self.attention_metrics["allocations"]) + 1
+            )
+        if payload.get("invest"):
+            self.attention_metrics["investments"] = (
+                int(self.attention_metrics["investments"]) + 1
+            )
+        if payload.get("priority_evolution"):
+            self.attention_metrics["priority_evolution"] = (
+                int(self.attention_metrics["priority_evolution"]) + 1
+            )
+
+    def record_forgetting(self, **payload: Any) -> None:
+        event = {"timestamp": time(), **payload}
+        self.forgetting_events.append(event)
+        self._trim(self.forgetting_events)
+        self.forgetting_metrics["events"] = int(self.forgetting_metrics["events"]) + 1
+        if payload.get("cool"):
+            cool_n = int(payload.get("cool") or 1)
+            self.forgetting_metrics["cools"] = int(self.forgetting_metrics["cools"]) + cool_n
+        if payload.get("reactivate"):
+            self.forgetting_metrics["reactivations"] = (
+                int(self.forgetting_metrics["reactivations"]) + 1
+            )
+        if payload.get("dormancy"):
+            self.forgetting_metrics["dormancies"] = (
+                int(self.forgetting_metrics["dormancies"]) + 1
+            )
+        if payload.get("accessibility_evolution"):
+            self.forgetting_metrics["accessibility_evolution"] = (
+                int(self.forgetting_metrics["accessibility_evolution"]) + 1
+            )
+        if payload.get("proposal"):
+            self.forgetting_metrics["proposals"] = (
+                int(self.forgetting_metrics["proposals"]) + 1
+            )
+        if payload.get("resist"):
+            self.forgetting_metrics["resists"] = int(self.forgetting_metrics["resists"]) + 1
+
     def snapshot(self) -> dict[str, Any]:
         """Public validation snapshot — metadata only, no chain-of-thought."""
         return {
-            "schema": "acm.validation/0.8",
+            "schema": "acm.validation/0.9",
             "counts": {
                 "activations": len(self.activations),
                 "confidence_deltas": len(self.confidence_deltas),
@@ -494,6 +556,8 @@ class ValidationHarness:
                 "reflection_events": len(self.reflection_events),
                 "learning_events": len(self.learning_events),
                 "offline_events": len(self.offline_events),
+                "attention_events": len(self.attention_events),
+                "forgetting_events": len(self.forgetting_events),
             },
             "identity": {
                 "growth": self.identity_metrics["growth"],
@@ -644,6 +708,33 @@ class ValidationHarness:
                 },
             },
             "offline_events": deepcopy(self.offline_events[-40:]),
+            "attention": {
+                "events": self.attention_metrics["events"],
+                "allocations": self.attention_metrics["allocations"],
+                "investments": self.attention_metrics["investments"],
+                "priority_evolution": self.attention_metrics["priority_evolution"],
+                "evolution": {
+                    "touches": len(self.attention_events),
+                    "allocations": self.attention_metrics["allocations"],
+                    "investments": self.attention_metrics["investments"],
+                },
+            },
+            "attention_events": deepcopy(self.attention_events[-40:]),
+            "forgetting": {
+                "events": self.forgetting_metrics["events"],
+                "cools": self.forgetting_metrics["cools"],
+                "reactivations": self.forgetting_metrics["reactivations"],
+                "dormancies": self.forgetting_metrics["dormancies"],
+                "accessibility_evolution": self.forgetting_metrics["accessibility_evolution"],
+                "proposals": self.forgetting_metrics["proposals"],
+                "resists": self.forgetting_metrics["resists"],
+                "evolution": {
+                    "touches": len(self.forgetting_events),
+                    "cools": self.forgetting_metrics["cools"],
+                    "reactivations": self.forgetting_metrics["reactivations"],
+                },
+            },
+            "forgetting_events": deepcopy(self.forgetting_events[-40:]),
         }
 
     def reset(self) -> None:
@@ -662,6 +753,8 @@ class ValidationHarness:
         self.reflection_events.clear()
         self.learning_events.clear()
         self.offline_events.clear()
+        self.attention_events.clear()
+        self.forgetting_events.clear()
         self.identity_metrics = {
             "growth": 0,
             "stability": 0,
@@ -750,4 +843,19 @@ class ValidationHarness:
             "cools": 0,
             "stabilizations": 0,
             "proposals": 0,
+        }
+        self.attention_metrics = {
+            "events": 0,
+            "allocations": 0,
+            "investments": 0,
+            "priority_evolution": 0,
+        }
+        self.forgetting_metrics = {
+            "events": 0,
+            "cools": 0,
+            "reactivations": 0,
+            "dormancies": 0,
+            "accessibility_evolution": 0,
+            "proposals": 0,
+            "resists": 0,
         }

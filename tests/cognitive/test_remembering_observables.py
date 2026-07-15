@@ -8,7 +8,7 @@ def test_harness_remembering_metrics() -> None:
     engine.encode("My favorite tea is green.", kind="preference")
     engine.remember("What is my favorite tea?")
     snap = engine.validation.snapshot()
-    assert snap["schema"] == "acm.validation/0.8"
+    assert snap["schema"] == "acm.validation/0.9"
     assert "remembering" in snap
     assert snap["remembering"]["reconstructions"] >= 1
     assert snap["remembering"]["activations"] >= 1

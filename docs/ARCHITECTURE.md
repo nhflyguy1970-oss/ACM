@@ -371,11 +371,11 @@ Order optimized for **stable identity first**, then associative life, then futur
 | **M6** | Goal Memory |
 | **M7** | Learning (*What have I learned?*) — **shipped v0.8.0** |
 | **M8** | Offline Cognition / Sleep (*What should become long-term memory?*) — **shipped v0.8.0** |
-| **M9** | Forgetting (accessibility) |
-| **M10** | Inference |
-| **M11** | Reflection |
-| **M12** | Prediction |
-| **M13** | Planning (consumes ACM) |
+| **M9** | Attention & Memory Priority — **shipped v0.9.0** |
+| **M10** | Accessibility & Forgetting — **shipped v0.9.0** |
+| **M11** | Prediction |
+| **M12** | Planning (consumes ACM) |
+| **M13** | Creativity / Analogy |
 | **M14** | Autobiographical Memory |
 | **M15** | Meta-memory |
 

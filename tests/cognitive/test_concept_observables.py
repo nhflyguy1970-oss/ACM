@@ -9,7 +9,7 @@ def test_harness_concept_metrics() -> None:
     engine.encode("A husky is a dog.", pin=True)
     engine.encode("Athena is a husky.", pin=True)
     snap = engine.validation.snapshot()
-    assert snap["schema"] == "acm.validation/0.8"
+    assert snap["schema"] == "acm.validation/0.9"
     assert snap["concept"]["births"] >= 1
     assert snap["concept"]["nuclei"] >= 1
     assert snap["concept"]["strengthenings"] >= 1

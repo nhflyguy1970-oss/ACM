@@ -9,7 +9,9 @@ from acm.types import new_id
 
 if TYPE_CHECKING:
     from acm.activation.engine import ActivationEngine
+    from acm.attention.organ import AttentionOrgan
     from acm.core.store import CognitiveStore
+    from acm.forgetting.organ import ForgettingOrgan
     from acm.learning.organ import LearningOrgan
     from acm.validation.harness import ValidationHarness
 
@@ -28,18 +30,32 @@ class OfflineCognitionOrgan:
         learning: LearningOrgan,
         *,
         activation: ActivationEngine | None = None,
+        attention: AttentionOrgan | None = None,
+        forgetting: ForgettingOrgan | None = None,
     ) -> None:
         self.store = store
         self.validation = validation
         self.learning = learning
         self.activation = activation
+        self.attention = attention
+        self.forgetting = forgetting
         self._batches = 0
         self._replays = 0
         self._stabilizations = 0
 
-    def bind(self, *, activation: ActivationEngine | None = None) -> None:
+    def bind(
+        self,
+        *,
+        activation: ActivationEngine | None = None,
+        attention: AttentionOrgan | None = None,
+        forgetting: ForgettingOrgan | None = None,
+    ) -> None:
         if activation is not None:
             self.activation = activation
+        if attention is not None:
+            self.attention = attention
+        if forgetting is not None:
+            self.forgetting = forgetting
 
     def consolidate(self, *, apply_low_impact: bool = True) -> dict[str, Any]:
         """Cognitive question M8: What should become long-term memory?"""
@@ -73,14 +89,20 @@ class OfflineCognitionOrgan:
                 replay=1,
             )
 
-        # Activate high-access concepts for neighborhood reinforcement (energy only)
-        hot = sorted(
-            (c for c in self.store.concepts.values() if c.active and not c.identity),
-            key=lambda c: c.access_count * c.strength,
-            reverse=True,
-        )[:8]
+        # Priority-ranked replay candidates from Attention (or fallback hot list)
+        if self.attention is not None:
+            hot_ids = self.attention.replay_candidates(limit=8)
+            hot = [self.store.concepts[i] for i in hot_ids if i in self.store.concepts]
+        else:
+            hot = sorted(
+                (c for c in self.store.concepts.values() if c.active and not c.identity),
+                key=lambda c: c.access_count * c.strength,
+                reverse=True,
+            )[:8]
         if self.activation is not None:
             for concept in hot:
+                if not concept.active:
+                    continue
                 label = concept.labels[0] if concept.labels else concept.id
                 field = self.activation.activate(label, attention_weight=0.4)
                 # Reinforce associations that carried energy in this replay field
@@ -102,18 +124,29 @@ class OfflineCognitionOrgan:
                     replay=1,
                 )
 
-        # Cool very weak associations (accessibility — not history erase)
+        # Cool very weak associations — Forgetting owns application
         if apply_low_impact:
-            for edge in list(self.store.associations.values()):
-                if edge.active and max(edge.strength_forward, edge.strength_backward) < 0.12:
-                    edge.active = False
-                    cooled += 1
-                    self.validation.record_offline(
-                        action="cool",
-                        association_id=edge.id,
-                        sleep_batch_id=batch_id,
-                        cool=1,
-                    )
+            if self.forgetting is not None:
+                cooled_ids = self.forgetting.cool_weak_associations(threshold=0.12)
+                cooled = len(cooled_ids)
+            else:
+                for edge in list(self.store.associations.values()):
+                    if edge.active and max(edge.strength_forward, edge.strength_backward) < 0.12:
+                        edge.active = False
+                        cooled += 1
+                        self.validation.record_offline(
+                            action="cool",
+                            association_id=edge.id,
+                            sleep_batch_id=batch_id,
+                            cool=1,
+                        )
+            if cooled:
+                self.validation.record_offline(
+                    action="cool_batch",
+                    sleep_batch_id=batch_id,
+                    cool=cooled,
+                    cooled=cooled,
+                )
 
         # Abstraction proposals: duplicate labels (never auto-merge)
         label_map: dict[str, list[str]] = {}

@@ -18,7 +18,9 @@ from acm.associations.model import AssociationStage
 
 if TYPE_CHECKING:
     from acm.associations.organ import AssociationOrgan
+    from acm.attention.organ import AttentionOrgan
     from acm.core.store import CognitiveStore
+    from acm.forgetting.organ import ForgettingOrgan
     from acm.identity.organ import IdentityOrgan
     from acm.validation.harness import ValidationHarness
     from acm.working.buffer import WorkingBuffer
@@ -30,6 +32,8 @@ class ActivationEngine:
     Parameters are cognitive constants for M5. Structural policy changes later
     require explicit user authorization — continuous Learning may tune strengths
     without rewriting this architecture silently.
+
+    Attention & Accessibility modulate energy; they do not fork this architecture.
     """
 
     SEED_THRESHOLD = 0.18
@@ -47,12 +51,16 @@ class ActivationEngine:
         associations: AssociationOrgan | None = None,
         identity: IdentityOrgan | None = None,
         buffer: WorkingBuffer | None = None,
+        attention: AttentionOrgan | None = None,
+        forgetting: ForgettingOrgan | None = None,
     ) -> None:
         self.store = store
         self.validation = validation
         self.associations = associations
         self.identity = identity
         self.buffer = buffer
+        self.attention = attention
+        self.forgetting = forgetting
 
     def bind(
         self,
@@ -60,6 +68,8 @@ class ActivationEngine:
         associations: AssociationOrgan | None = None,
         identity: IdentityOrgan | None = None,
         buffer: WorkingBuffer | None = None,
+        attention: AttentionOrgan | None = None,
+        forgetting: ForgettingOrgan | None = None,
     ) -> None:
         if associations is not None:
             self.associations = associations
@@ -67,6 +77,10 @@ class ActivationEngine:
             self.identity = identity
         if buffer is not None:
             self.buffer = buffer
+        if attention is not None:
+            self.attention = attention
+        if forgetting is not None:
+            self.forgetting = forgetting
 
     def activate(
         self,
@@ -185,15 +199,18 @@ class ActivationEngine:
             wm_ids = {item.ref_id for item in self.buffer.items()}
 
         for concept in self.store.concepts.values():
-            if not concept.active:
+            stage = getattr(concept, "stage", None)
+            if stage and stage.value == "retired":
                 continue
-            if getattr(concept, "stage", None) and concept.stage.value == "retired":
-                continue
+            dormant = not concept.active or (stage and stage.value == "dormant")
             energy = 0.0
             classes: list[str] = []
 
             blob = " ".join(concept.labels).lower()
-            if any(tok in blob for tok in tokens):
+            lexical_hit = any(tok in blob for tok in tokens) or (
+                len(q) >= 3 and q in blob
+            )
+            if lexical_hit:
                 energy += 0.55
                 classes.append(CueClass.LEXICAL.value)
 
@@ -210,18 +227,21 @@ class ActivationEngine:
                     energy += 0.35 * ctx_boost
                     classes.append(CueClass.CONTEXT.value)
 
-            if concept.id in wm_ids:
+            # Dormant / inactive only enter via strong cue match (reactivation path)
+            if dormant and energy < 0.55:
+                continue
+
+            if concept.id in wm_ids and not dormant:
                 energy += 0.4
                 classes.append(CueClass.WORKING.value)
                 field.working_influenced = True
 
-            if active_goals:
+            if active_goals and not dormant:
                 for goal in active_goals:
                     gtoks = [t for t in goal.title.lower().split() if len(t) > 2]
                     if any(t in blob for t in gtoks):
                         energy += 0.35 * goal.importance
                         classes.append(CueClass.GOAL.value)
-                # Concepts linked toward goals via associations
                 for edge, other in self.store.neighbors(concept.id):
                     if other.id in {g.id for g in active_goals} or edge.target_id in {
                         g.id for g in active_goals
@@ -243,7 +263,28 @@ class ActivationEngine:
 
             energy *= 0.45 + 0.55 * attention_weight
             energy *= 0.5 + 0.5 * concept.strength
-            if energy >= self.SEED_THRESHOLD:
+            # Living priority & accessibility modulate the singular Activation Architecture
+            if self.attention is not None:
+                energy *= 0.75 + 0.25 * self.attention.priority_of(concept.id)
+            access_factor = 1.0
+            if self.forgetting is not None:
+                access_factor = self.forgetting.factor(concept.id)
+            elif concept.id in self.store.accessibility:
+                from acm.forgetting.model import ACCESSIBILITY_FACTOR, AccessibilityLevel
+
+                try:
+                    access_factor = ACCESSIBILITY_FACTOR[
+                        AccessibilityLevel(self.store.accessibility[concept.id])
+                    ]
+                except ValueError:
+                    access_factor = 1.0
+            # Strong lexical cues pierce dormancy (reactivation) without a second activation model
+            if dormant and lexical_hit:
+                access_factor = max(access_factor, 0.85)
+            energy *= access_factor
+
+            threshold = self.SEED_THRESHOLD * (1.15 if dormant else 1.0)
+            if energy >= threshold:
                 seeds.append(
                     ActivationSeed(
                         target_kind=ActivationTarget.CONCEPT,
@@ -297,7 +338,10 @@ class ActivationEngine:
         source: str,
     ) -> None:
         concept = self.store.concepts.get(concept_id)
-        if concept is None or not concept.active:
+        if concept is None:
+            return
+        # Allow dormant targets that already seeded (reactivation path)
+        if not concept.active and concept_id not in {s.target_id for s in field.seeds}:
             return
         existing = field.concepts.get(concept_id)
         if existing is None:

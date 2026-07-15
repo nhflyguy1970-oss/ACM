@@ -195,3 +195,19 @@ Significant architectural and implementation decisions. Deviations from the desi
 **Why:** Matches functional consolidation evidence without simulating neural overnight processes.
 
 **Status:** Accepted.
+
+## D023 — Attention allocates; never plans (2026-07-15)
+
+**Decision:** M9 Attention & Memory Priority owns allocation and evolving investment on living structures. Goals bias Attention; Goals do not own priority. Attention modulates the singular Activation Architecture and never becomes planning, prediction, or executive decision making.
+
+**Why:** Human attention is a memory resource gate, not a planner.
+
+**Status:** Accepted.
+
+## D024 — Forgetting is accessibility policy; Offline requests cools (2026-07-15)
+
+**Decision:** M10 owns accessibility stages, cool, and reactivation. Offline Cognition may request weak-association cools; Forgetting applies them. Experiences remain immutable; prune-eligibility is proposal-only. Strong cues can restore dormant accessibility through Activation + reactivation.
+
+**Why:** P17 — most forgetting is deactivation, not deletion; ownership must not collapse Offline into Forgetting.
+
+**Status:** Accepted.

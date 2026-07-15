@@ -25,13 +25,13 @@ Offline **never** opens sensors, never invents Experiences, never talks to hosts
 
 ## Ownership boundary
 
-| Concern | Online Learning | Offline Cognition |
-|---------|-----------------|-------------------|
-| Adaptation from one Reflective Experience | Yes | May batch-replay many |
-| Fabricate history | Never | Never |
-| High-impact merge | Propose / assent | Propose only |
-| Weak edge dormancy | Rare | Yes (consolidation cool) |
-| Architecture change | Never | Never |
+| Concern | Online Learning | Offline Cognition | Forgetting (M10) |
+|---------|-----------------|-------------------|------------------|
+| Adaptation from one Reflective Experience | Yes | May batch-replay many | No |
+| Fabricate history | Never | Never | Never |
+| High-impact merge | Propose / assent | Propose only | N/A |
+| Weak edge dormancy | Rare | Requests cool | Applies cool |
+| Architecture change | Never | Never | Never |
 
 ## Shared lifecycle
 
@@ -43,4 +43,4 @@ Future Remembering benefits from both
 
 ## Future Forgetting
 
-Depends on both: Learning sets durable lessons; Offline cools unused accessibility; Forgetting will own explicit accessibility policy (not implemented).
+**Implemented as M10:** Learning sets durable lessons; Offline may request cools; Forgetting owns explicit accessibility policy. See [`FORGETTING_MODEL.md`](FORGETTING_MODEL.md).

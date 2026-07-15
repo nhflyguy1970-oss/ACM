@@ -15,8 +15,10 @@ from acm.working.buffer import BufferItem
 
 if TYPE_CHECKING:
     from acm.associations.organ import AssociationOrgan
+    from acm.attention.organ import AttentionOrgan
     from acm.concepts.model import Concept
     from acm.core.store import CognitiveStore
+    from acm.forgetting.organ import ForgettingOrgan
     from acm.identity.organ import IdentityOrgan
     from acm.validation.harness import ValidationHarness
     from acm.working.buffer import WorkingBuffer
@@ -38,6 +40,8 @@ class RememberingOrgan:
         identity: IdentityOrgan | None = None,
         associations: AssociationOrgan | None = None,
         buffer: WorkingBuffer | None = None,
+        attention: AttentionOrgan | None = None,
+        forgetting: ForgettingOrgan | None = None,
     ) -> None:
         self.store = store
         self.validation = validation
@@ -45,6 +49,8 @@ class RememberingOrgan:
         self.identity = identity
         self.associations = associations
         self.buffer = buffer
+        self.attention = attention
+        self.forgetting = forgetting
         self._reconstructions = 0
         self._ambiguous = 0
 
@@ -54,6 +60,8 @@ class RememberingOrgan:
         identity: IdentityOrgan | None = None,
         associations: AssociationOrgan | None = None,
         buffer: WorkingBuffer | None = None,
+        attention: AttentionOrgan | None = None,
+        forgetting: ForgettingOrgan | None = None,
     ) -> None:
         if identity is not None:
             self.identity = identity
@@ -61,8 +69,16 @@ class RememberingOrgan:
             self.associations = associations
         if buffer is not None:
             self.buffer = buffer
+        if attention is not None:
+            self.attention = attention
+        if forgetting is not None:
+            self.forgetting = forgetting
         self.activation.bind(
-            associations=self.associations, identity=self.identity, buffer=self.buffer
+            associations=self.associations,
+            identity=self.identity,
+            buffer=self.buffer,
+            attention=self.attention,
+            forgetting=self.forgetting,
         )
 
     def what_do_i_remember(
@@ -91,6 +107,12 @@ class RememberingOrgan:
             attention_weight=attention_weight,
             identity_query=False,
         )
+        # Reactivate dormant seeds that made it into the field (strong-cue recovery)
+        if self.forgetting is not None:
+            for seed in field.seeds:
+                concept = self.store.concepts.get(seed.target_id)
+                if concept is not None and not concept.active:
+                    self.forgetting.reactivate(seed.target_id, source="strong_cue", steps=2)
         ranked = field.ranked_concepts(limit=6)
         reconstruction = self._reconstruct(cue, field, ranked)
         self._reconsolidate(reconstruction, cue)
@@ -304,6 +326,17 @@ class RememberingOrgan:
         if self.associations is not None:
             for aid in reconstruction.association_ids[:5]:
                 self.associations.reinforce(aid, forward_delta=0.015, backward_delta=0.01)
+        # Accessibility recovery + priority investment (M9/M10)
+        if self.forgetting is not None:
+            self.forgetting.reactivate(concept.id, source="remembering", steps=1)
+        if self.attention is not None:
+            self.attention.invest(
+                concept.id,
+                delta=0.03,
+                source="remembering",
+                factors=["repetition", "salience"],
+                summary="Successful recall invested priority.",
+            )
 
     def _enter_working(self, reconstruction: Reconstruction) -> list[BufferItem]:
         if self.buffer is None or not reconstruction.primary_concept_id:

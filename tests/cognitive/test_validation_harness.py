@@ -7,7 +7,7 @@ def test_m0_harness_records_activation_and_lifecycle(engine: CognitiveEngine) ->
     engine.encode("My favorite coffee is dark roast.", kind="preference")
     engine.remember("What is my favorite coffee?")
     snap = engine.validation.snapshot()
-    assert snap["schema"] == "acm.validation/0.8"
+    assert snap["schema"] == "acm.validation/0.9"
     assert snap["counts"]["activations"] >= 1
     assert snap["counts"]["lifecycle"] >= 1
     assert snap["counts"]["reconsolidations"] >= 1

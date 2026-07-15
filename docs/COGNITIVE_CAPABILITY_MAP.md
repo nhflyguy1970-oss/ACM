@@ -146,13 +146,45 @@
 
 **Why Offline Cognition depends on Learning:** consolidation strengthens memory by replaying evidence through the Adaptation pipeline — not by inventing new history or bypassing governance.
 
-**How future Forgetting depends on both:** Forgetting will cool accessibility using Learning lessons and Offline schedules so durable understanding is not erased while stale paths fade.
+**How future Forgetting depends on both:** Forgetting cools accessibility using Learning lessons and Offline schedules so durable understanding is not erased while stale paths fade.
+
+### Attention & Memory Priority — M9 implemented
+
+| Field | Content |
+|-------|---------|
+| Question | What deserves cognitive attention and continued memory investment? |
+| Exclusive responsibility | Attention allocation + evolving memory priority |
+| Inputs | Cue text, Goals, Identity, living Concept importance, context |
+| Outputs | `what_deserves_attention`, `allocate`, `invest`, replay ranking |
+| Artifacts | PriorityEvents; AttentionAllocation factors |
+| Dependencies | Concepts, Goals, Identity, Activation (modulation only) |
+| Future dependents | All online verbs; Offline replay order |
+| Observability | `attention` harness aggregate |
+| Validation | Priority evolves; encode gate uses living factors |
+
+**Implementation status:** Implemented (v0.9.0). Docs: [`ATTENTION_MODEL.md`](ATTENTION_MODEL.md) · [`MEMORY_PRIORITY.md`](MEMORY_PRIORITY.md).
+
+### Accessibility & Forgetting — M10 implemented
+
+| Field | Content |
+|-------|---------|
+| Question | What should become harder to remember? |
+| Exclusive responsibility | Accessibility stages, cool, reactivation (never deletion) |
+| Inputs | Neglect, Offline cool requests, host soft-forget, strong cues |
+| Outputs | `what_should_be_harder_to_remember`, `cool_memory`, `reactivate_memory` |
+| Artifacts | Accessibility levels + AccessibilityEvents |
+| Dependencies | Concepts/Associations living state; Attention (cool resistance) |
+| Future dependents | Remembering thresholds; prune-assent UX |
+| Observability | `forgetting` harness aggregate |
+| Validation | History immutable; dormant structures reactivate |
+
+**Implementation status:** Implemented (v0.9.0). Docs: [`FORGETTING_MODEL.md`](FORGETTING_MODEL.md) · [`MEMORY_ACCESSIBILITY.md`](MEMORY_ACCESSIBILITY.md) · [`MEMORY_PRIORITY_LIFECYCLE.md`](MEMORY_PRIORITY_LIFECYCLE.md).
 
 ---
 
 ## Not yet organs (roadmapped)
 
-Prediction · Planning · Creativity · Analogical Reasoning · Forgetting · Full Goal / Attention organs
+Prediction · Planning · Creativity · Analogical Reasoning · Full Goal organ polish
 
 ## Ownership rule
 

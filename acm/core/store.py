@@ -7,8 +7,10 @@ from time import time
 from typing import Any
 
 from acm.associations.model import Association, RelationKind
+from acm.attention.model import PriorityEvent
 from acm.concepts.model import Concept, ConceptStage
 from acm.experiences.model import Experience
+from acm.forgetting.model import AccessibilityEvent
 from acm.learning.model import Adaptation
 from acm.types import ConceptRole, EdgeType, EnvelopeRef, new_id
 
@@ -48,6 +50,9 @@ class CognitiveStore:
         self.goals: dict[str, Goal] = {}
         self.envelopes: dict[str, EnvelopeRef] = {}
         self.adaptations: dict[str, Adaptation] = {}
+        self.accessibility: dict[str, str] = {}
+        self.priority_events: list[PriorityEvent] = []
+        self.accessibility_events: list[AccessibilityEvent] = []
 
     def add_concept(
         self, label: str, role: ConceptRole = ConceptRole.ENTITY, **kwargs: Any

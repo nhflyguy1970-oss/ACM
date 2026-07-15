@@ -9,11 +9,12 @@ from typing import Any
 from acm._version import __version__ as acm_version
 from acm.activation import ActivationEngine
 from acm.associations import AssociationOrgan
-from acm.attention.field import classify_attention, encode_weight
+from acm.attention import AttentionOrgan
 from acm.concepts import ConceptOrgan
 from acm.context.frame import ContextFrame, infer_context
 from acm.core.store import CognitiveStore
 from acm.experiences import ExperienceOrgan
+from acm.forgetting import ForgettingOrgan
 from acm.identity import IdentityOrgan
 from acm.learning import LearningOrgan
 from acm.observability.trace import CognitiveTraceEvent, TraceLog
@@ -75,12 +76,18 @@ class CognitiveEngine:
         self.identity = IdentityOrgan(
             agent_id=agent_id, store=self.store, validation=self.validation
         )
+        self.attention = AttentionOrgan(store=self.store, validation=self.validation)
+        self.forgetting = ForgettingOrgan(
+            store=self.store, validation=self.validation, attention=self.attention
+        )
         self.activation = ActivationEngine(
             store=self.store,
             validation=self.validation,
             associations=self.associations,
             identity=self.identity,
             buffer=self.buffer,
+            attention=self.attention,
+            forgetting=self.forgetting,
         )
         self.remembering = RememberingOrgan(
             store=self.store,
@@ -89,6 +96,8 @@ class CognitiveEngine:
             identity=self.identity,
             associations=self.associations,
             buffer=self.buffer,
+            attention=self.attention,
+            forgetting=self.forgetting,
         )
         self.reflection = ReflectionOrgan(
             store=self.store,
@@ -109,6 +118,8 @@ class CognitiveEngine:
             validation=self.validation,
             learning=self.learning,
             activation=self.activation,
+            attention=self.attention,
+            forgetting=self.forgetting,
         )
         self.extensions = ExtensionRegistry(core_version=acm_version)
         self.extensions.bind_engine(self)
@@ -124,6 +135,7 @@ class CognitiveEngine:
             concept = self.store.concepts.get(cid)
             if concept is not None:
                 self.concepts.register_existing(concept)
+                self.forgetting.ensure(cid)
 
     # --- public cognitive verbs -------------------------------------------------
 
@@ -205,17 +217,35 @@ class CognitiveEngine:
             )
 
         has_goal = bool(self.store.active_goals())
-        attention = classify_attention(text, has_open_goal=has_goal)
+        identity_boost = self.identity.attention_boost(text, kind=kind)
+        allocation = self.attention.allocate(
+            text,
+            has_open_goal=has_goal,
+            context_tags=self.context.tags,
+            identity_boost=identity_boost,
+        )
+        try:
+            attention = AttentionClass(allocation.attention_class)
+        except ValueError:
+            attention = AttentionClass.DEFAULT
         if pin:
             attention = AttentionClass.USER_PIN
+            allocation.attention_class = attention.value
+            allocation.weight = max(allocation.weight, 1.0)
         elif kind == "preference" and attention == AttentionClass.DEFAULT:
             attention = AttentionClass.NOVELTY
+            allocation.attention_class = attention.value
+            allocation.weight = max(allocation.weight, 0.75)
         elif kind == "identity" and attention == AttentionClass.DEFAULT:
             attention = AttentionClass.STAKES
+            allocation.attention_class = attention.value
+            allocation.weight = max(allocation.weight, 0.9)
         elif self.identity.classify_identity_signal(text, kind=kind) in ("agent", "user"):
             if attention == AttentionClass.DEFAULT:
                 attention = AttentionClass.STAKES
-        weight = min(1.0, encode_weight(attention) + self.identity.attention_boost(text, kind=kind))
+                allocation.attention_class = attention.value
+                allocation.weight = max(allocation.weight, 0.85)
+        weight = min(1.0, allocation.weight + identity_boost * 0.1)
 
         # Low default attention may still encode lightly — pin/preference/identity durable
         durable = weight >= 0.5 or kind in ("preference", "identity") or bool(revises_id)
@@ -256,6 +286,14 @@ class CognitiveEngine:
         self.concepts.bind_experience(exp, concept_ids=concept_ids)
         self.associations.absorb_experience(
             exp, concept_ids, identity_influenced=identity_influenced
+        )
+        self.forgetting.ensure(concept.id)
+        self.attention.invest(
+            concept.id,
+            delta=0.04 + 0.05 * weight,
+            source="encode",
+            factors=["novelty", "salience"],
+            summary="Encoding invested memory priority.",
         )
 
         for attr in concept.attributes:
@@ -372,20 +410,60 @@ class CognitiveEngine:
         """Cognitive question M6: What do I think about what I remember?"""
         self.context = infer_context(cue, self.context)
         has_goal = bool(self.store.active_goals())
-        attention = classify_attention(cue, has_open_goal=has_goal)
-        weight = encode_weight(attention)
+        allocation = self.attention.allocate(
+            cue, has_open_goal=has_goal, context_tags=self.context.tags
+        )
+        weight = allocation.weight
         evaluation = self.reflection.what_do_i_think(
             cue,
             context_tags=self.context.tags,
             attention_weight=weight,
-            attention_class=attention.value,
+            attention_class=allocation.attention_class,
         )
         self._reflect_count += 1
+        for cid in evaluation.activated_concept_ids[:4]:
+            self.attention.invest(
+                cid,
+                delta=0.02,
+                source="reflection",
+                factors=["reflection"],
+                summary="Reflection invested priority.",
+            )
         return evaluation.to_public()
 
     def what_have_i_learned(self, cue: str = "") -> dict[str, Any]:
         """Cognitive question M7: What have I learned?"""
         return self.learning.what_have_i_learned(cue)
+
+    def what_deserves_attention(self, cue: str = "") -> dict[str, Any]:
+        """M9: What deserves cognitive attention and continued memory investment?"""
+        return self.attention.what_deserves_attention(cue)
+
+    def what_should_be_harder_to_remember(self, cue: str = "") -> dict[str, Any]:
+        """Cognitive question M10: What should become harder to remember?"""
+        return self.forgetting.what_should_be_harder_to_remember(cue)
+
+    def cool_memory(self, concept_id: str, *, steps: int = 1) -> dict[str, Any]:
+        """Soft forget — accessibility down; never deletes Experiences."""
+        before_count = len(self.store.experiences)
+        # Host-requested cool is intentional (not silent); still never deletes.
+        event = self.forgetting.cool(concept_id, source="host", steps=steps, force=True)
+        self.validation.record_lifecycle(
+            LifecycleEvent(time(), MemoryVerb.FORGET.value, concept_id, "cool")
+        )
+        return {
+            "cooled": event is not None,
+            "event": event.to_public() if event else None,
+            "experiences_unchanged": len(self.store.experiences) == before_count,
+            "deleted": False,
+        }
+
+    def reactivate_memory(self, concept_id: str, *, steps: int = 1) -> dict[str, Any]:
+        event = self.forgetting.reactivate(concept_id, source="host", steps=steps)
+        return {
+            "reactivated": event is not None,
+            "event": event.to_public() if event else None,
+        }
 
     def learn(
         self,
@@ -406,6 +484,16 @@ class CognitiveEngine:
             }
         adaptations = self.learning.learn_from_reflection(rid)
         self._learn_count += 1
+        for a in adaptations:
+            if a.applied and a.target_kind.value == "concept" and a.target_id:
+                self.attention.invest(
+                    a.target_id,
+                    delta=0.03,
+                    source="learning",
+                    factors=["learning"],
+                    summary="Learning invested priority.",
+                )
+                self.forgetting.reactivate(a.target_id, source="learning", steps=1)
         self.validation.record_lifecycle(
             LifecycleEvent(time(), MemoryVerb.LEARN.value, rid, f"adaptations:{len(adaptations)}")
         )
@@ -467,8 +555,11 @@ class CognitiveEngine:
         t0 = perf_counter()
         self.context = infer_context(query, self.context)
         has_goal = bool(self.store.active_goals())
-        attention = classify_attention(query, has_open_goal=has_goal)
-        weight = encode_weight(attention)
+        allocation = self.attention.allocate(
+            query, has_open_goal=has_goal, context_tags=self.context.tags
+        )
+        attention = AttentionClass(allocation.attention_class)
+        weight = allocation.weight
 
         reconstruction = self.remembering.what_do_i_remember(
             query,
@@ -605,6 +696,8 @@ class CognitiveEngine:
         fobs = self.reflection.observables()
         lobs = self.learning.observables()
         oobs = self.offline.observables()
+        atobs = self.attention.observables()
+        fobs_forget = self.forgetting.observables()
         return {
             "agent_id": self.agent_id,
             "what_i_know_count": len(active_concepts),
@@ -621,6 +714,8 @@ class CognitiveEngine:
             "reflection": fobs,
             "learning": lobs,
             "offline": oobs,
+            "attention": atobs,
+            "forgetting": fobs_forget,
             "encode_count": self._encode_count,
             "remember_count": self._remember_count,
             "reflect_count": self._reflect_count,

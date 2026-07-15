@@ -18,6 +18,8 @@ class MemoryVerb(StrEnum):
     RECONSOLIDATE = "reconsolidate"
     LEARN = "learn"
     SLEEP = "sleep"
+    ATTEND = "attend"
+    FORGET = "forget"
 
 
 class AttentionClass(StrEnum):

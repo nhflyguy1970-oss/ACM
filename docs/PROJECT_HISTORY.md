@@ -17,6 +17,7 @@ Implementation was authorized as a **new standalone engine**, not a rename of Ar
 - **2026-07:** M6 Reflection — metacognitive evaluation producing Reflective Experiences. Released as v0.7.0. Capability map: `docs/COGNITIVE_CAPABILITY_MAP.md`.
 - **2026-07:** L0 Learning research & architecture — design-only foundations for M7. Released as v0.7.1. **No Learning organ code.**
 - **2026-07:** M7 Learning + M8 Offline Cognition — first complete adaptive memory cycle (Adaptation Records; sleep replay/consolidation). Released as v0.8.0.
+- **2026-07:** M9 Attention & Memory Priority + M10 Accessibility & Forgetting — priority-driven cognition and human-like soft forgetting. Released as v0.9.0.
 
 ## Milestone cognitive questions
 
@@ -31,6 +32,8 @@ Implementation was authorized as a **new standalone engine**, not a rename of Ar
 | L0 | (design) What have I learned? | Research + architecture authorizing M7 |
 | M7 | What have I learned? | Learning organ + Adaptation Records |
 | M8 | What should become long-term memory? | Offline Cognition (Sleep & Consolidation) |
+| M9 | What deserves cognitive attention and continued memory investment? | Attention & Memory Priority |
+| M10 | What should become harder to remember? | Accessibility & Forgetting |
 
 ### Organ dependency map (ownership)
 
@@ -43,12 +46,14 @@ Implementation was authorized as a **new standalone engine**, not a rename of Ar
 | Remembering | Identity, Experiences, Concepts, Associations, Goals, Attention, WM, Context, **Activation Architecture** | Reflection, Learning, Prediction, Planning, Creativity, Analogy, Metacognition | Activation-for-recall + reconstruction | Reflection, Learning, history rewrite |
 | Reflection | Identity, Experiences, Concepts, Associations, Remembering (+ Activation via Remembering) | Learning, Prediction, Planning, Creativity, Metacognition | Evaluation + Reflective Experiences | Learning / planning / history rewrite |
 | Learning | M1–M6 + Reflective Experiences + governance | Offline Cognition, Prediction, Planning, Creativity, Forgetting | Durable governed adaptation (Adaptation Records) | History rewrite; architecture self-mod |
-| Offline Cognition | Learning + living structures + Activation (read-only replay) | Forgetting (future), improved Remembering | Replay, consolidation, abstraction proposals | Inventing Experiences; external I/O; architecture change |
-| Activation Architecture | Concepts, Associations, Identity, Goals, WM, Context | Every future active organ | Shared field mechanics | Organ-specific questions |
+| Offline Cognition | Learning + living structures + Activation (read-only replay) | Forgetting (accessibility), improved Remembering | Replay, consolidation, abstraction proposals | Inventing Experiences; external I/O; architecture change |
+| Attention & Priority | Goals, Identity, living Concept importance, cue context | Encode/Remember/Reflect/Learn/Offline bias | Allocation + priority investment | Planning; decision making; deletion |
+| Accessibility & Forgetting | Neglect, Offline cool requests, host soft-forget | Remembering thresholds; reactivation | Accessibility stages; cool; reactivate | Experience deletion; history rewrite |
+| Activation Architecture | Concepts, Associations, Identity, Goals, WM, Context, Attention, Accessibility | Every future active organ | Shared field mechanics | Organ-specific questions |
 
 ### What new cognitive capability exists today that did not exist yesterday?
 
-**ACM now completes its first adaptive memory cycle:** Experience → Remembering → Reflection → Learning → Offline Cognition → improved living memory — without rewriting Experience history. Learning owns governed Adaptation Records; Offline Cognition owns sleep-like replay and consolidation. Forgetting, Prediction, Planning, Creativity, and Aria integration remain out of scope.
+**ACM now allocates cognitive investment and soft-forgets like human memory:** Attention/priority evolve from experience; accessibility cools without destroying history; strong cues reactivate dormant structures — all through one Activation Architecture.
 
 ## Relationship to Aria
 

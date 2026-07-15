@@ -2,6 +2,27 @@
 
 All notable changes to ACM are documented here.
 
+## [0.9.0] — 2026-07-15
+
+### Added
+
+- **M9 Attention & Memory Priority** — *What deserves cognitive attention and continued memory investment?*
+- **M10 Memory Accessibility & Forgetting** — *What should become harder to remember?* (accessibility stages; never deletes Experiences)
+- Evolving Concept priority investment; Attention allocation factors from living state (not a frozen weight table)
+- Accessibility lifecycle: highly accessible → … → prune-eligible (proposal only)
+- Strong-cue reactivation of dormant structures via singular Activation Architecture
+- Offline Cognition delegates weak-association cool to Forgetting; uses Attention for replay ranking
+- Public APIs: `what_deserves_attention`, `what_should_be_harder_to_remember`, `cool_memory`, `reactivate_memory`
+- Validation harness schema `acm.validation/0.9` — `attention` + `forgetting` aggregates
+- Docs: `ATTENTION_MODEL.md`, `MEMORY_PRIORITY.md`, `MEMORY_ACCESSIBILITY.md`, `FORGETTING_MODEL.md`, `MEMORY_PRIORITY_LIFECYCLE.md`
+- Decisions D023 (Attention≠planning), D024 (Forgetting≠deletion; Offline requests / Forgetting applies)
+
+### Notes
+
+- History and Experiences remain immutable
+- No Prediction / Planning / Creativity / Aria
+- Singular Cognitive Activation Architecture retained
+
 ## [0.8.0] — 2026-07-15
 
 ### Added

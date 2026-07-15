@@ -1,6 +1,6 @@
 # Roadmap — ACM
 
-Milestones are cognitive, not storage-tech. Each milestone requires: design review → implementation → behavioral + regression tests → benchmarks (where relevant) → documentation → git commit → CI green → then proceed.
+Milestones are cognitive, not storage-tech. Each milestone requires: design → architecture review → implementation → behavioral + cognitive + regression + performance tests → documentation → commit → push → CI → annotated tag → GitHub Release → completion report → approval before next.
 
 | Milestone | Focus | Status |
 |-----------|--------|--------|
@@ -15,31 +15,32 @@ Milestones are cognitive, not storage-tech. Each milestone requires: design revi
 | **L0** | Learning research & architecture (**design only**) | **Done (v0.7.1)** |
 | **M7** | Learning organ — *What have I learned?* | **Done (v0.8.0)** |
 | **M8** | Offline Cognition (Sleep & Consolidation) — *What should become long-term memory?* | **Done (v0.8.0)** |
+| **M9** | Attention & Memory Priority — *What deserves cognitive attention and continued memory investment?* | **Done (v0.9.0)** |
+| **M10** | Memory Accessibility & Forgetting — *What should become harder to remember?* | **Done (v0.9.0)** |
 | **M5b** | Goal Space organ polish | Planned (stubs / bias exist) |
-| **M4b** | Working memory + Attention field polish | Planned (stubs exist) |
-| **M9** | Forgetting as accessibility cooling | Planned (depends on Learning + Offline) |
-| **M10** | Prediction | Planned (after Learning) |
-| **M11** | Planning | Planned (after Prediction) |
-| **M12** | Creativity / Analogical reasoning | Planned |
-| **M13** | Safe Self-Improvement governance (assent UX) | Planned — never automatic |
-| **M14** | Multimodal envelopes maturity | Planned |
-| **M15** | Knowledge ≠ Memory adoption paths | Planned |
-| **M16** | Observability / meta-memory sketch maturity | Partial |
+| **M4b** | Working memory polish | Planned (buffer exists; Attention organ supersedes field-only M4b attention) |
+| **M11** | Prediction | Planned |
+| **M12** | Planning | Planned (after Prediction) |
+| **M13** | Creativity / Analogical reasoning | Planned |
+| **M14** | Safe Self-Improvement governance (assent UX) | Planned — never automatic |
+| **M15** | Multimodal envelopes maturity | Planned |
+| **M16** | Knowledge ≠ Memory adoption paths | Planned |
+| **M17** | Observability / meta-memory sketch maturity | Partial |
 
-> **Note:** Implementation numbering above is authoritative. Older freeze-chart labels in `ARCHITECTURE.md` (e.g. Reconsolidation as “M7”) are historical. Offline Cognition landed as **M8** per adaptive-cycle mandate; Forgetting follows as **M9**. See [`ONLINE_OFFLINE_MEMORY.md`](docs/ONLINE_OFFLINE_MEMORY.md).
+> **Note:** Implementation numbering above is authoritative. Attention landed as **M9** and Forgetting as **M10** per adaptive-memory mandate (Prediction deferred).
 
-## Adaptive cycle (complete at v0.8.0)
+## Adaptive cycle (complete through v0.9.0)
 
 ```
-Experience → Remembering → Reflection → Learning → Offline Cognition → Improved Memory
+Encode (Attention) → Experience → Remembering ↔ Accessibility
+  → Reflection → Learning → Offline Cognition (priority-ranked replay)
+  → Forgetting cools neglected paths → Reactivation via strong cues
 ```
-
-Learning depends on Reflection (Reflective Experiences as auditable evaluation). Offline Cognition depends on Learning (replay applies/proposes Adaptation Records). Future Forgetting will cool accessibility using both organs’ schedules — without rewriting history.
 
 ## Host integration
 
-Wiring Aria (or any host) is **out of scope** until ACM demonstrates milestone maturity with independent tests and benchmarks. Adapters live outside this repository.
+Wiring Aria (or any host) remains **out of scope**.
 
 ## Governance
 
-Daily Use Mode: Problem Reports and measured regressions drive work. No speculative feature stacks. Architectural self-improvement remains user-governed — Offline Cognition reorganizes memory only.
+Daily Use Mode. Architectural self-improvement remains user-governed.
