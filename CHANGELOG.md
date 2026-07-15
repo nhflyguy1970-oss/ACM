@@ -2,6 +2,18 @@
 
 All notable changes to ACM are documented here.
 
+## [0.12.1] — 2026-07-15
+
+### Added (design only — no organ code)
+
+- **Phase Gate P1** — Integration Readiness Review + Scientific Gap Analysis
+- Docs: `ACM_V1_READINESS_REVIEW.md`, `SCIENTIFIC_GAP_ANALYSIS.md`, `ARIA_INTEGRATION_ARCHITECTURE.md`, `ACM_COMPARATIVE_RESEARCH.md`, `ACM_PHASE2_RECOMMENDATIONS.md`
+- Decisions D031 (P1 verdict: READY WITH MINOR CHANGES), D032 (no new organs before Aria Shadow)
+
+### Verdict
+
+**READY WITH MINOR CHANGES** — durable CognitiveStore + Aria-side adapter Shadow required before ACM 1.0 / Aria primary memory. Planning / Decision / Aria coding not authorized by this release.
+
 ## [0.12.0] — 2026-07-15
 
 ### Added

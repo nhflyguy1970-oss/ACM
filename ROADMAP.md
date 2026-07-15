@@ -5,22 +5,25 @@ Milestones are cognitive, not storage-tech. Each milestone requires the permanen
 | Milestone | Focus | Status |
 |-----------|--------|--------|
 | **Foundation** … **M14** | Through Recombination + Analogy | **Done (≤v0.11.0)** |
-| **M15** | Memory Reconciliation — *When memories disagree, how should memory reconcile them?* | **Done (v0.12.0)** |
-| **M16** | Uncertainty & Confidence — *How certain am I that this memory is accurate?* | **Done (v0.12.0)** |
-| **M5b** | Goal Space organ polish | Planned |
-| **M4b** | Working memory polish | Planned |
-| **Next (approval required)** | Planning | Deferred — not started |
+| **M15** | Memory Reconciliation | **Done (v0.12.0)** |
+| **M16** | Uncertainty & Confidence | **Done (v0.12.0)** |
+| **P1** | Integration Readiness + Scientific Gap Analysis (**design only**) | **Done (v0.12.1)** |
+| **Track A** | Durable store + provenance + Aria adapter Shadow prep | **Awaiting approval** — see `ACM_PHASE2_RECOMMENDATIONS.md` |
+| **M5b** | Goal Space organ polish | Planned (Track B) |
+| **M4b** | Working memory polish | Planned (Track B) |
+| **Later** | Planning | Deferred — not a memory gate |
 | **Later** | Decision Making / Executive Reasoning | Deferred |
-| **Later** | Creativity orchestration (optional) | Planned — foundations in M13/M14 |
+| **Later** | Creativity orchestration (optional) | Foundations in M13/M14 |
 | **Later** | Safe Self-Improvement governance | Planned — never automatic |
-| **Later** | Multimodal / Knowledge ≠ Memory / meta-memory | Partial / Planned |
+| **Later** | Multimodal / Knowledge ≠ Memory | Partial / Planned |
 
-> **Core cognitive memory lifecycle:** complete through M16. See `docs/ACM_MATURITY_REVIEW_v1.md`.  
-> Planning / Decision Making / Aria remain deferred pending approval.
+> **P1 verdict:** **READY WITH MINOR CHANGES** — [`docs/ACM_V1_READINESS_REVIEW.md`](docs/ACM_V1_READINESS_REVIEW.md).  
+> Core cognitive memory lifecycle complete through M16. **No new organs** before Aria dual-write.  
+> Aria integration coding is **forbidden** until approval of Track A.
 
 ## Host integration
 
-Wiring Aria remains **out of scope**.
+Aria wiring remains **design-only**. Migration plan: [`docs/ARIA_INTEGRATION_ARCHITECTURE.md`](docs/ARIA_INTEGRATION_ARCHITECTURE.md).
 
 ## Governance
 

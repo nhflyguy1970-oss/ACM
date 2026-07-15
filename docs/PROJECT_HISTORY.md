@@ -21,6 +21,7 @@ Implementation was authorized as a **new standalone engine**, not a rename of Ar
 - **2026-07:** M11 Prediction + M12 Mental Simulation — memory-driven likelihood and hypothetical futures. Released as v0.10.0.
 - **2026-07:** M13 Memory Recombination + M14 Analogical Reasoning — novel blends and structure-mapping. Released as v0.11.0.
 - **2026-07:** M15 Memory Reconciliation + M16 Uncertainty & Confidence — conflict lineage and evolvable certainty. Released as v0.12.0. Maturity review: `docs/ACM_MATURITY_REVIEW_v1.md`.
+- **2026-07:** Phase Gate P1 — Integration Readiness + Scientific Gap Analysis (**design only**). Verdict: **READY WITH MINOR CHANGES**. Released as v0.12.1. See `docs/ACM_V1_READINESS_REVIEW.md`.
 
 ## Milestone cognitive questions
 
@@ -43,6 +44,7 @@ Implementation was authorized as a **new standalone engine**, not a rename of Ar
 | M14 | What existing memories are analogous even when they appear different? | Analogical Reasoning |
 | M15 | When memories disagree, how should memory reconcile them? | Memory Reconciliation |
 | M16 | How certain am I that this memory is accurate? | Uncertainty & Confidence |
+| P1 | (design) Is ACM ready for Aria / 1.0? | Readiness + scientific gap gate |
 
 ### Organ dependency map (ownership)
 
@@ -68,8 +70,8 @@ Implementation was authorized as a **new standalone engine**, not a rename of Ar
 
 ### What new cognitive capability exists today that did not exist yesterday?
 
-**ACM reconciles conflicting memories and tracks evolving certainty:** lineage-preserving conflict resolution plus explainable confidence/uncertainty — completing the core cognitive memory lifecycle without planning or Aria.
+**Phase Gate P1 closed (design):** ACM v0.12 is assessed **READY WITH MINOR CHANGES** for Aria. Required next work is durable store + host adapter Shadow — **not** new cognitive organs. Evidence: `ACM_V1_READINESS_REVIEW.md`.
 
 ## Relationship to Aria
 
-Aria remains the expected first consumer **after** ACM demonstrates maturity. Until then, Aria’s Memory continues under Daily Use Mode governance; ACM evolves independently.
+Aria remains the expected first consumer. Integration coding starts only after approval of P1 Track A. Migration design: `ARIA_INTEGRATION_ARCHITECTURE.md`. Until then, Aria’s Memory continues under Daily Use Mode governance; ACM evolves independently.

@@ -266,11 +266,23 @@
 
 **Implementation status:** Implemented (v0.12.0). Docs: [`CONFIDENCE_MODEL.md`](CONFIDENCE_MODEL.md) · [`UNCERTAINTY_MODEL.md`](UNCERTAINTY_MODEL.md) · [`ACM_MATURITY_REVIEW_v1.md`](ACM_MATURITY_REVIEW_v1.md).
 
+### Phase Gate P1 — Readiness (design only)
+
+| Field | Content |
+|-------|---------|
+| Question | Is ACM ready to become Aria’s memory subsystem / approach 1.0? |
+| Exclusive responsibility | Scientific gap analysis, architecture/engineering review, Aria migration design |
+| Outputs | Readiness verdict + recommendations (no organ code) |
+| Verdict | **READY WITH MINOR CHANGES** |
+| Observability | Documentation artifacts only |
+
+**Status:** Complete (v0.12.1). Docs: [`ACM_V1_READINESS_REVIEW.md`](ACM_V1_READINESS_REVIEW.md) · [`SCIENTIFIC_GAP_ANALYSIS.md`](SCIENTIFIC_GAP_ANALYSIS.md) · [`ARIA_INTEGRATION_ARCHITECTURE.md`](ARIA_INTEGRATION_ARCHITECTURE.md) · [`ACM_COMPARATIVE_RESEARCH.md`](ACM_COMPARATIVE_RESEARCH.md) · [`ACM_PHASE2_RECOMMENDATIONS.md`](ACM_PHASE2_RECOMMENDATIONS.md).
+
 ---
 
 ## Not yet organs (roadmapped)
 
-Planning · Decision Making · Creativity orchestration · Full Goal organ polish
+Planning · Decision Making · Creativity orchestration · Full Goal organ polish · Working-memory depth
 
 ## Ownership rule
 

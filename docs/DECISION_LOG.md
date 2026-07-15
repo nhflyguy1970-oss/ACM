@@ -259,3 +259,19 @@ Significant architectural and implementation decisions. Deviations from the desi
 **Why:** Certainty about memory accuracy is metamemory — not planning, decision making, or Aria policy.
 
 **Status:** Accepted.
+
+## D031 — Phase Gate P1 verdict: READY WITH MINOR CHANGES (2026-07-15)
+
+**Decision:** After scientific, architectural, engineering, and comparative review of ACM v0.12, the official readiness verdict is **READY WITH MINOR CHANGES**. ACM may proceed toward Aria dual-write only after Track A (durable store, provenance, adapter contract tests). Declaring ACM 1.0 as Aria’s sole SoT before Shadow certification is rejected.
+
+**Why:** Core cognitive memory lifecycle is scientifically adequate; production host readiness still lacks durable substrate and migration evidence.
+
+**Status:** Accepted. Evidence: `ACM_V1_READINESS_REVIEW.md`, `SCIENTIFIC_GAP_ANALYSIS.md`.
+
+## D032 — No new cognitive organs before Aria Shadow (2026-07-15)
+
+**Decision:** Do not invent Planning, Decision Making, Creativity orchestration, or other new organs as prerequisites for Aria memory integration. Adapter code lives in Aria (or host package), not inside ACM. Vector/RAG must not become ACM’s cognitive model.
+
+**Why:** Integration risk is engineering/host boundary, not missing memory organs; feature-copying AI frameworks would regress cognition.
+
+**Status:** Accepted. See `ACM_PHASE2_RECOMMENDATIONS.md`, `ACM_COMPARATIVE_RESEARCH.md`, `ARIA_INTEGRATION_ARCHITECTURE.md`.
