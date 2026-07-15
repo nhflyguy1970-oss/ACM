@@ -84,6 +84,6 @@ M3 records proposals; high-impact application waits for stronger policy (compati
 
 Weak nuclei/dormant Concepts may retire from default recognition. New Experiences can resurrect dormant Concepts by reinforcement (lifecycle overlay).
 
-## Future Associations
+## Future Associations → M4 delivered
 
-Associations (M4+) will connect Concepts (and Experiences/envelopes). Hierarchy/prototype structures here must remain usable as association endpoints. M3 does **not** implement spreading activation or associative remembering.
+Associations connect Concepts as living directed relationships (strength, distance, neighborhoods). Hierarchy/prototype structures remain association endpoints. M4 does **not** implement spreading-activation Remembering; see [`ASSOCIATION_MODEL.md`](ASSOCIATION_MODEL.md) · [`COGNITIVE_NETWORKS.md`](COGNITIVE_NETWORKS.md).

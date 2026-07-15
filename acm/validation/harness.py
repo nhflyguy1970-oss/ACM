@@ -108,6 +108,20 @@ class ValidationHarness:
             "splits": 0,
             "prototypes": 0,
         }
+        self.association_events: list[dict[str, Any]] = []
+        self.association_metrics: dict[str, float | int] = {
+            "births": 0,
+            "strengthenings": 0,
+            "weakenings": 0,
+            "dormancies": 0,
+            "reactivations": 0,
+            "neighborhoods": 0,
+            "clusters": 0,
+            "goal_influenced": 0,
+            "identity_influenced": 0,
+            "temporal": 0,
+            "asymmetric_births": 0,
+        }
 
     def _trim(self, seq: list[Any]) -> None:
         overflow = len(seq) - self.max_events
@@ -226,10 +240,51 @@ class ValidationHarness:
         if payload.get("prototype"):
             self.concept_metrics["prototypes"] = int(self.concept_metrics["prototypes"]) + 1
 
+    def record_association_organ(self, **payload: Any) -> None:
+        event = {"timestamp": time(), **payload}
+        self.association_events.append(event)
+        self._trim(self.association_events)
+        if payload.get("birth") or payload.get("action") == "birth":
+            self.association_metrics["births"] = int(self.association_metrics["births"]) + 1
+            fwd = float(payload.get("strength_forward") or 0)
+            back = float(payload.get("strength_backward") or 0)
+            if abs(fwd - back) > 0.08:
+                self.association_metrics["asymmetric_births"] = (
+                    int(self.association_metrics["asymmetric_births"]) + 1
+                )
+        if payload.get("strengthening"):
+            self.association_metrics["strengthenings"] = (
+                int(self.association_metrics["strengthenings"]) + 1
+            )
+        if payload.get("weakening"):
+            self.association_metrics["weakenings"] = int(self.association_metrics["weakenings"]) + 1
+        if payload.get("action") == "reactivate" or payload.get("reactivation"):
+            self.association_metrics["reactivations"] = (
+                int(self.association_metrics["reactivations"]) + 1
+            )
+        if payload.get("distance") == "dormant":
+            self.association_metrics["dormancies"] = int(self.association_metrics["dormancies"]) + 1
+        if payload.get("neighborhood") or payload.get("clusters"):
+            self.association_metrics["neighborhoods"] = (
+                int(self.association_metrics["neighborhoods"]) + 1
+            )
+        if payload.get("clusters"):
+            self.association_metrics["clusters"] = int(self.association_metrics["clusters"]) + 1
+        if payload.get("goal_influenced"):
+            self.association_metrics["goal_influenced"] = (
+                int(self.association_metrics["goal_influenced"]) + 1
+            )
+        if payload.get("identity_influenced"):
+            self.association_metrics["identity_influenced"] = (
+                int(self.association_metrics["identity_influenced"]) + 1
+            )
+        if payload.get("temporal"):
+            self.association_metrics["temporal"] = int(self.association_metrics["temporal"]) + 1
+
     def snapshot(self) -> dict[str, Any]:
         """Public validation snapshot — metadata only, no chain-of-thought."""
         return {
-            "schema": "acm.validation/0.4",
+            "schema": "acm.validation/0.5",
             "counts": {
                 "activations": len(self.activations),
                 "confidence_deltas": len(self.confidence_deltas),
@@ -241,6 +296,7 @@ class ValidationHarness:
                 "identity_touches": len(self.identity_touches),
                 "experience_events": len(self.experience_events),
                 "concept_events": len(self.concept_events),
+                "association_events": len(self.association_events),
             },
             "identity": {
                 "growth": self.identity_metrics["growth"],
@@ -288,6 +344,25 @@ class ValidationHarness:
                     "weakenings": self.concept_metrics["weakenings"],
                 },
             },
+            "association": {
+                "births": self.association_metrics["births"],
+                "strengthenings": self.association_metrics["strengthenings"],
+                "weakenings": self.association_metrics["weakenings"],
+                "dormancies": self.association_metrics["dormancies"],
+                "reactivations": self.association_metrics["reactivations"],
+                "neighborhoods": self.association_metrics["neighborhoods"],
+                "clusters": self.association_metrics["clusters"],
+                "goal_influenced": self.association_metrics["goal_influenced"],
+                "identity_influenced": self.association_metrics["identity_influenced"],
+                "temporal": self.association_metrics["temporal"],
+                "asymmetric_births": self.association_metrics["asymmetric_births"],
+                "evolution": {
+                    "touches": len(self.association_events),
+                    "births": self.association_metrics["births"],
+                    "strengthenings": self.association_metrics["strengthenings"],
+                    "weakenings": self.association_metrics["weakenings"],
+                },
+            },
             "activations": [asdict(a) for a in self.activations[-40:]],
             "confidence_deltas": [asdict(c) for c in self.confidence_deltas[-40:]],
             "association_changes": [asdict(a) for a in self.association_changes[-40:]],
@@ -298,6 +373,7 @@ class ValidationHarness:
             "identity_touches": deepcopy(self.identity_touches[-40:]),
             "experience_events": deepcopy(self.experience_events[-40:]),
             "concept_events": deepcopy(self.concept_events[-40:]),
+            "association_events": deepcopy(self.association_events[-40:]),
         }
 
     def reset(self) -> None:
@@ -311,6 +387,7 @@ class ValidationHarness:
         self.identity_touches.clear()
         self.experience_events.clear()
         self.concept_events.clear()
+        self.association_events.clear()
         self.identity_metrics = {
             "growth": 0,
             "stability": 0,
@@ -340,4 +417,17 @@ class ValidationHarness:
             "merges": 0,
             "splits": 0,
             "prototypes": 0,
+        }
+        self.association_metrics = {
+            "births": 0,
+            "strengthenings": 0,
+            "weakenings": 0,
+            "dormancies": 0,
+            "reactivations": 0,
+            "neighborhoods": 0,
+            "clusters": 0,
+            "goal_influenced": 0,
+            "identity_influenced": 0,
+            "temporal": 0,
+            "asymmetric_births": 0,
         }

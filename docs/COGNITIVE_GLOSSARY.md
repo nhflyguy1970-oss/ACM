@@ -10,7 +10,9 @@
 | **Concept nucleus** | Provisional emerging Concept before stabilization |
 | **Prototype** | Central-tendency features of a Concept |
 | **Exemplar** | Anchoring Experience (or instance) under a Concept |
-| **Association** | Weighted typed edge between cognitive objects |
+| **Association** | Living cognitive relationship (*How is this related?*) — directed strengths, distance, context |
+| **Cognitive neighborhood** | Nearby Concept associates of a seed Concept |
+| **Cognitive cluster** | Emergent community of related Concepts |
 | **Goal Space** | Active / completed goals that bias attention and recall |
 | **Attention** | Gate that modulates encoding durability |
 | **Context frame** | Situational tags that modulate meaning and retrieval |

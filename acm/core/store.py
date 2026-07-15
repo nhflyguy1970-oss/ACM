@@ -6,19 +6,24 @@ from dataclasses import dataclass, field
 from time import time
 from typing import Any
 
+from acm.associations.model import Association, RelationKind
 from acm.concepts.model import Concept, ConceptStage
 from acm.experiences.model import Experience
 from acm.types import ConceptRole, EdgeType, EnvelopeRef, new_id
 
 
-@dataclass
-class Association:
-    id: str
-    source_id: str
-    target_id: str
-    edge_type: EdgeType
-    weight: float = 0.5
-    active: bool = True
+def _to_relation(edge_type: EdgeType | RelationKind | str) -> RelationKind:
+    if isinstance(edge_type, RelationKind):
+        return edge_type
+    value = edge_type.value if isinstance(edge_type, EdgeType) else str(edge_type)
+    if value == "contests":
+        value = RelationKind.CONFLICTS_WITH.value
+    if value == "is_a":
+        value = RelationKind.IS_A_TRAFFIC.value
+    try:
+        return RelationKind(value)
+    except ValueError:
+        return RelationKind.RELATED_TO
 
 
 @dataclass
@@ -93,18 +98,24 @@ class CognitiveStore:
         self,
         source_id: str,
         target_id: str,
-        edge_type: EdgeType = EdgeType.RELATED_TO,
+        edge_type: EdgeType | RelationKind | str = EdgeType.RELATED_TO,
         weight: float = 0.5,
     ) -> Association:
-        edge = Association(
-            id=new_id("edge"),
+        """Legacy helper — Prefer AssociationOrgan.relate for cognition-first births."""
+        now = time()
+        assoc = Association(
+            id=new_id("asc"),
             source_id=source_id,
             target_id=target_id,
-            edge_type=edge_type,
-            weight=weight,
+            relation=_to_relation(edge_type),
+            strength_forward=weight,
+            strength_backward=max(0.1, weight * 0.65),
+            confidence=min(0.9, 0.4 + weight * 0.4),
+            first_seen=now,
+            last_activated=now,
         )
-        self.associations[edge.id] = edge
-        return edge
+        self.associations[assoc.id] = assoc
+        return assoc
 
     def neighbors(self, concept_id: str) -> list[tuple[Association, Concept]]:
         out: list[tuple[Association, Concept]] = []

@@ -129,3 +129,11 @@ Significant architectural and implementation decisions. Deviations from the desi
 **Why:** Abstraction is part of meaning formation; avoids starting Associations early.
 
 **Status:** Accepted.
+
+## D017 — Associations are directed and may be asymmetric (2026-07-15)
+
+**Decision:** Association organ stores independent `strength_forward` and `strength_backward`. Relation kinds may default toward symmetry (co-activation, resembles) or strong asymmetry (`is_a_traffic`, part_of, caused_by, depends_on, …). Taxonomic `is_a` remains owned by the Concept organ (D016); Associations may mirror hierarchy as `is_a_traffic` for cognitive traversal without relocating taxonomy.
+
+**Why:** Human activation is often directional (Dog → Animal stronger than Animal → Dog). Symmetric-only edges would erase cognitively meaningful asymmetry and would underprepare analogical / retrieval traversal.
+
+**Status:** Accepted.

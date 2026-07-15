@@ -8,6 +8,7 @@ from time import perf_counter, time
 from typing import Any
 
 from acm._version import __version__ as acm_version
+from acm.associations import AssociationOrgan
 from acm.attention.field import classify_attention, encode_weight
 from acm.concepts import ConceptOrgan
 from acm.concepts.model import Concept
@@ -65,6 +66,10 @@ class CognitiveEngine:
         self.trace = TraceLog()
         self.experiences = ExperienceOrgan(store=self.store, validation=self.validation)
         self.concepts = ConceptOrgan(store=self.store, validation=self.validation)
+        self.associations = AssociationOrgan(
+            store=self.store, validation=self.validation, concepts=self.concepts
+        )
+        self.concepts.bind_associations(self.associations)
         self.identity = IdentityOrgan(
             agent_id=agent_id, store=self.store, validation=self.validation
         )
@@ -209,6 +214,9 @@ class CognitiveEngine:
             identity_influenced=identity_influenced,
         )
         self.concepts.bind_experience(exp, concept_ids=concept_ids)
+        self.associations.absorb_experience(
+            exp, concept_ids, identity_influenced=identity_influenced
+        )
 
         for attr in concept.attributes:
             if exp.id not in attr.evidence_ids:
@@ -241,7 +249,7 @@ class CognitiveEngine:
             LifecycleEvent(time(), MemoryVerb.ENCODE.value, concept.id, kind)
         )
 
-        # Goal bias: associate concept with active goals
+        # Goal bias residue: keep legacy concept↔goal edge for compatibility
         for goal in self.store.active_goals():
             g_edge = self.store.add_association(
                 concept.id, goal.id, edge_type=EdgeType.RELATED_TO, weight=0.4 + 0.2 * weight
@@ -253,7 +261,7 @@ class CognitiveEngine:
                     "added",
                     concept.id,
                     goal.id,
-                    g_edge.edge_type.value,
+                    g_edge.relation.value,
                     g_edge.weight,
                 )
             )
@@ -303,6 +311,10 @@ class CognitiveEngine:
     def what_is_this(self, cue: str) -> dict[str, Any]:
         """Cognitive question M3: What is this?"""
         return self.concepts.what_is_this(cue)
+
+    def how_related(self, left: str, right: str) -> dict[str, Any]:
+        """Cognitive question M4: How is this related?"""
+        return self.associations.how_related(left, right)
 
     def timeline(self, **kwargs: Any) -> dict[str, Any]:
         return self.experiences.timeline(**kwargs)
@@ -535,6 +547,7 @@ class CognitiveEngine:
         ident = self.identity.observables()
         exobs = self.experiences.observables()
         cob = self.concepts.observables()
+        aobs = self.associations.observables()
         return {
             "agent_id": self.agent_id,
             "what_i_know_count": len(active_concepts),
@@ -546,6 +559,7 @@ class CognitiveEngine:
             "identity": ident,
             "experience": exobs,
             "concept": cob,
+            "association": aobs,
             "encode_count": self._encode_count,
             "remember_count": self._remember_count,
             "buffer_occupancy": len(self.buffer),

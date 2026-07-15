@@ -9,6 +9,10 @@
 | **This file** | **Constitution** — immutable cognitive *why* |
 | [`ARCHITECTURE.md`](ARCHITECTURE.md) | **Architecture** — *how* cognition is structured |
 | [`COGNITIVE_MEMORY_TEST_STRATEGY.md`](COGNITIVE_MEMORY_TEST_STRATEGY.md) | **Validation** — *how progress is measured* |
+| [`ASSOCIATION_MODEL.md`](ASSOCIATION_MODEL.md) | Living relationships (*How is this related?*) |
+| [`COGNITIVE_NETWORKS.md`](COGNITIVE_NETWORKS.md) | Neighborhoods / clusters |
+| [`ANALOGICAL_FOUNDATIONS.md`](ANALOGICAL_FOUNDATIONS.md) | Prep for future analogy |
+| [`CONCEPT_ARCHITECTURE.md`](CONCEPT_ARCHITECTURE.md) | Emergent meaning (*What is this?*) |
 
 **Governing question:** When someone proposes a Memory change, does it move ACM closer to practical human cognition?
 

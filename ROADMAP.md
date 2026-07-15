@@ -9,7 +9,7 @@ Milestones are cognitive, not storage-tech. Each milestone requires: design revi
 | **M1** | Identity schemas — *Who am I?* | **Done (v0.2.0)** |
 | **M2** | Experience organ — *What happened?* | **Done (v0.3.0)** |
 | **M3** | Concept organ — *What is this?* | **Done (v0.4.0)** |
-| **M4** | Association graph growth / spreading activation | Planned |
+| **M4** | Association organ — *How is this related?* | **Done (v0.5.0)** |
 | **M4b** | Working memory interference + attention field | Planned (M0 stubs exist) |
 | **M5** | Goal Space bias on encode/remember | Planned (M0 stubs exist) |
 | **M6** | Context frames & contextual recall | Planned (M0 stubs exist) |

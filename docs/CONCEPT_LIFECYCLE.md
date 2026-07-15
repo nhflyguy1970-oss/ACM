@@ -46,8 +46,8 @@ Recorded as proposals/candidates in M3. Silent high-impact merges of mature Conc
 |-------|-------------|
 | Experiences | Sole evidentiary source for ordinary Concepts |
 | Identity | Privileged Concepts; experience still grounds content |
-| Future Associations | Concepts are primary endpoints |
-| Future Remembering | Should prefer Concept activation over raw Experience scans |
+| Future Associations | Concepts are primary endpoints — see [`ASSOCIATION_MODEL.md`](ASSOCIATION_MODEL.md) |
+| Future Remembering | Should prefer Concept + Association activation over raw Experience scans |
 
 ## Long-term architectural direction
 

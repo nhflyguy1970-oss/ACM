@@ -11,6 +11,7 @@
 | [`MEMORY_DESIGN_PRINCIPLES.md`](MEMORY_DESIGN_PRINCIPLES.md) | **Constitution** — immutable cognitive *why* |
 | **ARCHITECTURE.md** | **Architecture** — *how* cognition is structured |
 | [`COGNITIVE_MEMORY_TEST_STRATEGY.md`](COGNITIVE_MEMORY_TEST_STRATEGY.md) | **Validation** — *how progress proves cognition* (includes M0 harness + observability) |
+| [`ASSOCIATION_MODEL.md`](ASSOCIATION_MODEL.md) · [`COGNITIVE_NETWORKS.md`](COGNITIVE_NETWORKS.md) · [`ANALOGICAL_FOUNDATIONS.md`](ANALOGICAL_FOUNDATIONS.md) | M4 Association organ companions (implementation) |
 
 **Governance:** Future work proceeds only under **Daily Use Mode** (Problem Reports → measure → minimal change → regressions → ACM Validation Harness / cognitive traces). This document is the architectural north star, not a speculative feature backlog. Principles decide whether a change is cognitively legitimate; the test strategy decides whether a milestone is done. Implementation deviations must be recorded in [`DECISION_LOG.md`](DECISION_LOG.md), not made silently.
 

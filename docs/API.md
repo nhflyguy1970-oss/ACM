@@ -1,8 +1,8 @@
-# API — ACM v0.4
+# API — ACM v0.5
 
 Public surface is intentionally small. Hosts integrate through `CognitiveEngine`; adapters and storage backends may evolve underneath without expanding the verb set casually.
 
-See also: [`PLUGIN_ARCHITECTURE.md`](PLUGIN_ARCHITECTURE.md) · [`CORE_BOUNDARIES.md`](CORE_BOUNDARIES.md) · [`EXPERIENCE_MODEL.md`](EXPERIENCE_MODEL.md) · [`CONCEPT_ARCHITECTURE.md`](CONCEPT_ARCHITECTURE.md)
+See also: [`PLUGIN_ARCHITECTURE.md`](PLUGIN_ARCHITECTURE.md) · [`CORE_BOUNDARIES.md`](CORE_BOUNDARIES.md) · [`EXPERIENCE_MODEL.md`](EXPERIENCE_MODEL.md) · [`CONCEPT_ARCHITECTURE.md`](CONCEPT_ARCHITECTURE.md) · [`ASSOCIATION_MODEL.md`](ASSOCIATION_MODEL.md)
 
 ## Install
 
@@ -86,6 +86,15 @@ Foundations for self-modeling: counts of known / uncertain concepts, experiences
 | `engine.concepts.recognize(cue)` | Similarity / seen-before hook (not Remembering) |
 | `engine.concepts` | Nuclei, hierarchy, prototypes, weaken/resurrect |
 
+### Associations
+
+| Method | Purpose |
+|--------|---------|
+| `how_related(left, right)` | Answer *How is this related?* (direct or neighborhood path) |
+| `engine.associations.neighborhood(cue)` | Cognitive neighborhood of a Concept |
+| `engine.associations.clusters()` | Emergent connected communities |
+| `engine.associations` | Relate / reinforce / weaken / absorb / observables |
+
 ### Identity
 
 | Method | Purpose |
@@ -108,7 +117,7 @@ Foundations for self-modeling: counts of known / uncertain concepts, experiences
 |-----------|---------|
 | `engine.validation` | `ValidationHarness` — milestone observables |
 | `engine.trace` | `TraceLog` of `CognitiveTraceEvent` |
-| `engine.validation.snapshot()` | JSON-safe report (`acm.validation/0.4`) including concept metrics |
+| `engine.validation.snapshot()` | JSON-safe report (`acm.validation/0.5`) including association metrics |
 | `engine.identity` | Identity organ (advanced; prefer public methods above) |
 
 ## Non-goals (public API)

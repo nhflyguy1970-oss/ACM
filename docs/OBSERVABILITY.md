@@ -15,7 +15,7 @@ Observable **cognitive state**, not reasoning dumps.
 
 ```python
 report = engine.validation.snapshot()
-assert report["schema"] == "acm.validation/0.4"
+assert report["schema"] == "acm.validation/0.5"
 ```
 
 Recorded streams (trimmed FIFO):
@@ -24,7 +24,7 @@ Recorded streams (trimmed FIFO):
 |--------|---------|
 | `activations` | Cue → activated concepts + cue classes |
 | `confidence_deltas` | Before/after confidence with reason code |
-| `association_changes` | Edge add/strengthen/weaken |
+| `association_changes` | Legacy edge add/strengthen/weaken residual |
 | `lifecycle` | Encode / goal / other verb events |
 | `working_transitions` | Enter / displace |
 | `reconsolidations` | Light / supersede / contest |
@@ -35,6 +35,8 @@ Recorded streams (trimmed FIFO):
 | `experience` (aggregate) | births · lineage · salience_evolutions · temporal_links · lifecycle · multimodal · identity/goal influence |
 | `concept_events` | Birth, strengthen/weaken, stage, hierarchy, prototype, proposals |
 | `concept` (aggregate) | births · nuclei · strengthenings · weakenings · maturity · hierarchy · abstraction · merge/split proposals · prototypes |
+| `association_events` | Birth, strengthen/weaken, dormancy, reactivation, neighborhoods, clusters |
+| `association` (aggregate) | births · strengthenings · weakenings · dormancies · reactivations · neighborhoods · clusters · goal/identity/temporal · asymmetric_births · evolution |
 
 ## Trace log
 

@@ -18,6 +18,7 @@ from acm.types import Attribute, ConceptRole, new_id
 from acm.validation.harness import ConfidenceDelta
 
 if TYPE_CHECKING:
+    from acm.associations.organ import AssociationOrgan
     from acm.core.store import CognitiveStore
     from acm.experiences.model import Experience
     from acm.validation.harness import ValidationHarness
@@ -39,11 +40,15 @@ class ConceptOrgan:
         self.validation = validation
         self.hierarchy: dict[str, HierarchyEdge] = {}
         self.proposals: dict[str, ConceptProposal] = {}
+        self.associations: AssociationOrgan | None = None
         self._births = 0
         self._strengthenings = 0
         self._weakenings = 0
         self._abstractions = 0
         self._stage_changes = 0
+
+    def bind_associations(self, associations: AssociationOrgan) -> None:
+        self.associations = associations
 
     # --- public cognitive surface ----------------------------------------------
 
@@ -224,6 +229,9 @@ class ConceptOrgan:
         )
         # Parent gains gentle abstraction reinforcement
         self._reinforce(parent, weight=weight * 0.4, reason="abstraction_parent")
+        if self.associations is not None:
+            self.associations.absorb_hierarchy_edge(child_id, parent_id, weight=weight)
+            self.associations.absorb_siblings(parent_id)
         return edge
 
     def weaken(self, concept_id: str, *, amount: float = 0.05) -> Concept | None:

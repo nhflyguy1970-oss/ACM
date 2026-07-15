@@ -161,8 +161,10 @@ Each subsection states **success**, **failure**, and **phase relevance** (earlie
 
 ### 5.3 Association growth — M4+
 
-**Success:** Typed associations increase meaningful neighborhoods (Zeus↔camping↔photos).  
-**Failure:** Bags of tags; no path-shaped remembering.  
+**Success:** Typed associations increase meaningful neighborhoods (Zeus↔camping↔photos); directed strengths may be asymmetric; distance bands observable; `how_related` reports direct or neighborhood paths.  
+**Failure:** Bags of tags; no path-shaped remembering; forced global symmetry that erases Dog→Animal asymmetry.  
+
+See also: [`ASSOCIATION_MODEL.md`](ASSOCIATION_MODEL.md) · [`COGNITIVE_NETWORKS.md`](COGNITIVE_NETWORKS.md) · [`ANALOGICAL_FOUNDATIONS.md`](ANALOGICAL_FOUNDATIONS.md)
 
 ### 5.4 Memory strengthening — M4/M5/M7+
 

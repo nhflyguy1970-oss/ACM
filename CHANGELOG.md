@@ -2,6 +2,30 @@
 
 All notable changes to ACM are documented here.
 
+## [0.5.0] — 2026-07-15
+
+### Added
+
+- **M4 Association organ** — living cognitive relationships answering *How is this related?*
+- Directed asymmetric strengths (`strength_forward` / `strength_backward`) — D017
+- Association lifecycle: birth → active/strong ⇄ dormant (+ reactivation); weaken path
+- Cognitive distance bands: immediate / near / far / weak / dormant / unexpected
+- Evolvable `RelationKind` vocabulary (not a closed mega-ontology)
+- Experience co-activation + `belongs_with`; hierarchy mirrored as `is_a_traffic`
+- Sibling `resembles`; neighborhoods + simple cognitive clusters
+- Public `how_related()`; organ `neighborhood()` / `clusters()` / `observables()`
+- Docs: `ASSOCIATION_MODEL.md`, `COGNITIVE_NETWORKS.md`, `ANALOGICAL_FOUNDATIONS.md`
+- Validation harness association metrics — schema `acm.validation/0.5`
+- Behavioral, cognitive, unit, and performance association tests
+
+### Notes
+
+- Remembering / Reflection / Learning / Prediction organs not started
+- Analogy not implemented — architecture prepared only
+- Taxonomy `is_a` remains owned by the Concept organ (D016); Associations mirror traffic
+- Aria / host wiring remains out of scope
+- Self-modification of ACM architecture still requires future explicit user authorization
+
 ## [0.4.0] — 2026-07-14
 
 ### Added
