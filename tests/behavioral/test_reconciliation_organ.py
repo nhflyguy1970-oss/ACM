@@ -86,7 +86,11 @@ def test_context_dependent_coexistence() -> None:
     engine.encode("Mug lives in kitchen cabinet.", pin=True)
     engine.set_context("office", activity="desk")
     engine.encode("Mug lives on office desk.", pin=True)
-    concepts = [c for c in engine.store.concepts.values() if not c.identity and "mug" in " ".join(c.labels).lower()]
+    concepts = [
+        c
+        for c in engine.store.concepts.values()
+        if not c.identity and "mug" in " ".join(c.labels).lower()
+    ]
     if len(concepts) >= 1:
         c = concepts[0]
         c.attributes.append(

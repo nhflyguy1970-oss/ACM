@@ -198,7 +198,7 @@ class ConfidenceOrgan:
                 kinds[UncertaintyKind.PREDICTION.value] = (
                     kinds.get(UncertaintyKind.PREDICTION.value, 0) + 1
                 )
-        for sim in self.store.simulations.values():
+        for _sim in self.store.simulations.values():
             kinds[UncertaintyKind.SIMULATION.value] = (
                 kinds.get(UncertaintyKind.SIMULATION.value, 0) + 1
             )

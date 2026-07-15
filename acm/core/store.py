@@ -9,8 +9,8 @@ from typing import Any
 from acm.analogy.model import AnalogyMapping
 from acm.associations.model import Association, RelationKind
 from acm.attention.model import PriorityEvent
-from acm.confidence.model import ConfidenceEvent
 from acm.concepts.model import Concept, ConceptStage
+from acm.confidence.model import ConfidenceEvent
 from acm.experiences.model import Experience
 from acm.forgetting.model import AccessibilityEvent
 from acm.learning.model import Adaptation

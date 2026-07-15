@@ -12,7 +12,10 @@ def test_long_running_reconciliation_confidence_cycle() -> None:
     if len(a) >= 2:
         engine.associations.relate(a[0].id, a[1].id, RelationKind.CONFLICTS_WITH)
     elif len(a) == 1:
-        other = next(c for c in engine.store.concepts.values() if not c.identity and c.id != a[0].id)
+        other = next(
+            c for c in engine.store.concepts.values()
+            if not c.identity and c.id != a[0].id
+        )
         engine.associations.relate(a[0].id, other.id, RelationKind.CONFLICTS_WITH)
     for i in range(8):
         before = len(engine.store.experiences)
