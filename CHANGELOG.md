@@ -2,6 +2,21 @@
 
 All notable changes to ACM are documented here.
 
+## [0.14.0] — 2026-07-15
+
+### Certification execution (no functional changes)
+
+- Executed Phase 2 Operational Certification against ACM 0.13.0 baseline
+- Verdict: **CERTIFIED WITH CONDITIONS** (`docs/ACM_CERTIFIED_v1.md`)
+- Evidence docs: Certification Results, Shadow, Performance, Migration/Rollback Rehearsals, Long-Duration
+- Raw artifacts under `docs/artifacts_*`
+- Full pytest green; framework gates 8/8 pass (`certified` flag remains false by design)
+
+### Notes
+
+- No new features, organs, architecture, or Aria integration
+- Conditions block unqualified ACM 1.0 / Aria primary cutover until Shadow is revalidated on real Aria legacy answers
+
 ## [0.13.0] — 2026-07-15
 
 ### Added (engineering only — no new cognition)

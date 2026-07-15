@@ -1,0 +1,127 @@
+{
+  "acm_version": "0.13.0",
+  "all_gates_green": true,
+  "certified": false,
+  "checklist": [
+    "persistence_roundtrip",
+    "checksum_integrity",
+    "backup_restore",
+    "provenance_stamped",
+    "shadow_legacy_authoritative",
+    "shadow_no_user_change",
+    "rollback_flag",
+    "performance_encode_p95",
+    "performance_remember_p95",
+    "adapter_capabilities",
+    "long_duration_smoke"
+  ],
+  "gates": [
+    {
+      "detail": "experiences restored",
+      "duration_ms": 9.731,
+      "metrics": {
+        "experiences": 1
+      },
+      "name": "persistence_roundtrip",
+      "passed": true
+    },
+    {
+      "detail": "checksum ok",
+      "duration_ms": 8.357,
+      "metrics": {
+        "checksum": "360273622049f58f65882e20d4ad911293ca8a17614467fe1f2b3edff887020e",
+        "integrity": {
+          "integrity_check": "ok",
+          "latest_checksum": "360273622049f58f65882e20d4ad911293ca8a17614467fe1f2b3edff887020e",
+          "latest_created": 1784133965.0952744,
+          "latest_schema_version": 1,
+          "ok": true,
+          "snapshot_count": 1
+        },
+        "ok": true,
+        "schema_version": 1,
+        "snapshot_errors": []
+      },
+      "name": "checksum_integrity",
+      "passed": true
+    },
+    {
+      "detail": "restore ok",
+      "duration_ms": 16.821,
+      "metrics": {
+        "experiences": 1
+      },
+      "name": "backup_restore",
+      "passed": true
+    },
+    {
+      "detail": "provenance present",
+      "duration_ms": 0.367,
+      "metrics": {
+        "count": 1
+      },
+      "name": "provenance_stamped",
+      "passed": true
+    },
+    {
+      "detail": "legacy authoritative",
+      "duration_ms": 0.398,
+      "metrics": {
+        "authoritative": "legacy"
+      },
+      "name": "shadow_legacy_authoritative",
+      "passed": true
+    },
+    {
+      "detail": "capabilities ok",
+      "duration_ms": 0.064,
+      "metrics": {
+        "acm_read_primary": false,
+        "acm_version": "0.13.0",
+        "adapter_version": "0.13.0",
+        "aria_import": false,
+        "flags": {
+          "acm_read_primary": false,
+          "acm_writes_only": false,
+          "rollback_to_legacy": false,
+          "shadow_read": true,
+          "shadow_write": true
+        },
+        "host_coupling": false,
+        "shadow": true,
+        "verbs": [
+          "remember",
+          "recall",
+          "health",
+          "capabilities",
+          "shadow_report"
+        ]
+      },
+      "name": "adapter_capabilities",
+      "passed": true
+    },
+    {
+      "detail": "encode p95=0.4ms",
+      "duration_ms": 6.912,
+      "metrics": {
+        "encode_p95_ms": 0.4263679948053323
+      },
+      "name": "performance_encode_p95",
+      "passed": true
+    },
+    {
+      "detail": "long smoke ok",
+      "duration_ms": 3.021,
+      "metrics": {
+        "experiences": 12
+      },
+      "name": "long_duration_smoke",
+      "passed": true
+    }
+  ],
+  "generated": 1784133965.1258883,
+  "note": "Framework executed gates only. Formal certification requires explicit approval.",
+  "passed": 8,
+  "schema": "acm.certification/0.13",
+  "total": 8
+}

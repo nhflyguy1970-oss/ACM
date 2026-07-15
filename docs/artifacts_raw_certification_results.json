@@ -1,0 +1,459 @@
+{
+  "started": 1784133965.0800939,
+  "sections": {
+    "framework": {
+      "schema": "acm.certification/0.13",
+      "acm_version": "0.13.0",
+      "generated": 1784133965.1258883,
+      "checklist": [
+        "persistence_roundtrip",
+        "checksum_integrity",
+        "backup_restore",
+        "provenance_stamped",
+        "shadow_legacy_authoritative",
+        "shadow_no_user_change",
+        "rollback_flag",
+        "performance_encode_p95",
+        "performance_remember_p95",
+        "adapter_capabilities",
+        "long_duration_smoke"
+      ],
+      "gates": [
+        {
+          "name": "persistence_roundtrip",
+          "passed": true,
+          "detail": "experiences restored",
+          "duration_ms": 9.731,
+          "metrics": {
+            "experiences": 1
+          }
+        },
+        {
+          "name": "checksum_integrity",
+          "passed": true,
+          "detail": "checksum ok",
+          "duration_ms": 8.357,
+          "metrics": {
+            "snapshot_errors": [],
+            "checksum": "360273622049f58f65882e20d4ad911293ca8a17614467fe1f2b3edff887020e",
+            "schema_version": 1,
+            "integrity": {
+              "integrity_check": "ok",
+              "snapshot_count": 1,
+              "latest_checksum": "360273622049f58f65882e20d4ad911293ca8a17614467fe1f2b3edff887020e",
+              "latest_schema_version": 1,
+              "latest_created": 1784133965.0952744,
+              "ok": true
+            },
+            "ok": true
+          }
+        },
+        {
+          "name": "backup_restore",
+          "passed": true,
+          "detail": "restore ok",
+          "duration_ms": 16.821,
+          "metrics": {
+            "experiences": 1
+          }
+        },
+        {
+          "name": "provenance_stamped",
+          "passed": true,
+          "detail": "provenance present",
+          "duration_ms": 0.367,
+          "metrics": {
+            "count": 1
+          }
+        },
+        {
+          "name": "shadow_legacy_authoritative",
+          "passed": true,
+          "detail": "legacy authoritative",
+          "duration_ms": 0.398,
+          "metrics": {
+            "authoritative": "legacy"
+          }
+        },
+        {
+          "name": "adapter_capabilities",
+          "passed": true,
+          "detail": "capabilities ok",
+          "duration_ms": 0.064,
+          "metrics": {
+            "adapter_version": "0.13.0",
+            "acm_version": "0.13.0",
+            "verbs": [
+              "remember",
+              "recall",
+              "health",
+              "capabilities",
+              "shadow_report"
+            ],
+            "shadow": true,
+            "acm_read_primary": false,
+            "host_coupling": false,
+            "aria_import": false,
+            "flags": {
+              "shadow_write": true,
+              "shadow_read": true,
+              "acm_read_primary": false,
+              "acm_writes_only": false,
+              "rollback_to_legacy": false
+            }
+          }
+        },
+        {
+          "name": "performance_encode_p95",
+          "passed": true,
+          "detail": "encode p95=0.4ms",
+          "duration_ms": 6.912,
+          "metrics": {
+            "encode_p95_ms": 0.4263679948053323
+          }
+        },
+        {
+          "name": "long_duration_smoke",
+          "passed": true,
+          "detail": "long smoke ok",
+          "duration_ms": 3.021,
+          "metrics": {
+            "experiences": 12
+          }
+        }
+      ],
+      "passed": 8,
+      "total": 8,
+      "all_gates_green": true,
+      "certified": false,
+      "note": "Framework executed gates only. Formal certification requires explicit approval.",
+      "report_path": "/tmp/acm_cert_run/framework/certification_report.json"
+    },
+    "shadow": {
+      "compares": [
+        {
+          "query": "coffee",
+          "agree": false,
+          "reason": "token_overlap:0.00",
+          "legacy_answer": "Coffee is bitter in the morning.",
+          "acm_answer": "coffee.",
+          "legacy_ms": 0.007,
+          "acm_ms": 1.226
+        },
+        {
+          "query": "tea",
+          "agree": false,
+          "reason": "token_overlap:0.00",
+          "legacy_answer": "Tea is warm after dinner.",
+          "acm_answer": "coffee.",
+          "legacy_ms": 0.005,
+          "acm_ms": 0.867
+        },
+        {
+          "query": "harbor lights",
+          "agree": false,
+          "reason": "token_overlap:0.00",
+          "legacy_answer": "Harbor lights guide inbound ships.",
+          "acm_answer": "harbor.",
+          "legacy_ms": 0.005,
+          "acm_ms": 1.032
+        },
+        {
+          "query": "sunrise",
+          "agree": false,
+          "reason": "token_overlap:0.00",
+          "legacy_answer": "Sunrise follows night.",
+          "acm_answer": "sunrise.",
+          "legacy_ms": 0.004,
+          "acm_ms": 0.973
+        },
+        {
+          "query": "northward cargo",
+          "agree": false,
+          "reason": "token_overlap:0.00",
+          "legacy_answer": "The northward passage is preferred for cargo.",
+          "acm_answer": "northward.",
+          "legacy_ms": 0.005,
+          "acm_ms": 0.997
+        },
+        {
+          "query": "unknown xyz",
+          "agree": false,
+          "reason": "one_empty",
+          "legacy_answer": "",
+          "acm_answer": "coffee.",
+          "legacy_ms": 0.005,
+          "acm_ms": 0.962
+        }
+      ],
+      "agree": 0,
+      "disagree": 6,
+      "missing_legacy": 1,
+      "missing_acm": 0,
+      "latency_legacy": [
+        0.007,
+        0.005,
+        0.005,
+        0.004,
+        0.005,
+        0.005
+      ],
+      "latency_acm": [
+        1.226,
+        0.867,
+        1.032,
+        0.973,
+        0.997,
+        0.962
+      ],
+      "conf_legacy": [
+        0.85,
+        0.85,
+        0.85,
+        0.85,
+        0.85,
+        0.1
+      ],
+      "conf_acm": [
+        0.8325,
+        0.6837657500000001,
+        0.8325,
+        0.8325,
+        0.8325,
+        0.6871524000000001
+      ],
+      "metrics": {
+        "remembers": 5,
+        "recalls": 6,
+        "shadow_compares": 6,
+        "agreements": 0,
+        "disagreements": 6,
+        "errors": 0,
+        "legacy_latency_ms_avg": 0.003482088107954372,
+        "acm_latency_ms_avg": 0.740630089818627,
+        "last_agreement": false,
+        "events": [
+          {
+            "timestamp": 1784133965.126591,
+            "op": "remember",
+            "legacy_latency_ms": 0.002,
+            "acm_latency_ms": 0.349,
+            "acm_shadow": true
+          },
+          {
+            "timestamp": 1784133965.126979,
+            "op": "remember",
+            "legacy_latency_ms": 0.002,
+            "acm_latency_ms": 0.38,
+            "acm_shadow": true
+          },
+          {
+            "timestamp": 1784133965.1275291,
+            "op": "remember",
+            "legacy_latency_ms": 0.001,
+            "acm_latency_ms": 0.544,
+            "acm_shadow": true
+          },
+          {
+            "timestamp": 1784133965.12788,
+            "op": "remember",
+            "legacy_latency_ms": 0.001,
+            "acm_latency_ms": 0.346,
+            "acm_shadow": true
+          },
+          {
+            "timestamp": 1784133965.1283538,
+            "op": "remember",
+            "legacy_latency_ms": 0.001,
+            "acm_latency_ms": 0.468,
+            "acm_shadow": true
+          },
+          {
+            "timestamp": 1784133965.1295996,
+            "op": "recall",
+            "legacy_latency_ms": 0.007,
+            "acm_latency_ms": 1.226,
+            "agreement": false
+          },
+          {
+            "timestamp": 1784133965.1304884,
+            "op": "recall",
+            "legacy_latency_ms": 0.005,
+            "acm_latency_ms": 0.867,
+            "agreement": false
+          },
+          {
+            "timestamp": 1784133965.1315393,
+            "op": "recall",
+            "legacy_latency_ms": 0.005,
+            "acm_latency_ms": 1.032,
+            "agreement": false
+          },
+          {
+            "timestamp": 1784133965.13253,
+            "op": "recall",
+            "legacy_latency_ms": 0.004,
+            "acm_latency_ms": 0.973,
+            "agreement": false
+          },
+          {
+            "timestamp": 1784133965.1335452,
+            "op": "recall",
+            "legacy_latency_ms": 0.005,
+            "acm_latency_ms": 0.997,
+            "agreement": false
+          },
+          {
+            "timestamp": 1784133965.134523,
+            "op": "recall",
+            "legacy_latency_ms": 0.005,
+            "acm_latency_ms": 0.962,
+            "agreement": false
+          }
+        ]
+      },
+      "mc": {
+        "shadow_agreement": 0,
+        "shadow_disagreement": 6,
+        "shadow_compares": 6,
+        "latency_legacy_ms_avg": 0.003482088107954372,
+        "latency_acm_ms_avg": 0.740630089818627,
+        "provenance_records": 15,
+        "errors": 0,
+        "authoritative": "legacy"
+      },
+      "overhead_ratio": 195.38709677419357
+    },
+    "long_duration": {
+      "ops": 40,
+      "errors": [],
+      "duration_ms": 89.41769100056263,
+      "experiences": 50,
+      "concepts": 9,
+      "provenance": 80,
+      "reconciliations": 5,
+      "predictions": 28,
+      "simulations": 22,
+      "recombinations": 12,
+      "analogies": 30
+    },
+    "persistence": {
+      "flush": {
+        "ok": true,
+        "kind": "checkpoint",
+        "checksum": "f7502e7e01c3a4a8fb606ed8d39e828b9f4a62ada3694426b3292c37c9308891",
+        "schema_version": 1,
+        "path": "/tmp/acm_cert_run/persist.sqlite"
+      },
+      "verify": {
+        "snapshot_errors": [],
+        "checksum": "f7502e7e01c3a4a8fb606ed8d39e828b9f4a62ada3694426b3292c37c9308891",
+        "schema_version": 1,
+        "integrity": {
+          "integrity_check": "ok",
+          "snapshot_count": 4,
+          "latest_checksum": "f7502e7e01c3a4a8fb606ed8d39e828b9f4a62ada3694426b3292c37c9308891",
+          "latest_schema_version": 1,
+          "latest_created": 1784133965.249299,
+          "ok": true
+        },
+        "ok": true
+      },
+      "export_checksum_ok": true,
+      "recovered_experiences": 2,
+      "after_delta_experiences": 3,
+      "restore": {
+        "ok": true,
+        "path": "/tmp/acm_cert_run/persist.sqlite",
+        "restored_from": "/tmp/acm_cert_run/persist.bak"
+      },
+      "restored_experiences": 3,
+      "import": {
+        "ok": true,
+        "experiences": 2
+      },
+      "import_experiences": 2,
+      "no_corruption": true
+    },
+    "migration": {
+      "time_ms": 40.26320100092562,
+      "experiences_exported": 15,
+      "experiences_imported": 15,
+      "provenance_exported": 30,
+      "provenance_imported": 30,
+      "complete": true,
+      "aria_migrated": false
+    },
+    "rollback": {
+      "time_ms": 17.5409520015819,
+      "baseline_experiences": 1,
+      "after_experiences": 1,
+      "experiences_match_baseline_size": true,
+      "orphan_experience_refs_in_provenance": 0,
+      "no_data_loss_of_baseline": true,
+      "flag_rollback_simulation": true,
+      "adapter_rollback_authoritative": "legacy",
+      "adapter_no_shadow_when_flag": true
+    },
+    "performance": {
+      "encode": {
+        "n": 30,
+        "p50": 0.3618750051828101,
+        "p95": 0.4160470052738674,
+        "mean": 0.3768415677768644,
+        "max": 0.6053559991414659
+      },
+      "remember": {
+        "n": 30,
+        "p50": 0.3426390030654147,
+        "p95": 0.3633980013546534,
+        "mean": 0.347602699912386,
+        "max": 0.437157999840565
+      },
+      "assess": {
+        "n": 20,
+        "p50": 0.05391200102167204,
+        "p95": 0.06624499656027183,
+        "mean": 0.05654604974552058,
+        "max": 0.08362800144823268
+      },
+      "persist_flush": {
+        "n": 15,
+        "p50": 1.0571809980319813,
+        "p95": 1.5029850037535653,
+        "mean": 1.0345355345634744,
+        "max": 1.6155480043380521
+      },
+      "shadow_overhead_ratio": 195.38709677419357,
+      "shadow_legacy_p95": 0.005,
+      "shadow_acm_p95": 1.032,
+      "db_bytes": 4096
+    },
+    "provenance": {
+      "sampled": 20,
+      "issues": [],
+      "total_records": 60,
+      "pass": true
+    },
+    "confidence": {
+      "assess_before": 0.98,
+      "assess_after_reconcile": 0.98,
+      "conflict_before": {
+        "con_9a74b1aecc3e": 0.77,
+        "con_ca8fa7e94c62": 0.77
+      },
+      "conflict_after": {
+        "con_9a74b1aecc3e": 0.662,
+        "con_ca8fa7e94c62": 0.662
+      },
+      "events": 18,
+      "confidence_moves_on_conflict": true
+    },
+    "daily_use": {
+      "errors": [],
+      "experiences": 4,
+      "ok": true
+    }
+  },
+  "finished": 1784133965.3796268
+}
