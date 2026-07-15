@@ -2,6 +2,26 @@
 
 All notable changes to ACM are documented here.
 
+## [0.7.1] — 2026-07-15
+
+### Added (design only — no Learning organ)
+
+- **L0 Learning research & architecture** — canonical design package for future M7
+- `docs/LEARNING_ARCHITECTURE.md` — organ ownership, lineage, verbs (design)
+- `docs/LEARNING_RESEARCH_FOUNDATIONS.md` — science grades + engineering translations
+- `docs/COGNITIVE_RESEARCH_FOUNDATIONS.md` — permanent per-organ research ledger
+- `docs/LEARNING_GOVERNANCE.md` — automatic vs assent vs never-automatic
+- `docs/LEARNING_LIFECYCLE.md` — adaptation lifecycle
+- `docs/ACM_ARCHITECTURE_REVIEW_M6.md` — full post-M6 architecture & roadmap review
+- Decision D020 — L0 design authorization; M7 blocked until accepted
+- Roadmap reconciled; Capability Map Learning (design) section
+
+### Notes
+
+- **No Learning / Prediction / Planning / Creativity / Forgetting implementation**
+- No prototypes, no hidden Learning code
+- M7 Learning remains unauthorized until L0 is accepted
+
 ## [0.7.0] — 2026-07-15
 
 ### Added

@@ -58,4 +58,6 @@ Intellectual honesty: *I don’t know*, *conflicting evidence*, *multiple interp
 
 ## Relationship to Learning
 
-Reflection prepares observations. **Learning** (future) will consume Reflective Experiences to adapt. Reflection itself does not adapt ACM. Architecture/policy change remains assent-gated.
+Reflection prepares observations. **Learning** (future M7) will consume Reflective Experiences to adapt. Reflection itself does not adapt ACM. Architecture/policy change remains assent-gated.
+
+Canonical Learning design (L0, design-only): [`LEARNING_ARCHITECTURE.md`](LEARNING_ARCHITECTURE.md) · [`LEARNING_GOVERNANCE.md`](LEARNING_GOVERNANCE.md) · [`LEARNING_RESEARCH_FOUNDATIONS.md`](LEARNING_RESEARCH_FOUNDATIONS.md).

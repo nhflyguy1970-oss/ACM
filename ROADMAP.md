@@ -5,25 +5,28 @@ Milestones are cognitive, not storage-tech. Each milestone requires: design revi
 | Milestone | Focus | Status |
 |-----------|--------|--------|
 | **Foundation** | Standalone repo, docs suite, public API scaffold, independence rules | **Done (v0.1.0)** |
-| **M0** | Validation Harness + cognitive observables + CI | **Done (minimal stubs)** |
-| **M1** | Identity schemas — *Who am I?* | **Done (v0.2.0)** |
-| **M2** | Experience organ — *What happened?* | **Done (v0.3.0)** |
-| **M3** | Concept organ — *What is this?* | **Done (v0.4.0)** |
-| **M4** | Association organ — *How is this related?* | **Done (v0.5.0)** |
-| **M5** | Remembering organ — *What do I remember?* (+ shared Activation Architecture) | **Done (v0.6.0)** |
-| **M6** | Reflection organ — *What do I think about what I remember?* | **Done (v0.7.0)** |
-| **M5b** | Goal Space bias refinement on encode/remember | Planned (M0 stubs exist; goals already bias activation) |
-| **M4b** | Working memory interference + attention field | Planned (M0 stubs exist) |
-| **M6** | Context frames & contextual recall | Planned (M0 stubs exist) |
-| **M7** | Reconsolidation (supersede / contest / strengthen) | Partial stub |
-| **M8** | Sleep consolidation (proposals + low-impact apply) | Partial stub |
-| **M9** | Multimodal envelopes (non-text first-class) | Planned |
-| **M10** | Knowledge ≠ Memory boundary + policy gate hooks | Planned |
-| **M11** | Lifelong strengthening / weakening / forgetting curves | Planned |
-| **M12** | Prediction & reflection loops | Planned |
-| **M13** | Abstraction / generalization | Planned |
-| **M14** | Observability completeness (cognitive state dashboard exports) | Planned |
-| **M15** | Meta-memory self-sketch maturity | Sketch only |
+| **M0** | Validation Harness + cognitive observables + CI | **Done** |
+| **M1** | Identity — *Who am I?* | **Done (v0.2.0)** |
+| **M2** | Experience — *What happened?* | **Done (v0.3.0)** |
+| **M3** | Concept — *What is this?* | **Done (v0.4.0)** |
+| **M4** | Association — *How is this related?* | **Done (v0.5.0)** |
+| **M5** | Remembering — *What do I remember?* (+ Activation Architecture) | **Done (v0.6.0)** |
+| **M6** | Reflection — *What do I think about what I remember?* | **Done (v0.7.0)** |
+| **L0** | Learning research & architecture (**design only**) | **Done (v0.7.1)** |
+| **M7** | Learning organ — *What have I learned?* | **Blocked until L0 accepted — not started** |
+| **M7b** | Sleep consolidation (apply/propose Learning) | Planned |
+| **M5b** | Goal Space organ polish | Planned (stubs / bias exist) |
+| **M4b** | Working memory + Attention field polish | Planned (stubs exist) |
+| **M8** | Forgetting as accessibility cooling | Planned |
+| **M9** | Prediction | Planned (after Learning) |
+| **M10** | Planning | Planned (after Prediction) |
+| **M11** | Creativity / Analogical reasoning | Planned |
+| **M12** | Safe Self-Improvement governance (assent UX) | Planned — never automatic |
+| **M13** | Multimodal envelopes maturity | Planned |
+| **M14** | Knowledge ≠ Memory adoption paths | Planned |
+| **M15** | Observability / meta-memory sketch maturity | Partial |
+
+> **Note:** Older roadmap labels (Context as “M6”, Reconsolidation as “M7”, freeze-chart Reflection as “M11”) referred to the design-freeze phase list in `ARCHITECTURE.md`. Implementation numbering above is authoritative for this repository. See [`ACM_ARCHITECTURE_REVIEW_M6.md`](docs/ACM_ARCHITECTURE_REVIEW_M6.md).
 
 ## Host integration
 
@@ -31,4 +34,4 @@ Wiring Aria (or any host) is **out of scope** until ACM demonstrates milestone m
 
 ## Governance
 
-Daily Use Mode: Problem Reports and measured regressions drive work. No speculative feature stacks.
+Daily Use Mode: Problem Reports and measured regressions drive work. No speculative feature stacks. **L0 produces architecture only — no Learning code until M7 is explicitly authorized.**

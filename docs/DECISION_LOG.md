@@ -171,3 +171,11 @@ Significant architectural and implementation decisions. Deviations from the desi
 **Why:** Metacognition requires observable evaluation that leaves auditable history for future Learning without secretly mutating prior cognition.
 
 **Status:** Accepted.
+
+## D020 — L0 Learning design before M7 implementation (2026-07-15)
+
+**Decision:** Before implementing the Learning organ, ACM completes **L0**: research-graded foundations, Learning Architecture, Governance (automatic vs assent vs never), Lifecycle, permanent `COGNITIVE_RESEARCH_FOUNDATIONS.md`, and post-M6 Architecture Review. Learning is defined as *governed durable adaptation of living structures* answering *What have I learned?* — distinct from Remembering, Reflection, Concept nucleation, knowledge import, and architectural self-improvement. M7 Learning code is **not authorized** until L0 is merged and accepted. No Learning prototypes in L0.
+
+**Why:** Learning is the first organ that permanently changes other organs; trust requires lineage, gates, and scientific/engineering clarity before code.
+
+**Status:** Accepted (design). Implementation deferred.

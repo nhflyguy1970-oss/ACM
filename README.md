@@ -8,21 +8,29 @@ ACM is **not** Aria. Aria (and any other agent) may become a *consumer* of ACM t
 
 ## Status
 
-**v0.7.0 — M6 Reflection Organ + Cognitive Capability Map**
+**v0.7.1 — L0 Learning Research & Architecture (design only)**
+
+Implemented organs: M1–M6. **Learning organ is not implemented.** L0 documents define canonical Learning design, governance, and research foundations for future M7.
 
 | Layer | State |
 |-------|--------|
-| Design constitution | Complete |
-| Architecture + Capability Map | Complete (`docs/COGNITIVE_CAPABILITY_MAP.md`) |
-| Activation Architecture | Complete |
-| M1 Identity | *Who am I?* |
-| M2 Experience | *What happened?* |
-| M3 Concept | *What is this?* |
-| M4 Association | *How is this related?* |
-| M5 Remembering | *What do I remember?* |
-| M6 Reflection | **Implemented** — *What do I think about what I remember?* |
-| M7+ Learning / Prediction / … | Roadmapped — not started |
+| M1–M6 organs | Implemented (through Reflection) |
+| Cognitive Capability Map | Complete |
+| Cognitive Research Foundations | Complete (permanent ledger) |
+| L0 Learning design package | **Complete — no code** |
+| M7 Learning organ | **Not started / not authorized** |
 | Host migration (Aria, etc.) | **Not started** |
+
+## Design canon (L0)
+
+| Document | Purpose |
+|----------|---------|
+| [docs/LEARNING_ARCHITECTURE.md](docs/LEARNING_ARCHITECTURE.md) | Future Learning organ architecture |
+| [docs/LEARNING_RESEARCH_FOUNDATIONS.md](docs/LEARNING_RESEARCH_FOUNDATIONS.md) | Graded scientific foundations |
+| [docs/COGNITIVE_RESEARCH_FOUNDATIONS.md](docs/COGNITIVE_RESEARCH_FOUNDATIONS.md) | Per-organ research ledger |
+| [docs/LEARNING_GOVERNANCE.md](docs/LEARNING_GOVERNANCE.md) | Automatic vs assent boundaries |
+| [docs/LEARNING_LIFECYCLE.md](docs/LEARNING_LIFECYCLE.md) | Adaptation lifecycle |
+| [docs/ACM_ARCHITECTURE_REVIEW_M6.md](docs/ACM_ARCHITECTURE_REVIEW_M6.md) | Post-M6 architecture & roadmap review |
 
 ## Install
 
@@ -33,40 +41,10 @@ pip install -e ".[dev]"
 pytest
 ```
 
-## 60-second integration
-
-```python
-from acm import CognitiveEngine
-
-engine = CognitiveEngine(agent_id="demo-agent")
-engine.encode("I am a research assistant.", kind="identity")
-engine.encode("My favorite coffee is dark roast.", kind="preference")
-print(engine.who_am_i()["answer"])
-print(engine.what_do_i_remember("What is my favorite coffee?"))
-print(engine.what_do_i_think("What is my favorite coffee?"))
-report = engine.validation.snapshot()
-print(report["reflection"])
-```
-
-See `examples/hello_acm.py`.
-
-## Document map
-
-| Document | Purpose |
-|----------|---------|
-| [docs/COGNITIVE_CAPABILITY_MAP.md](docs/COGNITIVE_CAPABILITY_MAP.md) | Master organ capability map |
-| [docs/REFLECTION_MODEL.md](docs/REFLECTION_MODEL.md) | Reflection organ |
-| [docs/METACOGNITION_FOUNDATIONS.md](docs/METACOGNITION_FOUNDATIONS.md) | Metacognition foundations |
-| [docs/REFLECTIVE_EXPERIENCES.md](docs/REFLECTIVE_EXPERIENCES.md) | Reflective Experience lineage |
-| [docs/REMEMBERING_MODEL.md](docs/REMEMBERING_MODEL.md) | Remembering |
-| [docs/COGNITIVE_ACTIVATION_ARCHITECTURE.md](docs/COGNITIVE_ACTIVATION_ARCHITECTURE.md) | Shared activation |
-| [docs/API.md](docs/API.md) | Public API |
-| [CHANGELOG.md](CHANGELOG.md) | Releases |
-
 ## Non-negotiables
 
-1. **Host-agnostic** — no Aria/MC/CapBus imports.  
-2. **Cognition before storage.**  
-3. **Observable cognitive state** — no prompt/CoT dumps.  
-4. **Daily Use Mode.**  
-5. **Assent for architecture change.**
+1. **Host-agnostic**  
+2. **Cognition before storage**  
+3. **Observable cognitive state** — no prompt/CoT dumps  
+4. **Daily Use Mode**  
+5. **Assent for architecture change** — Learning ≠ self-improvement  

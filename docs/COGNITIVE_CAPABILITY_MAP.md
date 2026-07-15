@@ -109,11 +109,28 @@
 | Observability | `reflection` aggregate |
 | Validation | Artifact birth + no silent history mutation |
 
+### Learning — L0 designed / M7 not implemented
+
+| Field | Content |
+|-------|---------|
+| Question | What have I learned? |
+| Exclusive responsibility | Governed durable adaptation of living structures |
+| Inputs | Reflective Experiences, encode/remember outcomes, Sleep batches |
+| Outputs (future) | `what_have_i_learned`, Adaptation Records, assent proposals |
+| Artifacts | Adaptation Records (designed); never Experience rewrites |
+| Dependencies | M1–M6 + Activation + Policy Gate patterns |
+| Future dependents | Prediction, Planning, Creativity, Forgetting, Self-Improvement governance |
+| Activation | Reuses shared Activation Architecture |
+| Observability | Designed — `learning` harness aggregate at M7 |
+| Validation | Design: [`LEARNING_ARCHITECTURE.md`](LEARNING_ARCHITECTURE.md) · Governance · Lifecycle |
+
+**Implementation status:** Design-only (L0). **No Learning organ code.**
+
 ---
 
 ## Not yet organs (roadmapped)
 
-Learning · Prediction · Planning · Creativity · Analogical Reasoning · Forgetting · Sleep consolidation maturity · Full Goal / Attention organs
+Prediction · Planning · Creativity · Analogical Reasoning · Forgetting · Sleep consolidation maturity · Full Goal / Attention organs
 
 ## Ownership rule
 

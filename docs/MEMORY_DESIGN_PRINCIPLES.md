@@ -16,6 +16,10 @@
 | [`COGNITIVE_ACTIVATION_ARCHITECTURE.md`](COGNITIVE_ACTIVATION_ARCHITECTURE.md) | Shared activation for active organs |
 | [`REMEMBERING_MODEL.md`](REMEMBERING_MODEL.md) | Reconstruction (*What do I remember?*) |
 | [`REMEMBERING_DESIGN_PRINCIPLES.md`](REMEMBERING_DESIGN_PRINCIPLES.md) | Remembering constitution companion |
+| [`LEARNING_ARCHITECTURE.md`](LEARNING_ARCHITECTURE.md) | Future Learning organ (L0 design) |
+| [`COGNITIVE_RESEARCH_FOUNDATIONS.md`](COGNITIVE_RESEARCH_FOUNDATIONS.md) | Permanent scientific ledger |
+| [`LEARNING_GOVERNANCE.md`](LEARNING_GOVERNANCE.md) | Learning assent boundaries |
+| [`ACM_ARCHITECTURE_REVIEW_M6.md`](ACM_ARCHITECTURE_REVIEW_M6.md) | Post-M6 architecture review |
 
 **Governing question:** When someone proposes a Memory change, does it move ACM closer to practical human cognition?
 
