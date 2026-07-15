@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "aria-cognitive-memory"
-version = "0.12.1"
+version = "0.13.0"
 description = "ACM — Aria Cognitive Memory: a reusable, host-agnostic cognitive memory engine"
 readme = "README.md"
 requires-python = ">=3.11"
@@ -35,7 +35,7 @@ Documentation = "https://github.com/nhflyguy1970-oss/ACM/tree/main/docs"
 Issues = "https://github.com/nhflyguy1970-oss/ACM/issues"
 
 [tool.hatch.build.targets.wheel]
-packages = ["acm"]
+packages = ["acm", "aria_memory_adapter"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

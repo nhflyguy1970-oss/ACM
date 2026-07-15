@@ -45,7 +45,7 @@ def test_learn_abstains_on_uncertainty() -> None:
     # Sparse cue → insufficient/uncertainty path tends to abstain
     assert learned["abstained"] >= 1 or learned["applied"] == 0
     snap = engine.validation.snapshot()
-    assert snap["schema"] == "acm.validation/0.12"
+    assert snap["schema"] == "acm.validation/0.13"
     assert "learning" in snap
 
 

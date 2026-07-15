@@ -9,7 +9,7 @@ def test_harness_association_metrics() -> None:
     engine.encode("Athena is a husky.", pin=True)
     engine.encode("Athena is a husky.", pin=True)
     snap = engine.validation.snapshot()
-    assert snap["schema"] == "acm.validation/0.12"
+    assert snap["schema"] == "acm.validation/0.13"
     assert "association" in snap
     assert snap["association"]["births"] >= 1
     assert snap["counts"]["association_events"] >= 1
@@ -74,7 +74,7 @@ def test_concept_experience_identity_interaction() -> None:
     how = engine.how_related("maps", "navigation")
     assert how["question"] == "How is this related?"
     snap = engine.validation.snapshot()
-    assert snap["schema"] == "acm.validation/0.12"
+    assert snap["schema"] == "acm.validation/0.13"
     assert snap["experience"]["births"] >= 2
     assert snap["concept"]["births"] >= 1
     assert snap["association"]["births"] >= 1

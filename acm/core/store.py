@@ -15,6 +15,7 @@ from acm.experiences.model import Experience
 from acm.forgetting.model import AccessibilityEvent
 from acm.learning.model import Adaptation
 from acm.prediction.model import Prediction
+from acm.provenance.model import ProvenanceRecord
 from acm.recombination.model import RecombinedMemory
 from acm.reconciliation.model import ReconciliationRecord
 from acm.simulation.model import Simulation
@@ -65,6 +66,10 @@ class CognitiveStore:
         self.analogies: dict[str, AnalogyMapping] = {}
         self.reconciliations: dict[str, ReconciliationRecord] = {}
         self.confidence_events: list[ConfidenceEvent] = []
+        self.provenance: dict[str, ProvenanceRecord] = {}
+
+    def provenance_for(self, artifact_id: str) -> list[ProvenanceRecord]:
+        return [p for p in self.provenance.values() if p.artifact_id == artifact_id]
 
     def add_concept(
         self, label: str, role: ConceptRole = ConceptRole.ENTITY, **kwargs: Any

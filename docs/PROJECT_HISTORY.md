@@ -22,6 +22,7 @@ Implementation was authorized as a **new standalone engine**, not a rename of Ar
 - **2026-07:** M13 Memory Recombination + M14 Analogical Reasoning — novel blends and structure-mapping. Released as v0.11.0.
 - **2026-07:** M15 Memory Reconciliation + M16 Uncertainty & Confidence — conflict lineage and evolvable certainty. Released as v0.12.0. Maturity review: `docs/ACM_MATURITY_REVIEW_v1.md`.
 - **2026-07:** Phase Gate P1 — Integration Readiness + Scientific Gap Analysis (**design only**). Verdict: **READY WITH MINOR CHANGES**. Released as v0.12.1. See `docs/ACM_V1_READINESS_REVIEW.md`.
+- **2026-07:** Phase 2 Operational Readiness (P2.1–P2.5) — durable store, provenance, adapter, shadow, certification framework. **No new cognition.** Released as v0.13.0. See `docs/OPERATIONAL_READINESS.md`.
 
 ## Milestone cognitive questions
 
@@ -45,6 +46,7 @@ Implementation was authorized as a **new standalone engine**, not a rename of Ar
 | M15 | When memories disagree, how should memory reconcile them? | Memory Reconciliation |
 | M16 | How certain am I that this memory is accurate? | Uncertainty & Confidence |
 | P1 | (design) Is ACM ready for Aria / 1.0? | Readiness + scientific gap gate |
+| P2 | (engineering) Is ACM operationally ready? | Durable store · provenance · adapter · shadow · certification framework |
 
 ### Organ dependency map (ownership)
 
@@ -70,8 +72,8 @@ Implementation was authorized as a **new standalone engine**, not a rename of Ar
 
 ### What new cognitive capability exists today that did not exist yesterday?
 
-**Phase Gate P1 closed (design):** ACM v0.12 is assessed **READY WITH MINOR CHANGES** for Aria. Required next work is durable store + host adapter Shadow — **not** new cognitive organs. Evidence: `ACM_V1_READINESS_REVIEW.md`.
+**None (by design).** Phase 2 adds operational engineering only: durable persistence, provenance traceability, host adapter + Shadow Mode, and an uncertified certification framework.
 
 ## Relationship to Aria
 
-Aria remains the expected first consumer. Integration coding starts only after approval of P1 Track A. Migration design: `ARIA_INTEGRATION_ARCHITECTURE.md`. Until then, Aria’s Memory continues under Daily Use Mode governance; ACM evolves independently.
+Adapter package `aria_memory_adapter` is ready for host wiring. Aria application integration and formal certification remain approval-gated. Migration design: `ARIA_INTEGRATION_ARCHITECTURE.md` · `OPERATIONAL_READINESS.md`.

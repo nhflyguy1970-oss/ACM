@@ -66,9 +66,19 @@ class CognitiveEngine:
         *,
         agent_id: str = "agent",
         buffer_capacity: int = 7,
+        persist_path: str | None = None,
+        auto_persist: bool = False,
     ) -> None:
         self.agent_id = agent_id
-        self.store = CognitiveStore()
+        self.auto_persist = auto_persist
+        self.durable = None
+        if persist_path:
+            from acm.persistence import DurableCognitiveStore
+
+            self.durable = DurableCognitiveStore(persist_path)
+            self.store = self.durable.store
+        else:
+            self.store = CognitiveStore()
         self.buffer = WorkingBuffer(capacity=buffer_capacity)
         self.context = ContextFrame()
         self.validation = ValidationHarness()
@@ -185,6 +195,74 @@ class CognitiveEngine:
             if concept is not None:
                 self.concepts.register_existing(concept)
                 self.forgetting.ensure(cid)
+        if self.durable is not None and self.auto_persist:
+            self.flush(kind="boot")
+
+    def flush(self, *, kind: str = "checkpoint") -> dict[str, Any]:
+        if self.durable is None:
+            return {"ok": False, "reason": "no_persist_path"}
+        result = self.durable.flush(kind=kind)
+        self.validation.record_storage(action="flush", kind=kind, ok=1)
+        return result
+
+    def export_snapshot(self, dest: str) -> dict[str, Any]:
+        if self.durable is None:
+            import json
+            from pathlib import Path
+
+            from acm.persistence.codec import export_store
+
+            payload_path = Path(dest)
+            payload_path.parent.mkdir(parents=True, exist_ok=True)
+            snap = export_store(self.store)
+            payload_path.write_text(json.dumps(snap, indent=2, sort_keys=True), encoding="utf-8")
+            self.validation.record_storage(action="export", ok=1)
+            return {"ok": True, "path": str(payload_path), "checksum": snap["checksum"]}
+        result = self.durable.export(dest)
+        self.validation.record_storage(action="export", ok=1)
+        return result
+
+    def import_snapshot(self, src: str) -> dict[str, Any]:
+        if self.durable is None:
+            import json
+            from pathlib import Path
+
+            from acm.persistence.codec import import_store
+
+            payload = json.loads(Path(src).read_text(encoding="utf-8"))
+            import_store(payload, store=self.store)
+            self.validation.record_storage(action="import", ok=1)
+            return {"ok": True, "experiences": len(self.store.experiences)}
+        result = self.durable.import_snapshot(src)
+        self.validation.record_storage(action="import", ok=1)
+        return result
+    def backup(self, dest: str) -> dict[str, Any]:
+        if self.durable is None:
+            return {"ok": False, "reason": "no_persist_path"}
+        result = self.durable.backup(dest)
+        self.validation.record_storage(action="backup", ok=1)
+        return result
+
+    def restore(self, src: str) -> dict[str, Any]:
+        if self.durable is None:
+            return {"ok": False, "reason": "no_persist_path"}
+        result = self.durable.restore(src)
+        self.validation.record_storage(action="restore", ok=1)
+        return result
+
+    def verify_persistence(self) -> dict[str, Any]:
+        if self.durable is None:
+            from acm.persistence.codec import export_store, verify_snapshot
+
+            snap = export_store(self.store)
+            errors = verify_snapshot(snap)
+            return {"ok": not errors, "snapshot_errors": errors, "checksum": snap.get("checksum")}
+        result = self.durable.verify()
+        self.validation.record_storage(action="verify", ok=1 if result.get("ok") else 0)
+        return result
+
+    def provenance_of(self, artifact_id: str) -> list[dict[str, Any]]:
+        return [p.to_public() for p in self.store.provenance_for(artifact_id)]
 
     # --- public cognitive verbs -------------------------------------------------
 
@@ -439,6 +517,31 @@ class CognitiveEngine:
             "identity": identity_result,
             "experience": self.experiences.public_view(exp),
         }
+        from acm.provenance import ProvenanceSource, stamp_provenance
+
+        prov = stamp_provenance(
+            self.store,
+            artifact_kind="experience",
+            artifact_id=exp.id,
+            origin=ProvenanceSource.ENCODE,
+            experience_ids=[exp.id],
+            contributor_ids=list(concept_ids),
+            explain="Encoded Experience with observed concept contributors.",
+        )
+        stamp_provenance(
+            self.store,
+            artifact_kind="concept",
+            artifact_id=concept.id,
+            origin=ProvenanceSource.ENCODE,
+            experience_ids=[exp.id],
+            contributor_ids=[concept.id],
+            parent_provenance_ids=[prov.id],
+            explain="Concept updated from encode evidence.",
+        )
+        payload["provenance_id"] = prov.id
+        self.validation.record_provenance(action="stamp", count=2)
+        if self.auto_persist and self.durable is not None:
+            self.flush(kind="encode")
         self.extensions.emit("after_encode", dict(payload))
         return payload
 

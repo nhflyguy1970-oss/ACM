@@ -4,27 +4,21 @@ Milestones are cognitive, not storage-tech. Each milestone requires the permanen
 
 | Milestone | Focus | Status |
 |-----------|--------|--------|
-| **Foundation** … **M14** | Through Recombination + Analogy | **Done (≤v0.11.0)** |
-| **M15** | Memory Reconciliation | **Done (v0.12.0)** |
-| **M16** | Uncertainty & Confidence | **Done (v0.12.0)** |
-| **P1** | Integration Readiness + Scientific Gap Analysis (**design only**) | **Done (v0.12.1)** |
-| **Track A** | Durable store + provenance + Aria adapter Shadow prep | **Awaiting approval** — see `ACM_PHASE2_RECOMMENDATIONS.md` |
-| **M5b** | Goal Space organ polish | Planned (Track B) |
-| **M4b** | Working memory polish | Planned (Track B) |
-| **Later** | Planning | Deferred — not a memory gate |
-| **Later** | Decision Making / Executive Reasoning | Deferred |
-| **Later** | Creativity orchestration (optional) | Foundations in M13/M14 |
-| **Later** | Safe Self-Improvement governance | Planned — never automatic |
-| **Later** | Multimodal / Knowledge ≠ Memory | Partial / Planned |
+| **Foundation** … **M16** | Core cognitive memory lifecycle | **Done (≤v0.12.0)** |
+| **P1** | Integration Readiness + Scientific Gap Analysis (design) | **Done (v0.12.1)** |
+| **P2** | Operational Readiness (P2.1–P2.5) — **engineering only** | **Done (v0.13.0)** |
+| **Next (approval)** | Certification execution + Aria integration phase | **Not started** |
+| **M5b / M4b** | Goal / Working-memory polish | Track B — optional |
+| **Later** | Planning / Decision / Creativity orchestration | Deferred |
 
-> **P1 verdict:** **READY WITH MINOR CHANGES** — [`docs/ACM_V1_READINESS_REVIEW.md`](docs/ACM_V1_READINESS_REVIEW.md).  
-> Core cognitive memory lifecycle complete through M16. **No new organs** before Aria dual-write.  
-> Aria integration coding is **forbidden** until approval of Track A.
+> **P1 verdict:** READY WITH MINOR CHANGES.  
+> **P2:** Durable store · Provenance · Adapter · Shadow · Certification framework — **no new cognition**.  
+> Aria integration coding and formal certification **require approval**.
 
 ## Host integration
 
-Aria wiring remains **design-only**. Migration plan: [`docs/ARIA_INTEGRATION_ARCHITECTURE.md`](docs/ARIA_INTEGRATION_ARCHITECTURE.md).
+Adapter package exists (`aria_memory_adapter`). Aria application wiring is **out of scope** until approved.
 
 ## Governance
 
-Daily Use Mode. Architectural self-improvement remains user-governed.
+Daily Use Mode. Architectural self-improvement remains user-governed. Future cognition is evidence-driven only.

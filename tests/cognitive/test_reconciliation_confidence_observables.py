@@ -17,7 +17,7 @@ def test_reconciliation_confidence_observables() -> None:
     engine.how_should_memory_reconcile("signal")
     engine.how_certain_am_i("signal")
     snap = engine.validation.snapshot()
-    assert snap["schema"] == "acm.validation/0.12"
+    assert snap["schema"] == "acm.validation/0.13"
     assert "reconciliation" in snap and "confidence" in snap
     assert snap["counts"]["reconciliation_events"] >= 1
     blob = str(snap).lower()

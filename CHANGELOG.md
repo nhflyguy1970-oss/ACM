@@ -2,6 +2,26 @@
 
 All notable changes to ACM are documented here.
 
+## [0.13.0] — 2026-07-15
+
+### Added (engineering only — no new cognition)
+
+- **P2.1** Durable CognitiveStore — SQLite backend, snapshots, checksums, backup/restore, import/export
+- **P2.2** Provenance model — non-fabricated lineage stamps on encode
+- **P2.3** `aria_memory_adapter` — separate package; legacy API translation; feature flags; health
+- **P2.4** Shadow Mode — legacy authoritative; ACM parallel compare; MC/Trace engineering metrics
+- **P2.5** Certification framework — gates + report generator (`certified` always false)
+- Validation harness schema `acm.validation/0.13` — storage / provenance / shadow aggregates
+- Docs: CognitiveStore, Provenance, Adapter, Shadow, Certification, Operational Readiness, Migration, Rollback, Daily Use Validation
+- Decisions D033–D035
+
+### Notes
+
+- No new cognitive organs or capabilities
+- No Aria application integration
+- No certification execution
+- Singular Activation Architecture unchanged
+
 ## [0.12.1] — 2026-07-15
 
 ### Added (design only — no organ code)

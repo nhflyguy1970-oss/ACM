@@ -278,6 +278,17 @@
 
 **Status:** Complete (v0.12.1). Docs: [`ACM_V1_READINESS_REVIEW.md`](ACM_V1_READINESS_REVIEW.md) · [`SCIENTIFIC_GAP_ANALYSIS.md`](SCIENTIFIC_GAP_ANALYSIS.md) · [`ARIA_INTEGRATION_ARCHITECTURE.md`](ARIA_INTEGRATION_ARCHITECTURE.md) · [`ACM_COMPARATIVE_RESEARCH.md`](ACM_COMPARATIVE_RESEARCH.md) · [`ACM_PHASE2_RECOMMENDATIONS.md`](ACM_PHASE2_RECOMMENDATIONS.md).
 
+### Phase 2 — Operational Readiness (engineering only)
+
+| Field | Content |
+|-------|---------|
+| Question | Is ACM production-ready without new cognition? |
+| Deliverables | Durable store · Provenance · Adapter · Shadow · Certification framework |
+| Cognition change | **None** |
+| Observability | `acm.validation/0.13` storage/provenance/shadow |
+
+**Status:** Complete (v0.13.0). Docs: [`OPERATIONAL_READINESS.md`](OPERATIONAL_READINESS.md) · [`COGNITIVESTORE_ARCHITECTURE.md`](COGNITIVESTORE_ARCHITECTURE.md) · [`PROVENANCE_MODEL.md`](PROVENANCE_MODEL.md) · [`ARIA_MEMORY_ADAPTER.md`](ARIA_MEMORY_ADAPTER.md) · [`SHADOW_MODE.md`](SHADOW_MODE.md) · [`CERTIFICATION_FRAMEWORK.md`](CERTIFICATION_FRAMEWORK.md).
+
 ---
 
 ## Not yet organs (roadmapped)
@@ -286,4 +297,4 @@ Planning · Decision Making · Creativity orchestration · Full Goal organ polis
 
 ## Ownership rule
 
-No organ assumes another’s exclusive responsibility. Metacognition emerges from Reflection interacting with Remembering and Learning — not as a silent monopoly organ. Reconciliation and Confidence cooperate without merging ownership.
+No organ assumes another’s exclusive responsibility. Metacognition emerges from Reflection interacting with Remembering and Learning — not as a silent monopoly organ. Reconciliation and Confidence cooperate without merging ownership. Phase 2 engineering layers do not become cognitive organs.

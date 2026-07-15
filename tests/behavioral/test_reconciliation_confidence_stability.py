@@ -31,6 +31,6 @@ def test_long_running_reconciliation_confidence_cycle() -> None:
             engine.learn(cue="harbor")
             engine.sleep()
     assert engine.store.reconciliations
-    assert engine.validation.snapshot()["schema"] == "acm.validation/0.12"
+    assert engine.validation.snapshot()["schema"] == "acm.validation/0.13"
     meta = engine.metacognitive_sketch()
     assert "reconciliation" in meta and "confidence" in meta

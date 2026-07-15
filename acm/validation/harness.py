@@ -234,6 +234,27 @@ class ValidationHarness:
             "last_before": 0.0,
             "last_after": 0.0,
         }
+        self.storage_events: list[dict[str, Any]] = []
+        self.storage_metrics: dict[str, float | int] = {
+            "events": 0,
+            "flushes": 0,
+            "exports": 0,
+            "imports": 0,
+            "backups": 0,
+            "restores": 0,
+            "verifies": 0,
+        }
+        self.provenance_events: list[dict[str, Any]] = []
+        self.provenance_metrics: dict[str, float | int] = {
+            "events": 0,
+            "stamps": 0,
+        }
+        self.shadow_events: list[dict[str, Any]] = []
+        self.shadow_metrics: dict[str, float | int] = {
+            "events": 0,
+            "agreements": 0,
+            "disagreements": 0,
+        }
 
     def _trim(self, seq: list[Any]) -> None:
         overflow = len(seq) - self.max_events
@@ -643,6 +664,45 @@ class ValidationHarness:
         if payload.get("confidence") is not None:
             self.analogy_metrics["last_confidence"] = float(payload["confidence"])
 
+    def record_storage(self, **payload: Any) -> None:
+        event = {"timestamp": time(), **payload}
+        self.storage_events.append(event)
+        self._trim(self.storage_events)
+        self.storage_metrics["events"] = int(self.storage_metrics["events"]) + 1
+        action = str(payload.get("action", ""))
+        key = {
+            "flush": "flushes",
+            "export": "exports",
+            "import": "imports",
+            "backup": "backups",
+            "restore": "restores",
+            "verify": "verifies",
+        }.get(action)
+        if key:
+            self.storage_metrics[key] = int(self.storage_metrics[key]) + 1
+
+    def record_provenance(self, **payload: Any) -> None:
+        event = {"timestamp": time(), **payload}
+        self.provenance_events.append(event)
+        self._trim(self.provenance_events)
+        self.provenance_metrics["events"] = int(self.provenance_metrics["events"]) + 1
+        if payload.get("action") == "stamp" or payload.get("stamp"):
+            self.provenance_metrics["stamps"] = int(self.provenance_metrics["stamps"]) + int(
+                payload.get("count") or 1
+            )
+
+    def record_shadow(self, **payload: Any) -> None:
+        event = {"timestamp": time(), **payload}
+        self.shadow_events.append(event)
+        self._trim(self.shadow_events)
+        self.shadow_metrics["events"] = int(self.shadow_metrics["events"]) + 1
+        if payload.get("agree"):
+            self.shadow_metrics["agreements"] = int(self.shadow_metrics["agreements"]) + 1
+        if payload.get("disagree"):
+            self.shadow_metrics["disagreements"] = (
+                int(self.shadow_metrics["disagreements"]) + 1
+            )
+
     def record_reconciliation(self, **payload: Any) -> None:
         event = {"timestamp": time(), **payload}
         self.reconciliation_events.append(event)
@@ -692,7 +752,7 @@ class ValidationHarness:
     def snapshot(self) -> dict[str, Any]:
         """Public validation snapshot — metadata only, no chain-of-thought."""
         return {
-            "schema": "acm.validation/0.12",
+            "schema": "acm.validation/0.13",
             "counts": {
                 "activations": len(self.activations),
                 "confidence_deltas": len(self.confidence_deltas),
@@ -717,6 +777,9 @@ class ValidationHarness:
                 "analogy_events": len(self.analogy_events),
                 "reconciliation_events": len(self.reconciliation_events),
                 "confidence_organ_events": len(self.confidence_organ_events),
+                "storage_events": len(self.storage_events),
+                "provenance_events": len(self.provenance_events),
+                "shadow_events": len(self.shadow_events),
             },
             "identity": {
                 "growth": self.identity_metrics["growth"],
@@ -966,6 +1029,27 @@ class ValidationHarness:
                 },
             },
             "confidence_organ_events": deepcopy(self.confidence_organ_events[-40:]),
+            "storage": {
+                "events": self.storage_metrics["events"],
+                "flushes": self.storage_metrics["flushes"],
+                "exports": self.storage_metrics["exports"],
+                "imports": self.storage_metrics["imports"],
+                "backups": self.storage_metrics["backups"],
+                "restores": self.storage_metrics["restores"],
+                "verifies": self.storage_metrics["verifies"],
+            },
+            "storage_events": deepcopy(self.storage_events[-40:]),
+            "provenance": {
+                "events": self.provenance_metrics["events"],
+                "stamps": self.provenance_metrics["stamps"],
+            },
+            "provenance_events": deepcopy(self.provenance_events[-40:]),
+            "shadow": {
+                "events": self.shadow_metrics["events"],
+                "agreements": self.shadow_metrics["agreements"],
+                "disagreements": self.shadow_metrics["disagreements"],
+            },
+            "shadow_events": deepcopy(self.shadow_events[-40:]),
         }
 
     def reset(self) -> None:
@@ -992,6 +1076,9 @@ class ValidationHarness:
         self.analogy_events.clear()
         self.reconciliation_events.clear()
         self.confidence_organ_events.clear()
+        self.storage_events.clear()
+        self.provenance_events.clear()
+        self.shadow_events.clear()
         self.identity_metrics = {
             "growth": 0,
             "stability": 0,
@@ -1134,4 +1221,22 @@ class ValidationHarness:
             "recalibrations": 0,
             "last_before": 0.0,
             "last_after": 0.0,
+        }
+        self.storage_metrics = {
+            "events": 0,
+            "flushes": 0,
+            "exports": 0,
+            "imports": 0,
+            "backups": 0,
+            "restores": 0,
+            "verifies": 0,
+        }
+        self.provenance_metrics = {
+            "events": 0,
+            "stamps": 0,
+        }
+        self.shadow_metrics = {
+            "events": 0,
+            "agreements": 0,
+            "disagreements": 0,
         }

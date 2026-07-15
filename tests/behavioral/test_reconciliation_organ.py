@@ -44,7 +44,7 @@ def test_conflict_preserves_lineage_and_lowers_confidence() -> None:
     assert ca.confidence <= before_a or cb.confidence <= before_b
     assert len(engine.store.confidence_events) >= 1
     snap = engine.validation.snapshot()
-    assert snap["schema"] == "acm.validation/0.12"
+    assert snap["schema"] == "acm.validation/0.13"
     assert snap["reconciliation"]["reconciliations"] >= 1
     assert snap["confidence"]["evolutions"] >= 1
 

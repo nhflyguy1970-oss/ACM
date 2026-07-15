@@ -8,7 +8,7 @@ def test_harness_reflection_metrics() -> None:
     engine.encode("My favorite tea is green.", kind="preference")
     engine.what_do_i_think("What is my favorite tea?")
     snap = engine.validation.snapshot()
-    assert snap["schema"] == "acm.validation/0.12"
+    assert snap["schema"] == "acm.validation/0.13"
     assert "reflection" in snap
     assert snap["reflection"]["reflections"] >= 1
     assert snap["reflection"]["reflective_experiences"] >= 1

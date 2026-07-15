@@ -275,3 +275,27 @@ Significant architectural and implementation decisions. Deviations from the desi
 **Why:** Integration risk is engineering/host boundary, not missing memory organs; feature-copying AI frameworks would regress cognition.
 
 **Status:** Accepted. See `ACM_PHASE2_RECOMMENDATIONS.md`, `ACM_COMPARATIVE_RESEARCH.md`, `ARIA_INTEGRATION_ARCHITECTURE.md`.
+
+## D033 — ACM owns durable storage; hosts never own ACM store files (2026-07-15)
+
+**Decision:** Phase 2 delivers ACM-owned `DurableCognitiveStore` with replaceable SQLite backend, versioned snapshots, checksums, backup/restore. Hosts consume the engine API; they do not redefine ACM persistence as host tables.
+
+**Why:** Production readiness and technology independence without host lock-in.
+
+**Status:** Accepted.
+
+## D034 — Adapter and Shadow remain outside Aria and outside cognition (2026-07-15)
+
+**Decision:** Ship `aria_memory_adapter` as a separate package. Shadow Mode keeps legacy authoritative and never changes user-visible behavior. No Aria application modifications in Phase 2.
+
+**Why:** Preserve host independence; enable measurable dual-write without cutover risk.
+
+**Status:** Accepted.
+
+## D035 — Certification framework does not certify (2026-07-15)
+
+**Decision:** Build certification gates and report generator with `certified=False` always until an explicit future certification execution approval.
+
+**Why:** Separate readiness tooling from formal certification authority.
+
+**Status:** Accepted.

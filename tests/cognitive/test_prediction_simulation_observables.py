@@ -9,7 +9,7 @@ def test_prediction_simulation_observables() -> None:
     engine.what_is_likely("module gamma")
     engine.what_futures_can_memory_imagine("module gamma", branches=2)
     snap = engine.validation.snapshot()
-    assert snap["schema"] == "acm.validation/0.12"
+    assert snap["schema"] == "acm.validation/0.13"
     assert "prediction" in snap and "simulation" in snap
     blob = str(snap).lower()
     for banned in ("chain of thought", "system prompt", "you are an ai"):
