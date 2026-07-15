@@ -2,6 +2,25 @@
 
 All notable changes to ACM are documented here.
 
+## [0.7.0] — 2026-07-15
+
+### Added
+
+- **M6 Reflection organ** — first metacognitive organ answering *What do I think about what I remember?*
+- Evaluation of Remembering reconstructions (confidence, contradiction, consistency, pattern, question, hypothesis, uncertainty)
+- Reflective Experiences as immutable lineage (`reflects_on`) — never rewrite history
+- Reuses shared Cognitive Activation Architecture via Remembering (no second activation model)
+- Public `what_do_i_think()`; harness schema `acm.validation/0.7`
+- Docs: `REFLECTION_MODEL.md`, `METACOGNITION_FOUNDATIONS.md`, `REFLECTIVE_EXPERIENCES.md`, `COGNITIVE_CAPABILITY_MAP.md`
+- Decision D019 (Reflection ownership + Reflective Experiences)
+- Behavioral, cognitive, unit, and performance reflection tests
+
+### Notes
+
+- Learning / Prediction / Planning / Creativity / Forgetting not started
+- Reflection does not silently mutate Concepts or Experiences
+- Aria / host wiring remains out of scope
+
 ## [0.6.0] — 2026-07-15
 
 ### Added

@@ -66,6 +66,6 @@ Context retags emphasis; Identity biases self-relevant reconstructions and owns 
 
 Recent activations and Experience timestamps bias accessibility for reconstruction without rewriting history.
 
-## Future Reflection
+## Future Reflection → M6 delivered
 
-Remembering produces reconstructions. Reflection will evaluate them. M5 does not implement Reflection.
+Remembering produces reconstructions. **Reflection** evaluates them and births Reflective Experiences. See [`REFLECTION_MODEL.md`](REFLECTION_MODEL.md). M5/M6 still do **not** implement Learning.

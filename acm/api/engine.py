@@ -17,6 +17,7 @@ from acm.experiences import ExperienceOrgan
 from acm.identity import IdentityOrgan
 from acm.observability.trace import CognitiveTraceEvent, TraceLog
 from acm.plugins import ExtensionRegistry
+from acm.reflection import ReflectionOrgan
 from acm.remembering import RememberingOrgan
 from acm.types import (
     AttentionClass,
@@ -87,11 +88,19 @@ class CognitiveEngine:
             associations=self.associations,
             buffer=self.buffer,
         )
+        self.reflection = ReflectionOrgan(
+            store=self.store,
+            validation=self.validation,
+            remembering=self.remembering,
+            experiences=self.experiences,
+            buffer=self.buffer,
+        )
         self.extensions = ExtensionRegistry(core_version=acm_version)
         self.extensions.bind_engine(self)
         # Metacognitive sketches — emerge from state; not scripted “consciousness”
         self._encode_count = 0
         self._remember_count = 0
+        self._reflect_count = 0
         # Nuclei exist as organizational anchors; content still arrives via experience
         self.identity.ensure_schemas()
         for cid in self.identity._schema_ids.values():
@@ -342,14 +351,33 @@ class CognitiveEngine:
         }
         return public
 
+    def what_do_i_think(self, cue: str) -> dict[str, Any]:
+        """Cognitive question M6: What do I think about what I remember?"""
+        self.context = infer_context(cue, self.context)
+        has_goal = bool(self.store.active_goals())
+        attention = classify_attention(cue, has_open_goal=has_goal)
+        weight = encode_weight(attention)
+        evaluation = self.reflection.what_do_i_think(
+            cue,
+            context_tags=self.context.tags,
+            attention_weight=weight,
+            attention_class=attention.value,
+        )
+        self._reflect_count += 1
+        return evaluation.to_public()
+
     def timeline(self, **kwargs: Any) -> dict[str, Any]:
         return self.experiences.timeline(**kwargs)
 
     def revise_experience(self, experience_id: str, text: str, **kwargs: Any) -> dict[str, Any]:
-        """Correction/reflection path — always births a new immutable Experience."""
+        """Correction path — always births a new immutable Experience."""
         return self.encode(text, revises_id=experience_id, **kwargs)
 
     def reflect_on(self, experience_id: str, text: str, **kwargs: Any) -> dict[str, Any]:
+        """Host-supplied Reflective Experience lineage helper.
+
+        Prefer `what_do_i_think` for organ evaluation.
+        """
         return self.encode(text, reflects_on_id=experience_id, pin=True, **kwargs)
 
     def remember(self, query: str) -> RememberResult:
@@ -517,6 +545,7 @@ class CognitiveEngine:
         cob = self.concepts.observables()
         aobs = self.associations.observables()
         robs = self.remembering.observables()
+        fobs = self.reflection.observables()
         return {
             "agent_id": self.agent_id,
             "what_i_know_count": len(active_concepts),
@@ -530,8 +559,10 @@ class CognitiveEngine:
             "concept": cob,
             "association": aobs,
             "remembering": robs,
+            "reflection": fobs,
             "encode_count": self._encode_count,
             "remember_count": self._remember_count,
+            "reflect_count": self._reflect_count,
             "buffer_occupancy": len(self.buffer),
             "context_tags": list(self.context.tags),
             "extensions": self.extensions.names(),

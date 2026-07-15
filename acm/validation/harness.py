@@ -135,6 +135,17 @@ class ValidationHarness:
             "context_influenced": 0,
             "working_influenced": 0,
         }
+        self.reflection_events: list[dict[str, Any]] = []
+        self.reflection_metrics: dict[str, float | int] = {
+            "reflections": 0,
+            "contradictions": 0,
+            "patterns": 0,
+            "questions": 0,
+            "hypotheses": 0,
+            "insufficient_evidence": 0,
+            "activation_reused": 0,
+            "reflective_experiences": 0,
+        }
 
     def _trim(self, seq: list[Any]) -> None:
         overflow = len(seq) - self.max_events
@@ -343,10 +354,43 @@ class ValidationHarness:
                 int(self.remembering_metrics["working_influenced"]) + 1
             )
 
+    def record_reflection(self, **payload: Any) -> None:
+        event = {"timestamp": time(), **payload}
+        self.reflection_events.append(event)
+        self._trim(self.reflection_events)
+        if payload.get("reflection") or payload.get("action") == "evaluation":
+            self.reflection_metrics["reflections"] = (
+                int(self.reflection_metrics["reflections"]) + 1
+            )
+        if payload.get("contradiction"):
+            self.reflection_metrics["contradictions"] = (
+                int(self.reflection_metrics["contradictions"]) + 1
+            )
+        if payload.get("pattern"):
+            self.reflection_metrics["patterns"] = int(self.reflection_metrics["patterns"]) + 1
+        if payload.get("question"):
+            self.reflection_metrics["questions"] = int(self.reflection_metrics["questions"]) + 1
+        if payload.get("hypothesis"):
+            self.reflection_metrics["hypotheses"] = (
+                int(self.reflection_metrics["hypotheses"]) + 1
+            )
+        if payload.get("insufficient_evidence"):
+            self.reflection_metrics["insufficient_evidence"] = (
+                int(self.reflection_metrics["insufficient_evidence"]) + 1
+            )
+        if payload.get("activation_reused"):
+            self.reflection_metrics["activation_reused"] = (
+                int(self.reflection_metrics["activation_reused"]) + 1
+            )
+        if payload.get("reflective_experience_id"):
+            self.reflection_metrics["reflective_experiences"] = (
+                int(self.reflection_metrics["reflective_experiences"]) + 1
+            )
+
     def snapshot(self) -> dict[str, Any]:
         """Public validation snapshot — metadata only, no chain-of-thought."""
         return {
-            "schema": "acm.validation/0.6",
+            "schema": "acm.validation/0.7",
             "counts": {
                 "activations": len(self.activations),
                 "confidence_deltas": len(self.confidence_deltas),
@@ -360,6 +404,7 @@ class ValidationHarness:
                 "concept_events": len(self.concept_events),
                 "association_events": len(self.association_events),
                 "remembering_events": len(self.remembering_events),
+                "reflection_events": len(self.reflection_events),
             },
             "identity": {
                 "growth": self.identity_metrics["growth"],
@@ -456,6 +501,23 @@ class ValidationHarness:
             "concept_events": deepcopy(self.concept_events[-40:]),
             "association_events": deepcopy(self.association_events[-40:]),
             "remembering_events": deepcopy(self.remembering_events[-40:]),
+            "reflection": {
+                "reflections": self.reflection_metrics["reflections"],
+                "contradictions": self.reflection_metrics["contradictions"],
+                "patterns": self.reflection_metrics["patterns"],
+                "questions": self.reflection_metrics["questions"],
+                "hypotheses": self.reflection_metrics["hypotheses"],
+                "insufficient_evidence": self.reflection_metrics["insufficient_evidence"],
+                "activation_reused": self.reflection_metrics["activation_reused"],
+                "reflective_experiences": self.reflection_metrics["reflective_experiences"],
+                "evolution": {
+                    "touches": len(self.reflection_events),
+                    "reflections": self.reflection_metrics["reflections"],
+                    "contradictions": self.reflection_metrics["contradictions"],
+                    "questions": self.reflection_metrics["questions"],
+                },
+            },
+            "reflection_events": deepcopy(self.reflection_events[-40:]),
         }
 
     def reset(self) -> None:
@@ -471,6 +533,7 @@ class ValidationHarness:
         self.concept_events.clear()
         self.association_events.clear()
         self.remembering_events.clear()
+        self.reflection_events.clear()
         self.identity_metrics = {
             "growth": 0,
             "stability": 0,
@@ -525,4 +588,14 @@ class ValidationHarness:
             "identity_influenced": 0,
             "context_influenced": 0,
             "working_influenced": 0,
+        }
+        self.reflection_metrics = {
+            "reflections": 0,
+            "contradictions": 0,
+            "patterns": 0,
+            "questions": 0,
+            "hypotheses": 0,
+            "insufficient_evidence": 0,
+            "activation_reused": 0,
+            "reflective_experiences": 0,
         }

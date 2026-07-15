@@ -17,6 +17,8 @@
 | **Activation Architecture** | Shared cue→spread→field model for all active organs |
 | **Reconstruction** | Present-tense recollection package; never rewrites Experience history |
 | **Spreading activation** | Energy propagation along Associations with decay / thresholds |
+| **Reflection** | Metacognitive evaluation (*What do I think about what I remember?*) |
+| **Reflective Experience** | Immutable Experience born from Reflection with `reflects_on` lineage |
 | **Goal Space** | Active / completed goals that bias attention and recall |
 | **Attention** | Gate that modulates encoding durability |
 | **Context frame** | Situational tags that modulate meaning and retrieval |

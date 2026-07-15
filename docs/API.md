@@ -1,8 +1,8 @@
-# API — ACM v0.6
+# API — ACM v0.7
 
 Public surface is intentionally small. Hosts integrate through `CognitiveEngine`; adapters and storage backends may evolve underneath without expanding the verb set casually.
 
-See also: [`PLUGIN_ARCHITECTURE.md`](PLUGIN_ARCHITECTURE.md) · [`CORE_BOUNDARIES.md`](CORE_BOUNDARIES.md) · [`REMEMBERING_MODEL.md`](REMEMBERING_MODEL.md) · [`COGNITIVE_ACTIVATION_ARCHITECTURE.md`](COGNITIVE_ACTIVATION_ARCHITECTURE.md) · [`ASSOCIATION_MODEL.md`](ASSOCIATION_MODEL.md)
+See also: [`COGNITIVE_CAPABILITY_MAP.md`](COGNITIVE_CAPABILITY_MAP.md) · [`REFLECTION_MODEL.md`](REFLECTION_MODEL.md) · [`REMEMBERING_MODEL.md`](REMEMBERING_MODEL.md) · [`COGNITIVE_ACTIVATION_ARCHITECTURE.md`](COGNITIVE_ACTIVATION_ARCHITECTURE.md)
 
 ## Install
 
@@ -66,6 +66,10 @@ Active **Remembering** — reconstructs via the shared Cognitive Activation Arch
 
 Cognitive question M5 façade over `remember()` — returns the reconstruction public view.
 
+#### `what_do_i_think(cue) -> dict`
+
+Cognitive question M6 — evaluates the reconstruction and births a Reflective Experience. Returns outcomes, confidence assessment, questions/hypotheses, and lineage ids. Does not rewrite history.
+
 #### `sleep(*, apply_low_impact=True) -> dict`
 
 Consolidation pass: prune weak edges (optional); record merge *proposals* without auto-applying high-impact structure changes.
@@ -110,6 +114,14 @@ Foundations for self-modeling: counts of known / uncertain concepts, experiences
 | `engine.remembering` | Remembering organ |
 | `engine.activation` | Shared Cognitive Activation Engine |
 
+### Reflection
+
+| Method | Purpose |
+|--------|---------|
+| `what_do_i_think(cue)` | *What do I think about what I remember?* evaluation + Reflective Experience |
+| `reflect_on(experience_id, text)` | Host-supplied Reflective Experience lineage helper |
+| `engine.reflection` | Reflection organ |
+
 ### Identity
 
 | Method | Purpose |
@@ -132,7 +144,7 @@ Foundations for self-modeling: counts of known / uncertain concepts, experiences
 |-----------|---------|
 | `engine.validation` | `ValidationHarness` — milestone observables |
 | `engine.trace` | `TraceLog` of `CognitiveTraceEvent` |
-| `engine.validation.snapshot()` | JSON-safe report (`acm.validation/0.6`) including remembering metrics |
+| `engine.validation.snapshot()` | JSON-safe report (`acm.validation/0.7`) including reflection metrics |
 | `engine.identity` | Identity organ (advanced; prefer public methods above) |
 
 ## Non-goals (public API)

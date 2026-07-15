@@ -15,7 +15,7 @@ Observable **cognitive state**, not reasoning dumps.
 
 ```python
 report = engine.validation.snapshot()
-assert report["schema"] == "acm.validation/0.6"
+assert report["schema"] == "acm.validation/0.7"
 ```
 
 Recorded streams (trimmed FIFO):
@@ -36,6 +36,8 @@ Recorded streams (trimmed FIFO):
 | `association_events` / `association` | M4 metrics |
 | `remembering_events` | Activation fields + reconstructions |
 | `remembering` (aggregate) | reconstructions · activations · ambiguities · propagations · decays · experience_participants · goal/identity/context/working influence · evolution |
+| `reflection_events` | Evaluation outcomes + Reflective Experience ids |
+| `reflection` (aggregate) | reflections · contradictions · patterns · questions · hypotheses · insufficient_evidence · activation_reused · reflective_experiences · evolution |
 
 ## Trace log
 

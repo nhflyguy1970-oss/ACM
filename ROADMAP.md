@@ -11,6 +11,7 @@ Milestones are cognitive, not storage-tech. Each milestone requires: design revi
 | **M3** | Concept organ — *What is this?* | **Done (v0.4.0)** |
 | **M4** | Association organ — *How is this related?* | **Done (v0.5.0)** |
 | **M5** | Remembering organ — *What do I remember?* (+ shared Activation Architecture) | **Done (v0.6.0)** |
+| **M6** | Reflection organ — *What do I think about what I remember?* | **Done (v0.7.0)** |
 | **M5b** | Goal Space bias refinement on encode/remember | Planned (M0 stubs exist; goals already bias activation) |
 | **M4b** | Working memory interference + attention field | Planned (M0 stubs exist) |
 | **M6** | Context frames & contextual recall | Planned (M0 stubs exist) |

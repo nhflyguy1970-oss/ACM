@@ -173,6 +173,13 @@ See also: [`ASSOCIATION_MODEL.md`](ASSOCIATION_MODEL.md) · [`COGNITIVE_NETWORKS
 
 See also: [`REMEMBERING_MODEL.md`](REMEMBERING_MODEL.md) · [`COGNITIVE_ACTIVATION_ARCHITECTURE.md`](COGNITIVE_ACTIVATION_ARCHITECTURE.md)
 
+### 5.3c Reflection evaluation — M6+
+
+**Success:** Reflection births Reflective Experiences; prior Experiences immutable; honest uncertainty/contradiction/question outcomes; Activation Architecture reused.  
+**Failure:** Silent Concept overwrite; CoT dumps; Learning disguised as Reflection.  
+
+See also: [`REFLECTION_MODEL.md`](REFLECTION_MODEL.md) · [`COGNITIVE_CAPABILITY_MAP.md`](COGNITIVE_CAPABILITY_MAP.md)
+
 ### 5.4 Memory strengthening — M4/M5/M7+
 
 **Success:** Practice, confirmation, multimodal co-activation raise retrieval preference.  

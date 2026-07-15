@@ -154,3 +154,20 @@ Significant architectural and implementation decisions. Deviations from the desi
 **Why:** Retrieval/search/RAG are insufficient for human-like cognition; one shared activation model prevents each future organ inventing a parallel mechanism.
 
 **Status:** Accepted.
+
+## D019 — Reflection evaluates; Reflective Experiences record history (2026-07-15)
+
+**Decision:** M6 Reflection organ answers *What do I think about what I remember?* by evaluating Remembering reconstructions and birthing immutable **Reflective Experiences** (`CognitiveKind.REFLECTION`, `reflects_on` lineage). Reflection reuses the Cognitive Activation Architecture through Remembering — it does not invent a second activation model. Confidence assessment is evaluative metadata / artifact content, not silent overwrite of Concept confidence. Intellectual honesty outcomes (`insufficient_evidence`, contradictions, questions, hypotheses) are first-class.
+
+**Organ map for this decision:**
+
+| Item | Content |
+|------|---------|
+| Depends upon | Identity, Experiences, Concepts, Associations, Remembering |
+| Future dependents | Learning, Prediction, Planning, Creativity, Metacognition |
+| Owns alone | Evaluation of reconstructions + Reflective Experience birth |
+| Never assumes | Learning/adaptation, planning, history rewrite, Concept meaning |
+
+**Why:** Metacognition requires observable evaluation that leaves auditable history for future Learning without secretly mutating prior cognition.
+
+**Status:** Accepted.
