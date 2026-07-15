@@ -2,6 +2,31 @@
 
 All notable changes to ACM are documented here.
 
+## [0.16.0] — 2026-07-15
+
+### Added — Cognitive Intent Classification & Routing (architectural correction)
+
+- Package updates: `acm.authority.taxonomy`, expanded `classification`, new `routing`
+  (`CognitiveRoutingEngine`, `CognitiveOwnership`, `route_request`)
+- Distinct `assistant_identity` vs `user_identity`; goal/project/decision/working-memory intents
+- Non-cognitive taxonomy still classified by ACM (`procedural`, `planning`, `tool_request`, …)
+- Uncertain classification policy: no silent LM ownership for self/shared cognitive cues
+- Docs: `COGNITIVE_INTENT_CLASSIFICATION.md`, `COGNITIVE_ROUTING.md`, `INTENT_TAXONOMY.md`,
+  `COGNITIVE_OWNERSHIP.md`, `QUESTION_CLASSIFICATION.md`, `COGNITIVE_ROUTING_VALIDATION.md`
+- Decision **D039**; tests `tests/cognitive/test_cognitive_intent_routing.py`
+
+### Changed
+
+- Cognitive Response Pipeline routes via Cognitive Routing Engine
+- Identity questions: “Who am I?” → user identity path (not assistant `who_am_i`)
+- Goal / project questions no longer fall through as weak `general_memory` when specialized cues match
+
+### Notes
+
+- Standalone ACM only — **not** promoted into Aria until explicit approval
+- Memory Authority (D038) remains intact and is required before speech for cognitive intents
+- Certification (v0.14.0) unchanged until re-certification after promotion/acceptance
+
 ## [0.15.0] — 2026-07-15
 
 ### Added — Memory Authority architectural correction

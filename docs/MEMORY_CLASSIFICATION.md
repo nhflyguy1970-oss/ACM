@@ -1,33 +1,37 @@
 # Memory Classification
 
-**Status:** Normative (v0.15.0)  
-**Module:** `acm.authority.classification`
+**Status:** Normative (superseded in detail by v0.16 Cognitive Intent Classification)  
+**Module:** `acm.authority.classification`  
+**See:** [`COGNITIVE_INTENT_CLASSIFICATION.md`](COGNITIVE_INTENT_CLASSIFICATION.md) · [`QUESTION_CLASSIFICATION.md`](QUESTION_CLASSIFICATION.md)
 
 ## Purpose
 
 Decide whether an inbound utterance requires cognitive memory **before** any
-language-model generation.
+language-model generation, and which **cognitive intent** applies.
 
 ## Outcomes
 
 | `is_memory_request` | `intent` | Host obligation |
 |---------------------|----------|-----------------|
-| true | `identity`, `remembering`, `learning`, … | Call ACM pipeline first |
-| false | `not_memory` | Non-memory task; LM allowed for generation (still cannot become memory) |
+| true | cognitive intents (`assistant_identity`, `remembering`, `goal`, …) | Call ACM pipeline first |
+| false | non-cognitive (`procedural`, `general_knowledge`, `not_memory`, …) | Host may generate; still cannot become memory |
 
-## Covered intents
+## Covered intents (v0.16)
 
-Identity · Experience · Remembering · Reflection · Learning · Concept ·
-Association · Goal · Preference · Confidence · Reconciliation · Project ·
-History · Autobiography · Pattern · General memory.
+Identity (assistant/user) · Autobiography · Experience · Remembering ·
+Reflection · Learning · Concept · Association · Goal · Preference ·
+Confidence · Reconciliation · Project · History · Decision history ·
+Working memory · Current context · Pattern · General memory · Uncertain ·
+plus classified non-cognitive surfaces.
 
-## Signals (examples)
+## Critical examples
 
-- “Who are you?” / “Who am I?” → identity  
-- “What do you remember…?” / “What is my …?” → remembering  
-- “What have you learned?” → learning  
-- “What happened…?” → experience  
-- “Write a poem…” → not_memory  
+- “Who are you?” → `assistant_identity` → Identity Organ  
+- “Who am I?” → `user_identity` → Identity Organ (user path)  
+- “What projects are we working on?” → `project` → Remembering (+ supports)  
+- “What is our long-term goal?” → `goal` → Goals  
+- “How has your understanding changed?” → `learning` → Learning  
+- “Write a poem…” → `procedural` → not memory  
 
-Classification is host-agnostic regex/heuristic routing inside ACM. Hosts may
-add richer NLP **before** calling ACM, but must not replace ACM reconstruction.
+Classification is host-agnostic inside ACM. Hosts must not replace ACM
+reconstruction or organ ownership.

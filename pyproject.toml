@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "aria-cognitive-memory"
-version = "0.15.0"
+version = "0.16.0"
 description = "ACM — Aria Cognitive Memory: a reusable, host-agnostic cognitive memory engine"
 readme = "README.md"
 requires-python = ">=3.11"

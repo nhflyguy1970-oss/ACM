@@ -26,6 +26,7 @@ Implementation was authorized as a **new standalone engine**, not a rename of Ar
 - **2026-07:** Phase 2 Operational Certification Execution — measured all gates. Verdict: **CERTIFIED WITH CONDITIONS**. Released as v0.14.0 (evidence docs only). See `docs/ACM_CERTIFIED_v1.md`.
 - **2026-07:** Aria ACM Integration Blueprint (**design only**) — full cognitive memory **replacement** via independent Aria-embedded ACM copy; ACM Supremacy Rules (D036–D037). Docs live under Jarvis `docs/acm_integration/`. Released as ACM v0.14.1 (governance docs only). **No Aria/ACM implementation.**
 - **2026-07:** **Memory Authority** architectural correction (D038) — Cognitive Response Pipeline; LM never determines memory; unknown is knowledge; speech contamination blocked; soft confabulation refused. Released as **v0.15.0**. Standalone only until promotion approval.
+- **2026-07:** **Cognitive Intent Classification & Routing** architectural correction (D039) — every request classified by cognitive intent; Cognitive Routing Engine assigns organ ownership; LM never chooses the organ; assistant vs user identity; goals/projects/reflection/learning routed correctly. Released as **v0.16.0**. Standalone only until promotion approval.
 
 ## Milestone cognitive questions
 

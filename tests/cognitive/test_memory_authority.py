@@ -22,7 +22,7 @@ def eng(tmp_path):
 def test_classify_identity_and_remembering():
     who = classify_memory_request("Who are you?")
     assert who.is_memory_request is True
-    assert who.intent == MemoryIntent.IDENTITY
+    assert who.intent == MemoryIntent.ASSISTANT_IDENTITY
 
     rem = classify_memory_request("What do you remember about coffee?")
     assert rem.is_memory_request is True
@@ -33,7 +33,7 @@ def test_classify_identity_and_remembering():
 
     non = classify_memory_request("Write a poem about the ocean")
     assert non.is_memory_request is False
-    assert non.intent == MemoryIntent.NOT_MEMORY
+    assert non.intent in {MemoryIntent.NOT_MEMORY, MemoryIntent.PROCEDURAL}
 
 
 def test_known_memory_pipeline(eng: CognitiveEngine):
@@ -124,9 +124,10 @@ def test_generated_response_isolation(eng: CognitiveEngine):
 
 def test_identity_recall_via_pipeline(eng: CognitiveEngine):
     result = eng.cognitive_respond("Who are you?")
-    assert result["intent"] == MemoryIntent.IDENTITY.value
+    assert result["intent"] == MemoryIntent.ASSISTANT_IDENTITY.value
     assert result["is_memory_request"] is True
-    assert "classify_memory_request" in result["reasoning_path"]
+    assert any("classify" in step for step in result["reasoning_path"])
+    assert any("who_am_i" in step or "owner:identity" in step for step in result["reasoning_path"])
 
 
 def test_low_confidence_and_false_memory_prevention(eng: CognitiveEngine):

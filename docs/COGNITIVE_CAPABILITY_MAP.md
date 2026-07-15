@@ -15,6 +15,7 @@
 | Cognitive Activation Architecture | Shared cue→spread→field for active organs |
 | Working Buffer · Attention · Context · Goals | Bias & capacity (owned as mechanisms, not full milestone organs yet) |
 | **Memory Authority (v0.15)** | Classify → ACM reconstruct → `CognitiveMemoryResult` → faithful speak; LM never memory authority |
+| **Cognitive Intent & Routing (v0.16)** | Intent taxonomy → organ ownership → route; LM never determines cognitive owner (D039) |
 
 ---
 

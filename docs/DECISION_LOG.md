@@ -332,3 +332,11 @@ Matrix, API, migration, rollback, and test plans must not authorize permanent du
 **Why:** Daily Use testing showed hosts can answer memory questions via LM generation, creating hallucinated autobiography and contamination risk. Memory is cognitive, not linguistic.
 
 **Status:** Accepted. Docs: `MEMORY_AUTHORITY_MODEL.md`, `COGNITIVE_RESPONSE_PIPELINE.md`, et al. Version **v0.15.0**. Promotion into Aria vendored copy requires separate approval.
+
+## D039 — Cognitive Intent Classification & Routing (2026-07-15)
+
+**Decision:** Every inbound request SHALL pass **Cognitive Intent Classification** before execution. Classification determines cognitive vs non-cognitive ownership and **which ACM organ answers**. A **Cognitive Routing Engine** assigns exactly one primary organ (supporting organs optional). The language model never determines cognitive ownership. Uncertain classifications with self/shared cognitive cues remain cognitive-conservative (`general_memory` / `uncertain`) — they do **not** silent-bypass to LM generation. Assistant identity and user identity are distinct intents. Goal and project questions route to cognitive memory (goals / remembering), not host language generation.
+
+**Why:** Daily Use testing showed Memory Authority alone is insufficient when the classifier is too shallow — autobiographical and cognitive questions were classified as general language and could bypass the cognitive pipeline.
+
+**Status:** Accepted. Docs: `COGNITIVE_INTENT_CLASSIFICATION.md`, `COGNITIVE_ROUTING.md`, `INTENT_TAXONOMY.md`, `COGNITIVE_OWNERSHIP.md`, `QUESTION_CLASSIFICATION.md`, `COGNITIVE_ROUTING_VALIDATION.md`. Version **v0.16.0**. Standalone ACM only until explicitly promoted into Aria.

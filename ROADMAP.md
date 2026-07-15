@@ -10,13 +10,15 @@ Milestones are cognitive, not storage-tech. Each milestone requires the permanen
 | **P2 Cert** | Operational Certification Execution | **Done (v0.14.0)** — **CERTIFIED WITH CONDITIONS** |
 | **Aria Blueprint** | Full memory replacement design + ACM Supremacy Rules | **Done (design, v0.14.1 docs)** — Jarvis `docs/acm_integration/` |
 | **Memory Authority** | LM never determines memory; Cognitive Response Pipeline | **Done (v0.15.0)** — D038; promote-to-Aria pending approval |
-| **Next (approval)** | Promote Memory Authority into Aria vendored ACM; close cert Condition 1 | **Awaiting approval** |
+| **Cognitive Intent & Routing** | Classify cognitive ownership; route to owning organ | **Done (v0.16.0)** — D039; promote-to-Aria pending approval |
+| **Next (approval)** | Promote certified ACM into Aria vendored copy (v0.15+/v0.16+ as approved) | **Awaiting approval** |
 | **Later** | Unqualified ACM 1.0 label | Evidence-driven |
 | **Later** | Planning / Decision / Creativity | Deferred |
 
 > **Certification:** [`docs/ACM_CERTIFIED_v1.md`](docs/ACM_CERTIFIED_v1.md)  
 > **Memory Authority:** [`docs/MEMORY_AUTHORITY_MODEL.md`](docs/MEMORY_AUTHORITY_MODEL.md)  
-> **Integration policy:** D036 · D037 · **D038**.  
+> **Cognitive Intent:** [`docs/COGNITIVE_INTENT_CLASSIFICATION.md`](docs/COGNITIVE_INTENT_CLASSIFICATION.md)  
+> **Integration policy:** D036 · D037 · **D038** · **D039**.  
 > Standalone ACM stays research/reference — **not** Aria’s runtime shared library. Cognition improvements: implement here → certify → **explicit promotion**.
 
 ## Host integration
