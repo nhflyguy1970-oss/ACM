@@ -10,7 +10,7 @@ def test_harness_experience_metrics() -> None:
     engine.revise_experience(first["experience_id"], "Actually, the result was expected.")
     engine.experiences.touch(first["experience_id"])
     snap = engine.validation.snapshot()
-    assert snap["schema"] == "acm.validation/0.9"
+    assert snap["schema"] == "acm.validation/0.10"
     assert snap["experience"]["births"] >= 2
     assert snap["experience"]["lineage"] >= 1
     assert snap["experience"]["temporal_links"] >= 1

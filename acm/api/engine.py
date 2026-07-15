@@ -19,8 +19,10 @@ from acm.identity import IdentityOrgan
 from acm.learning import LearningOrgan
 from acm.observability.trace import CognitiveTraceEvent, TraceLog
 from acm.plugins import ExtensionRegistry
+from acm.prediction import PredictionOrgan
 from acm.reflection import ReflectionOrgan
 from acm.remembering import RememberingOrgan
+from acm.simulation import SimulationOrgan
 from acm.sleep import OfflineCognitionOrgan
 from acm.types import (
     AttentionClass,
@@ -121,6 +123,20 @@ class CognitiveEngine:
             attention=self.attention,
             forgetting=self.forgetting,
         )
+        self.prediction = PredictionOrgan(
+            store=self.store,
+            validation=self.validation,
+            activation=self.activation,
+            attention=self.attention,
+            forgetting=self.forgetting,
+        )
+        self.simulation = SimulationOrgan(
+            store=self.store,
+            validation=self.validation,
+            activation=self.activation,
+            attention=self.attention,
+            prediction=self.prediction,
+        )
         self.extensions = ExtensionRegistry(core_version=acm_version)
         self.extensions.bind_engine(self)
         # Metacognitive sketches — emerge from state; not scripted “consciousness”
@@ -129,6 +145,8 @@ class CognitiveEngine:
         self._reflect_count = 0
         self._learn_count = 0
         self._sleep_count = 0
+        self._predict_count = 0
+        self._simulate_count = 0
         # Nuclei exist as organizational anchors; content still arrives via experience
         self.identity.ensure_schemas()
         for cid in self.identity._schema_ids.values():
@@ -295,6 +313,16 @@ class CognitiveEngine:
             factors=["novelty", "salience"],
             summary="Encoding invested memory priority.",
         )
+        # Prediction accuracy loop — memory outcome feedback, not reward for actions
+        recent = sorted(
+            self.store.predictions.values(), key=lambda p: p.created, reverse=True
+        )
+        for pred in recent[:3]:
+            if pred.evaluated:
+                continue
+            if any(tok in (pred.cue or "").lower() for tok in text.lower().split() if len(tok) > 3):
+                self.prediction.evaluate(pred.id, concept.id)
+                break
 
         for attr in concept.attributes:
             if exp.id not in attr.evidence_ids:
@@ -442,6 +470,84 @@ class CognitiveEngine:
     def what_should_be_harder_to_remember(self, cue: str = "") -> dict[str, Any]:
         """Cognitive question M10: What should become harder to remember?"""
         return self.forgetting.what_should_be_harder_to_remember(cue)
+
+    def what_is_likely(self, cue: str) -> dict[str, Any]:
+        """Cognitive question M11: Based upon memory, what is likely?"""
+        self.context = infer_context(cue, self.context)
+        has_goal = bool(self.store.active_goals())
+        allocation = self.attention.allocate(
+            cue, has_open_goal=has_goal, context_tags=self.context.tags
+        )
+        result = self.prediction.what_is_likely(
+            cue,
+            context_tags=self.context.tags,
+            attention_weight=allocation.weight,
+        )
+        self._predict_count += 1
+        self.validation.record_lifecycle(
+            LifecycleEvent(
+                time(),
+                MemoryVerb.PREDICT.value,
+                result.get("id", ""),
+                f"outcomes:{len(result.get('outcomes') or [])}",
+            )
+        )
+        self.trace.append(
+            CognitiveTraceEvent(
+                verb=MemoryVerb.PREDICT.value,
+                attention_class=allocation.attention_class,
+                context_tags=list(self.context.tags),
+                metadata={
+                    "prediction_id": result.get("id"),
+                    "confidence": result.get("confidence"),
+                    "plans": False,
+                },
+            )
+        )
+        self.extensions.emit("after_predict", dict(result))
+        return result
+
+    def what_futures_can_memory_imagine(self, cue: str, *, branches: int = 3) -> dict[str, Any]:
+        """Cognitive question M12: What possible futures can memory imagine?"""
+        self.context = infer_context(cue, self.context)
+        has_goal = bool(self.store.active_goals())
+        allocation = self.attention.allocate(
+            cue, has_open_goal=has_goal, context_tags=self.context.tags
+        )
+        before = len(self.store.experiences)
+        result = self.simulation.what_futures_can_memory_imagine(
+            cue,
+            branches=branches,
+            context_tags=self.context.tags,
+            attention_weight=allocation.weight,
+        )
+        self._simulate_count += 1
+        result["experiences_unchanged"] = len(self.store.experiences) == before
+        self.validation.record_lifecycle(
+            LifecycleEvent(
+                time(),
+                MemoryVerb.SIMULATE.value,
+                "",
+                f"branches:{len(result.get('simulations') or [])}",
+            )
+        )
+        self.trace.append(
+            CognitiveTraceEvent(
+                verb=MemoryVerb.SIMULATE.value,
+                attention_class=allocation.attention_class,
+                metadata={
+                    "branch_count": len(result.get("simulations") or []),
+                    "hypothetical": True,
+                    "historical_experiences_created": 0,
+                    "plans": False,
+                },
+            )
+        )
+        self.extensions.emit("after_simulate", dict(result))
+        return result
+
+    def evaluate_prediction(self, prediction_id: str, realized_concept_id: str) -> dict[str, Any]:
+        return self.prediction.evaluate(prediction_id, realized_concept_id)
 
     def cool_memory(self, concept_id: str, *, steps: int = 1) -> dict[str, Any]:
         """Soft forget — accessibility down; never deletes Experiences."""
@@ -698,6 +804,8 @@ class CognitiveEngine:
         oobs = self.offline.observables()
         atobs = self.attention.observables()
         fobs_forget = self.forgetting.observables()
+        preds = self.prediction.observables()
+        sims = self.simulation.observables()
         return {
             "agent_id": self.agent_id,
             "what_i_know_count": len(active_concepts),
@@ -716,11 +824,15 @@ class CognitiveEngine:
             "offline": oobs,
             "attention": atobs,
             "forgetting": fobs_forget,
+            "prediction": preds,
+            "simulation": sims,
             "encode_count": self._encode_count,
             "remember_count": self._remember_count,
             "reflect_count": self._reflect_count,
             "learn_count": self._learn_count,
             "sleep_count": self._sleep_count,
+            "predict_count": self._predict_count,
+            "simulate_count": self._simulate_count,
             "buffer_occupancy": len(self.buffer),
             "context_tags": list(self.context.tags),
             "extensions": self.extensions.names(),

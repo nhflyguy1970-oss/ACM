@@ -211,3 +211,19 @@ Significant architectural and implementation decisions. Deviations from the desi
 **Why:** P17 — most forgetting is deactivation, not deletion; ownership must not collapse Offline into Forgetting.
 
 **Status:** Accepted.
+
+## D025 — Prediction estimates; never plans (2026-07-15)
+
+**Decision:** M11 Prediction owns probabilistic anticipated memory outcomes via Activation + Associations. It never selects actions, plans goal sequences, or makes decisions. Confidence evolves from feedback / Learning / Offline residue.
+
+**Why:** Prospective memory is not executive control.
+
+**Status:** Accepted.
+
+## D026 — Simulation is hypothetical memory; never history or planning (2026-07-15)
+
+**Decision:** M12 Mental Simulation owns temporary Hypothetical Sequences clearly tagged non-historical. It may reuse Prediction for anchors but never births Experiences, never plans, never decides. Planning remains a later consumer organ.
+
+**Why:** Episodic future thinking must not corrupt autobiography or become a planner.
+
+**Status:** Accepted.

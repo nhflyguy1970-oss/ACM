@@ -180,11 +180,43 @@
 
 **Implementation status:** Implemented (v0.9.0). Docs: [`FORGETTING_MODEL.md`](FORGETTING_MODEL.md) · [`MEMORY_ACCESSIBILITY.md`](MEMORY_ACCESSIBILITY.md) · [`MEMORY_PRIORITY_LIFECYCLE.md`](MEMORY_PRIORITY_LIFECYCLE.md).
 
+### Prediction — M11 implemented
+
+| Field | Content |
+|-------|---------|
+| Question | Based upon memory, what is likely? |
+| Exclusive responsibility | Probabilistic expected memory outcomes |
+| Inputs | Activation, Associations, Priority, Accessibility, Learning residue |
+| Outputs | `what_is_likely`, Prediction artifacts, `evaluate_prediction` |
+| Artifacts | Predictions with outcome distributions |
+| Dependencies | M1–M10 + Activation |
+| Future dependents | Mental Simulation; Planning (consumer later) |
+| Observability | `prediction` harness aggregate |
+| Validation | Never plans/decides; confidence evolves |
+
+**Implementation status:** Implemented (v0.10.0). Docs: [`PREDICTION_MODEL.md`](PREDICTION_MODEL.md) · [`PREDICTIVE_MEMORY.md`](PREDICTIVE_MEMORY.md) · [`BIOLOGICAL_VS_TECHNICAL_FUNCTION.md`](BIOLOGICAL_VS_TECHNICAL_FUNCTION.md).
+
+### Mental Simulation — M12 implemented
+
+| Field | Content |
+|-------|---------|
+| Question | What possible futures can memory imagine? |
+| Exclusive responsibility | Hypothetical recombination / counterfactual memory sequences |
+| Inputs | Activation, living structures, optional Prediction anchors |
+| Outputs | `what_futures_can_memory_imagine` / `simulate` |
+| Artifacts | Simulations with HypotheticalSteps (`hypothetical=true`) |
+| Dependencies | Prediction (optional), Activation, Concepts/Associations/Experiences (read-only) |
+| Future dependents | Planning (consumer); Creativity (later) |
+| Observability | `simulation` harness aggregate |
+| Validation | Never births Experiences; never plans/decides |
+
+**Implementation status:** Implemented (v0.10.0). Docs: [`MENTAL_SIMULATION.md`](MENTAL_SIMULATION.md) · [`HYPOTHETICAL_MEMORY.md`](HYPOTHETICAL_MEMORY.md).
+
 ---
 
 ## Not yet organs (roadmapped)
 
-Prediction · Planning · Creativity · Analogical Reasoning · Full Goal organ polish
+Planning · Creativity · Analogical Reasoning · Full Goal organ polish
 
 ## Ownership rule
 

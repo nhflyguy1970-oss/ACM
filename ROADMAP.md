@@ -15,31 +15,24 @@ Milestones are cognitive, not storage-tech. Each milestone requires: design → 
 | **L0** | Learning research & architecture (**design only**) | **Done (v0.7.1)** |
 | **M7** | Learning organ — *What have I learned?* | **Done (v0.8.0)** |
 | **M8** | Offline Cognition (Sleep & Consolidation) — *What should become long-term memory?* | **Done (v0.8.0)** |
-| **M9** | Attention & Memory Priority — *What deserves cognitive attention and continued memory investment?* | **Done (v0.9.0)** |
-| **M10** | Memory Accessibility & Forgetting — *What should become harder to remember?* | **Done (v0.9.0)** |
-| **M5b** | Goal Space organ polish | Planned (stubs / bias exist) |
-| **M4b** | Working memory polish | Planned (buffer exists; Attention organ supersedes field-only M4b attention) |
-| **M11** | Prediction | Planned |
-| **M12** | Planning | Planned (after Prediction) |
-| **M13** | Creativity / Analogical reasoning | Planned |
-| **M14** | Safe Self-Improvement governance (assent UX) | Planned — never automatic |
-| **M15** | Multimodal envelopes maturity | Planned |
-| **M16** | Knowledge ≠ Memory adoption paths | Planned |
-| **M17** | Observability / meta-memory sketch maturity | Partial |
+| **M9** | Attention & Memory Priority | **Done (v0.9.0)** |
+| **M10** | Memory Accessibility & Forgetting | **Done (v0.9.0)** |
+| **M11** | Prediction — *Based upon memory, what is likely?* | **Done (v0.10.0)** |
+| **M12** | Mental Simulation — *What possible futures can memory imagine?* | **Done (v0.10.0)** |
+| **M5b** | Goal Space organ polish | Planned |
+| **M4b** | Working memory polish | Planned |
+| **M13** | Planning | Planned (after Prediction + Simulation) |
+| **M14** | Creativity / Analogical reasoning | Planned |
+| **M15** | Safe Self-Improvement governance (assent UX) | Planned — never automatic |
+| **M16** | Multimodal envelopes maturity | Planned |
+| **M17** | Knowledge ≠ Memory adoption paths | Planned |
+| **M18** | Observability / meta-memory sketch maturity | Partial |
 
-> **Note:** Implementation numbering above is authoritative. Attention landed as **M9** and Forgetting as **M10** per adaptive-memory mandate (Prediction deferred).
-
-## Adaptive cycle (complete through v0.9.0)
-
-```
-Encode (Attention) → Experience → Remembering ↔ Accessibility
-  → Reflection → Learning → Offline Cognition (priority-ranked replay)
-  → Forgetting cools neglected paths → Reactivation via strong cues
-```
+> **Note:** M12 is Mental Simulation (memory recombination). Planning is deferred to **M13**. See [`BIOLOGICAL_VS_TECHNICAL_FUNCTION.md`](docs/BIOLOGICAL_VS_TECHNICAL_FUNCTION.md).
 
 ## Host integration
 
-Wiring Aria (or any host) remains **out of scope**.
+Wiring Aria remains **out of scope**.
 
 ## Governance
 

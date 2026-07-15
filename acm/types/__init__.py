@@ -20,6 +20,8 @@ class MemoryVerb(StrEnum):
     SLEEP = "sleep"
     ATTEND = "attend"
     FORGET = "forget"
+    PREDICT = "predict"
+    SIMULATE = "simulate"
 
 
 class AttentionClass(StrEnum):

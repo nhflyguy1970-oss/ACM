@@ -189,6 +189,21 @@ class ValidationHarness:
             "proposals": 0,
             "resists": 0,
         }
+        self.prediction_events: list[dict[str, Any]] = []
+        self.prediction_metrics: dict[str, float | int] = {
+            "events": 0,
+            "predictions": 0,
+            "evaluations": 0,
+            "last_confidence": 0.0,
+            "last_accuracy": 0.0,
+        }
+        self.simulation_events: list[dict[str, Any]] = []
+        self.simulation_metrics: dict[str, float | int] = {
+            "events": 0,
+            "simulations": 0,
+            "hypothetical_steps": 0,
+            "branches": 0,
+        }
 
     def _trim(self, seq: list[Any]) -> None:
         overflow = len(seq) - self.max_events
@@ -536,10 +551,48 @@ class ValidationHarness:
         if payload.get("resist"):
             self.forgetting_metrics["resists"] = int(self.forgetting_metrics["resists"]) + 1
 
+    def record_prediction(self, **payload: Any) -> None:
+        event = {"timestamp": time(), **payload}
+        self.prediction_events.append(event)
+        self._trim(self.prediction_events)
+        self.prediction_metrics["events"] = int(self.prediction_metrics["events"]) + 1
+        if payload.get("predict"):
+            self.prediction_metrics["predictions"] = (
+                int(self.prediction_metrics["predictions"]) + 1
+            )
+        if payload.get("evaluate"):
+            self.prediction_metrics["evaluations"] = (
+                int(self.prediction_metrics["evaluations"]) + 1
+            )
+        if payload.get("confidence") is not None:
+            self.prediction_metrics["last_confidence"] = float(payload["confidence"])
+        if payload.get("confidence_after") is not None:
+            self.prediction_metrics["last_confidence"] = float(payload["confidence_after"])
+        if payload.get("accuracy") is not None:
+            self.prediction_metrics["last_accuracy"] = float(payload["accuracy"])
+
+    def record_simulation(self, **payload: Any) -> None:
+        event = {"timestamp": time(), **payload}
+        self.simulation_events.append(event)
+        self._trim(self.simulation_events)
+        self.simulation_metrics["events"] = int(self.simulation_metrics["events"]) + 1
+        if payload.get("simulate"):
+            self.simulation_metrics["simulations"] = (
+                int(self.simulation_metrics["simulations"]) + 1
+            )
+            self.simulation_metrics["branches"] = (
+                int(self.simulation_metrics["branches"]) + 1
+            )
+        steps = int(payload.get("steps") or 0)
+        if steps:
+            self.simulation_metrics["hypothetical_steps"] = (
+                int(self.simulation_metrics["hypothetical_steps"]) + steps
+            )
+
     def snapshot(self) -> dict[str, Any]:
         """Public validation snapshot — metadata only, no chain-of-thought."""
         return {
-            "schema": "acm.validation/0.9",
+            "schema": "acm.validation/0.10",
             "counts": {
                 "activations": len(self.activations),
                 "confidence_deltas": len(self.confidence_deltas),
@@ -558,6 +611,8 @@ class ValidationHarness:
                 "offline_events": len(self.offline_events),
                 "attention_events": len(self.attention_events),
                 "forgetting_events": len(self.forgetting_events),
+                "prediction_events": len(self.prediction_events),
+                "simulation_events": len(self.simulation_events),
             },
             "identity": {
                 "growth": self.identity_metrics["growth"],
@@ -735,6 +790,30 @@ class ValidationHarness:
                 },
             },
             "forgetting_events": deepcopy(self.forgetting_events[-40:]),
+            "prediction": {
+                "events": self.prediction_metrics["events"],
+                "predictions": self.prediction_metrics["predictions"],
+                "evaluations": self.prediction_metrics["evaluations"],
+                "confidence": self.prediction_metrics["last_confidence"],
+                "accuracy": self.prediction_metrics["last_accuracy"],
+                "evolution": {
+                    "touches": len(self.prediction_events),
+                    "predictions": self.prediction_metrics["predictions"],
+                    "evaluations": self.prediction_metrics["evaluations"],
+                },
+            },
+            "prediction_events": deepcopy(self.prediction_events[-40:]),
+            "simulation": {
+                "events": self.simulation_metrics["events"],
+                "simulations": self.simulation_metrics["simulations"],
+                "hypothetical_steps": self.simulation_metrics["hypothetical_steps"],
+                "branches": self.simulation_metrics["branches"],
+                "evolution": {
+                    "touches": len(self.simulation_events),
+                    "simulations": self.simulation_metrics["simulations"],
+                },
+            },
+            "simulation_events": deepcopy(self.simulation_events[-40:]),
         }
 
     def reset(self) -> None:
@@ -755,6 +834,8 @@ class ValidationHarness:
         self.offline_events.clear()
         self.attention_events.clear()
         self.forgetting_events.clear()
+        self.prediction_events.clear()
+        self.simulation_events.clear()
         self.identity_metrics = {
             "growth": 0,
             "stability": 0,
@@ -858,4 +939,17 @@ class ValidationHarness:
             "accessibility_evolution": 0,
             "proposals": 0,
             "resists": 0,
+        }
+        self.prediction_metrics = {
+            "events": 0,
+            "predictions": 0,
+            "evaluations": 0,
+            "last_confidence": 0.0,
+            "last_accuracy": 0.0,
+        }
+        self.simulation_metrics = {
+            "events": 0,
+            "simulations": 0,
+            "hypothetical_steps": 0,
+            "branches": 0,
         }

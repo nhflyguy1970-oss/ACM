@@ -373,11 +373,12 @@ Order optimized for **stable identity first**, then associative life, then futur
 | **M8** | Offline Cognition / Sleep (*What should become long-term memory?*) — **shipped v0.8.0** |
 | **M9** | Attention & Memory Priority — **shipped v0.9.0** |
 | **M10** | Accessibility & Forgetting — **shipped v0.9.0** |
-| **M11** | Prediction |
-| **M12** | Planning (consumes ACM) |
-| **M13** | Creativity / Analogy |
-| **M14** | Autobiographical Memory |
-| **M15** | Meta-memory |
+| **M11** | Prediction — **shipped v0.10.0** |
+| **M12** | Mental Simulation — **shipped v0.10.0** |
+| **M13** | Planning (consumes ACM) |
+| **M14** | Creativity / Analogy |
+| **M15** | Autobiographical Memory |
+| **M16** | Meta-memory |
 
 **M0 before M1:** no Identity migration without the ability to observe activation, confidence movement, policy assent, and lifecycle transitions. Planning is late by design.
 

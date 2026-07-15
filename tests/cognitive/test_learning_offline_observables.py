@@ -9,7 +9,7 @@ def test_learning_observables_in_harness() -> None:
     thought = engine.what_do_i_think("What is my favorite tea?")
     engine.learn(reflective_experience_id=thought["reflective_experience_id"])
     snap = engine.validation.snapshot()
-    assert snap["schema"] == "acm.validation/0.9"
+    assert snap["schema"] == "acm.validation/0.10"
     assert snap["counts"]["learning_events"] >= 1
     assert "learning" in snap
     assert snap["learning"]["events"] >= 1

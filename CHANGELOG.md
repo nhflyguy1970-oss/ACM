@@ -2,6 +2,24 @@
 
 All notable changes to ACM are documented here.
 
+## [0.10.0] — 2026-07-15
+
+### Added
+
+- **M11 Prediction** — *Based upon memory, what is likely?* probabilistic Predicted Outcomes
+- **M12 Mental Simulation** — *What possible futures can memory imagine?* hypothetical sequences (never Experience history)
+- Public APIs: `what_is_likely`, `what_futures_can_memory_imagine`, `evaluate_prediction`
+- Prediction accuracy feedback from later encodes; confidence evolution
+- Simulation reuses Activation + optional Prediction anchors; reality wall enforced
+- Validation harness schema `acm.validation/0.10` — `prediction` + `simulation` aggregates
+- Docs: `PREDICTION_MODEL.md`, `MENTAL_SIMULATION.md`, `PREDICTIVE_MEMORY.md`, `HYPOTHETICAL_MEMORY.md`, `BIOLOGICAL_VS_TECHNICAL_FUNCTION.md`
+- Decisions D025 (Prediction≠planning), D026 (Simulation≠history/planning)
+
+### Notes
+
+- No Planning / Decision Making / Creativity / Aria
+- Singular Cognitive Activation Architecture retained
+
 ## [0.9.0] — 2026-07-15
 
 ### Added

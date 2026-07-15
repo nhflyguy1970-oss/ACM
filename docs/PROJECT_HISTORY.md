@@ -18,6 +18,7 @@ Implementation was authorized as a **new standalone engine**, not a rename of Ar
 - **2026-07:** L0 Learning research & architecture — design-only foundations for M7. Released as v0.7.1. **No Learning organ code.**
 - **2026-07:** M7 Learning + M8 Offline Cognition — first complete adaptive memory cycle (Adaptation Records; sleep replay/consolidation). Released as v0.8.0.
 - **2026-07:** M9 Attention & Memory Priority + M10 Accessibility & Forgetting — priority-driven cognition and human-like soft forgetting. Released as v0.9.0.
+- **2026-07:** M11 Prediction + M12 Mental Simulation — memory-driven likelihood and hypothetical futures. Released as v0.10.0.
 
 ## Milestone cognitive questions
 
@@ -34,6 +35,8 @@ Implementation was authorized as a **new standalone engine**, not a rename of Ar
 | M8 | What should become long-term memory? | Offline Cognition (Sleep & Consolidation) |
 | M9 | What deserves cognitive attention and continued memory investment? | Attention & Memory Priority |
 | M10 | What should become harder to remember? | Accessibility & Forgetting |
+| M11 | Based upon memory, what is likely? | Prediction |
+| M12 | What possible futures can memory imagine? | Mental Simulation |
 
 ### Organ dependency map (ownership)
 
@@ -49,11 +52,13 @@ Implementation was authorized as a **new standalone engine**, not a rename of Ar
 | Offline Cognition | Learning + living structures + Activation (read-only replay) | Forgetting (accessibility), improved Remembering | Replay, consolidation, abstraction proposals | Inventing Experiences; external I/O; architecture change |
 | Attention & Priority | Goals, Identity, living Concept importance, cue context | Encode/Remember/Reflect/Learn/Offline bias | Allocation + priority investment | Planning; decision making; deletion |
 | Accessibility & Forgetting | Neglect, Offline cool requests, host soft-forget | Remembering thresholds; reactivation | Accessibility stages; cool; reactivate | Experience deletion; history rewrite |
+| Prediction | Activation + Associations + Priority + Accessibility + Learning residue | Simulation (optional anchors); future Planning (consumer only) | Probabilistic memory outcomes | Planning; decisions; actions |
+| Mental Simulation | Activation + living structures + Prediction hints | Future Planning (consumer); Creativity (later) | Hypothetical sequences | Experience birth; planning; decisions |
 | Activation Architecture | Concepts, Associations, Identity, Goals, WM, Context, Attention, Accessibility | Every future active organ | Shared field mechanics | Organ-specific questions |
 
 ### What new cognitive capability exists today that did not exist yesterday?
 
-**ACM now allocates cognitive investment and soft-forgets like human memory:** Attention/priority evolve from experience; accessibility cools without destroying history; strong cues reactivate dormant structures — all through one Activation Architecture.
+**ACM now anticipates and imagines from memory:** Prediction estimates likely memory outcomes without planning; Mental Simulation explores hypothetical futures without rewriting history — both via one Activation Architecture.
 
 ## Relationship to Aria
 
