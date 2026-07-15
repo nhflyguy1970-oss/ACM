@@ -9,7 +9,7 @@ import pytest
 from acm.api.engine import CognitiveEngine
 from acm.authority.classification import classify_memory_request, classify_request
 from acm.authority.routing import CognitiveRoutingEngine, ownership_for_intent
-from acm.authority.taxonomy import CognitiveIntent, ORGAN_NONE
+from acm.authority.taxonomy import ORGAN_NONE, CognitiveIntent
 
 
 @pytest.fixture()
@@ -164,12 +164,10 @@ def test_pipeline_user_identity_does_not_claim_to_be_agent(eng):
     result = eng.cognitive_respond("Who am I?")
     assert result["intent"] == CognitiveIntent.USER_IDENTITY.value
     speech = eng.speak_cognitive_result(result).lower()
-    # Must not answer as if the user is the agent named aria as identity claim of "I am"
-    # (assistant who_am_i starts with "I am aria")
+    assert "invent" not in speech
     assert result["classification"]["ownership"]["primary_organ"] == "identity"
-    assert "user_identity" in " ".join(result["reasoning_path"]) or "user_identity_reconstruct" in result[
-        "reasoning_path"
-    ]
+    path_text = " ".join(result["reasoning_path"])
+    assert "user_identity" in path_text or "user_identity_reconstruct" in path_text
 
 
 def test_pipeline_goals(eng):

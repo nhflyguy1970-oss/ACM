@@ -27,7 +27,11 @@ class CognitiveResponsePipeline:
         classification = decision.classification
         path = list(decision.reasoning_path)
 
-        if classification.is_memory_request is False or decision.ownership.primary_organ == ORGAN_NONE:
+        non_cognitive = (
+            classification.is_memory_request is False
+            or decision.ownership.primary_organ == ORGAN_NONE
+        )
+        if non_cognitive:
             path.append("bypass_non_memory")
             return CognitiveMemoryResult(
                 status=MemoryStatus.NOT_MEMORY,
