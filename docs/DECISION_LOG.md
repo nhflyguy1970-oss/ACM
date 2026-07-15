@@ -340,3 +340,11 @@ Matrix, API, migration, rollback, and test plans must not authorize permanent du
 **Why:** Daily Use testing showed Memory Authority alone is insufficient when the classifier is too shallow — autobiographical and cognitive questions were classified as general language and could bypass the cognitive pipeline.
 
 **Status:** Accepted. Docs: `COGNITIVE_INTENT_CLASSIFICATION.md`, `COGNITIVE_ROUTING.md`, `INTENT_TAXONOMY.md`, `COGNITIVE_OWNERSHIP.md`, `QUESTION_CLASSIFICATION.md`, `COGNITIVE_ROUTING_VALIDATION.md`. Version **v0.16.0**. Standalone ACM only until explicitly promoted into Aria.
+
+## D040 — End-to-End Cognitive Dispatch: organs only terminate cognition (2026-07-15)
+
+**Decision:** Intent classification and routing are necessary but not sufficient. ACM owns a formal **Cognitive Dispatch Engine**: classify → ownership → dispatch → owning/supporting organs → reconstruction → `CognitiveMemoryResult` → faithful speak. A cognitive request **SHALL terminate only at a cognitive organ**. MemoryStore, MemoryEngine, KnowledgeEngine, SearchEngine, indexes, storage, databases, caches, providers, and language models are never cognitive endpoints. CognitiveStore may support organs as substrate only. Diagnostics expose intent, ownership, dispatch/reconstruction paths, confidence, provenance, uncertainty, and `terminated_at` — never naming infrastructure as authority. Raw adaptation/storage dumps are forbidden as speech. User identity must not answer as assistant identity.
+
+**Why:** Daily Use showed correct classification still terminating in host infrastructure or returning raw Memory/Learning artifacts instead of organ reconstruction.
+
+**Status:** Accepted. Docs: `COGNITIVE_DISPATCH_ENGINE.md`, `COGNITIVE_EXECUTION_PIPELINE.md`, `COGNITIVE_HANDLER_MODEL.md`, `ORGAN_OWNERSHIP_VALIDATION.md`, `COGNITIVE_DISPATCH_VALIDATION.md`, `INFRASTRUCTURE_ABSTRACTION.md`. Version **v0.17.0**. Standalone only until promoted into Aria.

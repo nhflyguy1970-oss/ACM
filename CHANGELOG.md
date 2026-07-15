@@ -2,6 +2,33 @@
 
 All notable changes to ACM are documented here.
 
+## [0.17.0] — 2026-07-15
+
+### Added — End-to-End Cognitive Dispatch (architectural correction)
+
+- `CognitiveDispatchEngine` (`acm.authority.dispatch`) — classify → ownership →
+  dispatch → organ terminate → `CognitiveMemoryResult`
+- Organ handlers (`acm.authority.handlers`) with forbidden-infrastructure terminals
+- Multi-organ reconstruction + dispatch diagnostics on results
+- Engine API: `dispatch_request`
+- Docs: `COGNITIVE_DISPATCH_ENGINE.md`, `COGNITIVE_EXECUTION_PIPELINE.md`,
+  `COGNITIVE_HANDLER_MODEL.md`, `ORGAN_OWNERSHIP_VALIDATION.md`,
+  `COGNITIVE_DISPATCH_VALIDATION.md`, `INFRASTRUCTURE_ABSTRACTION.md`
+- Decision **D040**; tests `tests/cognitive/test_cognitive_dispatch.py`
+
+### Changed
+
+- “How has your understanding changed?” → Reflection (+ Learning/Experiences)
+- Learning answers formatted as cognitive speech (never raw adaptation dumps)
+- User identity reconstruction strips assistant “I am {agent}” bleed
+- Goal/project paths terminate at cognitive organs with supporting contributions
+
+### Notes
+
+- Standalone ACM only — **not** promoted into Aria until explicit approval
+- D038 Memory Authority and D039 Intent Classification remain intact
+- Certification (v0.14.0) unchanged until re-certification after promotion/acceptance
+
 ## [0.16.0] — 2026-07-15
 
 ### Added — Cognitive Intent Classification & Routing (architectural correction)

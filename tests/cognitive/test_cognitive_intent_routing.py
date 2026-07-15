@@ -39,7 +39,7 @@ def eng(tmp_path):
         ("What is our long-term goal?", CognitiveIntent.GOAL, True),
         ("What is our plan?", CognitiveIntent.GOAL, True),
         ("What are we working on?", CognitiveIntent.GOAL, True),
-        ("How has your understanding changed?", CognitiveIntent.LEARNING, True),
+        ("How has your understanding changed?", CognitiveIntent.REFLECTION, True),
         ("What have you learned?", CognitiveIntent.LEARNING, True),
         ("What do you remember about fly tying?", CognitiveIntent.REMEMBERING, True),
         ("How are coffee and tea related?", CognitiveIntent.ASSOCIATION, True),
@@ -139,6 +139,9 @@ def test_routing_reflection_learning_association(eng):
     router = CognitiveRoutingEngine(eng)
     assert router.decide("What do you think about memory?").ownership.primary_organ == "reflection"
     assert router.decide("What have you learned?").ownership.primary_organ == "learning"
+    changed = router.decide("How has your understanding changed?")
+    assert changed.ownership.primary_organ == "reflection"
+    assert "learning" in changed.ownership.supporting_organs
     assert (
         router.decide("How are fly tying and camping related?").ownership.primary_organ
         == "associations"
@@ -187,9 +190,18 @@ def test_pipeline_projects(eng):
 
 
 def test_pipeline_learning(eng):
-    result = eng.cognitive_respond("How has your understanding changed?")
+    result = eng.cognitive_respond("What have you learned?")
     assert result["intent"] == CognitiveIntent.LEARNING.value
     assert result["is_memory_request"] is True
+
+
+def test_pipeline_understanding_change_is_reflection(eng):
+    result = eng.cognitive_respond("How has your understanding changed?")
+    assert result["intent"] == CognitiveIntent.REFLECTION.value
+    assert result["is_memory_request"] is True
+    speech = eng.speak_cognitive_result(result)
+    assert not speech.strip().startswith("{")
+    assert "'id':" not in speech
 
 
 def test_pipeline_remembering(eng):
@@ -212,6 +224,7 @@ def test_lm_never_owns_cognitive_question(eng):
         "What projects are we working on?",
         "What is our long-term goal?",
         "How has your understanding changed?",
+        "What have you learned?",
     ):
         result = eng.cognitive_respond(q)
         assert result["is_memory_request"] is True, q

@@ -16,6 +16,7 @@
 | Working Buffer · Attention · Context · Goals | Bias & capacity (owned as mechanisms, not full milestone organs yet) |
 | **Memory Authority (v0.15)** | Classify → ACM reconstruct → `CognitiveMemoryResult` → faithful speak; LM never memory authority |
 | **Cognitive Intent & Routing (v0.16)** | Intent taxonomy → organ ownership → route; LM never determines cognitive owner (D039) |
+| **Cognitive Dispatch (v0.17)** | End-to-end organ termination; multi-organ reconstruct; no infrastructure endpoints (D040) |
 
 ---
 
