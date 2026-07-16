@@ -17,6 +17,7 @@
 | **Memory Authority (v0.15)** | Classify → ACM reconstruct → `CognitiveMemoryResult` → faithful speak; LM never memory authority |
 | **Cognitive Intent & Routing (v0.16)** | Intent taxonomy → organ ownership → route; LM never determines cognitive owner (D039) |
 | **Cognitive Dispatch (v0.17)** | End-to-end organ termination; multi-organ reconstruct; no infrastructure endpoints (D040) |
+| **Semantic Extraction (v0.18)** | NL → structured cognitive facts before organ storage; perspective + evidence separation (D041) |
 
 ---
 

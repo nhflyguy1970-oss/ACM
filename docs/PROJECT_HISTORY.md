@@ -28,6 +28,7 @@ Implementation was authorized as a **new standalone engine**, not a rename of Ar
 - **2026-07:** **Memory Authority** architectural correction (D038) — Cognitive Response Pipeline; LM never determines memory; unknown is knowledge; speech contamination blocked; soft confabulation refused. Released as **v0.15.0**. Standalone only until promotion approval.
 - **2026-07:** **Cognitive Intent Classification & Routing** architectural correction (D039) — every request classified by cognitive intent; Cognitive Routing Engine assigns organ ownership; LM never chooses the organ; assistant vs user identity; goals/projects/reflection/learning routed correctly. Released as **v0.16.0**. Standalone only until promotion approval.
 - **2026-07:** **End-to-End Cognitive Dispatch** architectural correction (D040) — Cognitive Dispatch Engine; organ-only termination; multi-organ reconstruction; diagnostics; sanitize raw storage/learning dumps; user identity without assistant bleed. Released as **v0.17.0**. Standalone only until promotion approval.
+- **2026-07:** **Semantic Extraction** implementation correction (D041) — NL → structured cognitive facts before organ storage; perspective resolution; instructional strip; evidence separation. Released as **v0.18.0**. Standalone only until promotion approval.
 
 ## Milestone cognitive questions
 
@@ -77,7 +78,8 @@ Implementation was authorized as a **new standalone engine**, not a rename of Ar
 
 ### What new cognitive capability exists today that did not exist yesterday?
 
-**None.** Aria integration blueprint and Supremacy Rules are design/governance only (v0.14.1). Cognition remains as certified in v0.14.0.
+**Semantic Extraction (v0.18.0 / D041):** encode now forms structured cognitive facts before organ storage. Not a new organ — an implementation correction to the existing pipeline.
+
 
 ## Relationship to Aria
 

@@ -12,6 +12,7 @@ Milestones are cognitive, not storage-tech. Each milestone requires the permanen
 | **Memory Authority** | LM never determines memory; Cognitive Response Pipeline | **Done (v0.15.0)** — D038; promote-to-Aria pending approval |
 | **Cognitive Intent & Routing** | Classify cognitive ownership; route to owning organ | **Done (v0.16.0)** — D039; promote-to-Aria pending approval |
 | **Cognitive Dispatch** | End-to-end organ termination; no infrastructure endpoints | **Done (v0.17.0)** — D040; promote-to-Aria pending approval |
+| **Semantic Extraction** | NL → structured cognitive facts before organ storage | **Done (v0.18.0)** — D041; promote-to-Aria pending approval |
 | **Next (approval)** | Promote certified ACM into Aria vendored copy (as approved) | **Awaiting approval** |
 | **Later** | Unqualified ACM 1.0 label | Evidence-driven |
 | **Later** | Planning / Decision / Creativity | Deferred |
@@ -20,7 +21,8 @@ Milestones are cognitive, not storage-tech. Each milestone requires the permanen
 > **Memory Authority:** [`docs/MEMORY_AUTHORITY_MODEL.md`](docs/MEMORY_AUTHORITY_MODEL.md)  
 > **Cognitive Intent:** [`docs/COGNITIVE_INTENT_CLASSIFICATION.md`](docs/COGNITIVE_INTENT_CLASSIFICATION.md)  
 > **Cognitive Dispatch:** [`docs/COGNITIVE_DISPATCH_ENGINE.md`](docs/COGNITIVE_DISPATCH_ENGINE.md)  
-> **Integration policy:** D036 · D037 · **D038** · **D039** · **D040**.  
+> **Semantic Extraction:** [`docs/SEMANTIC_EXTRACTION.md`](docs/SEMANTIC_EXTRACTION.md)  
+> **Integration policy:** D036 · D037 · **D038** · **D039** · **D040** · **D041**.  
 > Standalone ACM stays research/reference — **not** Aria’s runtime shared library. Cognition improvements: implement here → certify → **explicit promotion**.
 
 ## Host integration

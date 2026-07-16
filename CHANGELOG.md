@@ -2,6 +2,28 @@
 
 All notable changes to ACM are documented here.
 
+## [0.18.0] — 2026-07-16
+
+### Added — Semantic Extraction (implementation correction)
+
+- Package `acm.semantic` — LM/host/provider-independent Semantic Extraction
+- Natural language → structured `CognitiveFact`s before organ storage
+- Perspective resolution (user vs assistant vs third party)
+- Instructional-language stripping (`please remember that`, …)
+- Identity / relationship / preference / goal / project / location / skill extractors
+- Update semantics: user identity attributes revise in place (no duplicate names)
+- `encode(..., speaker=...)` optional speaker hint
+- Experience.summary stores cognitive fact phrasing; original text in evidence metadata
+- Docs: `SEMANTIC_EXTRACTION.md`, `IDENTITY_EXTRACTION.md`, `PERSPECTIVE_RESOLUTION.md`,
+  `COGNITIVE_FACT_MODEL.md`, `FACT_EXTRACTION_RULES.md`
+- Decision **D041**; tests `tests/cognitive/test_semantic_extraction.py`
+
+### Notes
+
+- Standalone ACM only — **not** promoted into Aria until explicit approval
+- Existing organ architecture unchanged; extraction is a pipeline improvement
+- D038–D040 Memory Authority / Intent / Dispatch remain intact
+
 ## [0.17.0] — 2026-07-15
 
 ### Added — End-to-End Cognitive Dispatch (architectural correction)

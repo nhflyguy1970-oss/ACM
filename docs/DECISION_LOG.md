@@ -348,3 +348,11 @@ Matrix, API, migration, rollback, and test plans must not authorize permanent du
 **Why:** Daily Use showed correct classification still terminating in host infrastructure or returning raw Memory/Learning artifacts instead of organ reconstruction.
 
 **Status:** Accepted. Docs: `COGNITIVE_DISPATCH_ENGINE.md`, `COGNITIVE_EXECUTION_PIPELINE.md`, `COGNITIVE_HANDLER_MODEL.md`, `ORGAN_OWNERSHIP_VALIDATION.md`, `COGNITIVE_DISPATCH_VALIDATION.md`, `INFRASTRUCTURE_ABSTRACTION.md`. Version **v0.17.0**. Standalone only until promoted into Aria.
+
+## D041 — Semantic Extraction: structured cognitive facts before organ storage (2026-07-16)
+
+**Decision:** ACM SHALL extract structured cognitive facts from natural language **before** any organ stores information. Semantic Extraction (`acm.semantic`) is LM-independent, host-independent, and provider-independent. Organs receive cognitive facts; original conversational wording is supporting evidence only. Perspective resolution distinguishes user vs assistant vs third party so user and assistant identities are never confused. Instructional language (`please remember that`, etc.) never becomes part of stored facts. User identity attribute updates revise in place (no duplicate active names). This is an **implementation correction** to the existing encode pipeline — not a new organ and not an architectural redesign.
+
+**Why:** Daily Use showed Identity storing utterances (`My name is Jeff. Please remember that.`) instead of the cognitive fact (User · Name · Jeff). Language must be translated into cognition before memory formation.
+
+**Status:** Accepted. Docs: `SEMANTIC_EXTRACTION.md`, `IDENTITY_EXTRACTION.md`, `PERSPECTIVE_RESOLUTION.md`, `COGNITIVE_FACT_MODEL.md`, `FACT_EXTRACTION_RULES.md`. Version **v0.18.0**. Standalone only until promoted into Aria.
