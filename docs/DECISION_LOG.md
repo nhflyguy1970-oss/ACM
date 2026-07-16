@@ -372,3 +372,11 @@ Matrix, API, migration, rollback, and test plans must not authorize permanent du
 **Why:** After user teach (`My name is Jeff.`), `Who are you?` incorrectly answered with the user name (`I'm Jeff…`) because first-person / `kind=identity` paths and remembering gap-fill contaminated the agent schema and speech.
 
 **Status:** Accepted. Docs: `ASSISTANT_IDENTITY.md`, `ASSISTANT_IDENTITY_PIPELINE.md`, `IDENTITY_SEPARATION.md`. Version **v0.18.2**. Standalone only until promoted into Aria.
+
+## D044 — Identity rendering isolation: no cross-identity blend (2026-07-16)
+
+**Decision:** Fix identity *rendering* so responses contain only the requested identity. `Who am I?` uses user schema speech only. `Who are you?` uses assistant operational/agent speech only. `isolate_identity_text` removes relationship glue, personalization (`you know me as`), and foreign identity values. Pipeline materialization and `speak_cognitive_result` apply isolation for identity intents. Explicit relationship questions remain the only multi-identity path. No new organs; no architecture change.
+
+**Why:** Behavioral validation showed correct assistant selection still blending user facts into speech (`I'm ARIA, and you know me as Jeff` / `I am known as Jeff`).
+
+**Status:** Accepted. Docs: `IDENTITY_RENDERING_ISOLATION.md`, `IDENTITY_RENDERING_PIPELINE.md`, `IDENTITY_CONTEXT_FILTERING.md`. Version **v0.18.3**. Standalone only until promoted into Aria.

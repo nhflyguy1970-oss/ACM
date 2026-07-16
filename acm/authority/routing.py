@@ -401,42 +401,13 @@ class CognitiveRoutingEngine:
         return self._remember(request)
 
     def _user_identity(self, request: str) -> dict[str, Any]:
+        _ = request
         engine = self.engine
-        engine.identity.ensure_schemas()
+        who = engine.identity.render_user_identity()
+        text = who.get("answer")
+        conf = float(who.get("confidence") or 0.0)
         user = engine.identity.schema_concept("user")
-        speak_keys = ("name", "preferred_name", "role", "location", "capability")
-        lines: list[str] = []
-        attr_confs: list[float] = []
-        for attr in user.attributes:
-            if not attr.active:
-                continue
-            if attr.key == "name":
-                lines.append(f"Your name is {attr.value}.")
-                attr_confs.append(float(attr.confidence))
-            elif attr.key == "preferred_name":
-                lines.append(f"You prefer to be called {attr.value}.")
-                attr_confs.append(float(attr.confidence))
-            elif attr.key == "role":
-                lines.append(f"You are {attr.value}.")
-                attr_confs.append(float(attr.confidence))
-            elif attr.key == "location":
-                lines.append(f"You live in {attr.value}.")
-                attr_confs.append(float(attr.confidence))
-            elif attr.key == "capability":
-                lines.append(f"You can {attr.value}.")
-                attr_confs.append(float(attr.confidence))
-            elif attr.key == "statement":
-                val = str(attr.value or "").strip()
-                low = val.lower()
-                if "please remember" in low or low.startswith("you are"):
-                    continue
-                lines.append(val.rstrip(".") + ".")
-                attr_confs.append(float(attr.confidence))
-            elif attr.key not in speak_keys:
-                continue
-        if lines:
-            text = " ".join(lines)
-            conf = max(attr_confs) if attr_confs else float(user.confidence or 0.4)
+        if text:
             return {
                 "memory": text,
                 "confidence": conf,
@@ -446,7 +417,7 @@ class CognitiveRoutingEngine:
                 "cue_matched": True,
                 "experiences": [],
                 "associations": [],
-                "raw": {"user_schema": user.id, "structured": True},
+                "raw": {"user_schema": user.id, "structured": True, "isolated": True},
             }
         return {
             "memory": None,

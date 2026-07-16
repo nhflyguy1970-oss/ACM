@@ -805,8 +805,74 @@ class IdentityOrgan:
         """Assistant-identity reconstruction — agent schema only (never user)."""
         return self.render_assistant_identity()
 
+    def render_user_identity(self) -> dict[str, Any]:
+        """Structured user identity only — never assistant / operational profile."""
+        from acm.identity.rendering import (
+            IdentityRenderTarget,
+            isolate_identity_text,
+            user_forbidden_from_assistant,
+        )
+
+        self.ensure_schemas()
+        user = self.schema_concept("user")
+        agent = self.schema_concept("agent")
+        speak_keys = ("name", "preferred_name", "role", "location", "capability")
+        lines: list[str] = []
+        attr_confs: list[float] = []
+        for attr in user.attributes:
+            if not attr.active:
+                continue
+            if attr.key not in speak_keys and attr.key != "statement":
+                continue
+            if attr.key == "name":
+                lines.append(f"Your name is {attr.value}.")
+                attr_confs.append(float(attr.confidence))
+            elif attr.key == "preferred_name":
+                lines.append(f"You prefer to be called {attr.value}.")
+                attr_confs.append(float(attr.confidence))
+            elif attr.key == "role":
+                lines.append(f"You are {attr.value}.")
+                attr_confs.append(float(attr.confidence))
+            elif attr.key == "location":
+                lines.append(f"You live in {attr.value}.")
+                attr_confs.append(float(attr.confidence))
+            elif attr.key == "capability":
+                lines.append(f"You can {attr.value}.")
+                attr_confs.append(float(attr.confidence))
+            elif attr.key == "statement":
+                val = str(attr.value or "").strip()
+                low = val.lower()
+                if "please remember" in low or low.startswith("you are"):
+                    continue
+                lines.append(val.rstrip(".") + ".")
+                attr_confs.append(float(attr.confidence))
+
+        raw = " ".join(lines).strip() if lines else None
+        forbidden = user_forbidden_from_assistant(
+            [(a.key, a.value) for a in agent.attributes if a.active],
+            self.agent_id,
+        )
+        text = isolate_identity_text(
+            raw, target=IdentityRenderTarget.USER, forbidden_values=forbidden
+        )
+        conf = max(attr_confs) if text and attr_confs else 0.0
+        return {
+            "answer": text,
+            "confidence": conf if text else 0.0,
+            "explanation_class": "experience" if text else "unknown",
+            "schemas": {"user": {"concept_id": user.id}},
+            "source": "user_identity",
+            "isolated": True,
+        }
+
     def render_assistant_identity(self) -> dict[str, Any]:
-        """Structured assistant identity from operational + agent schema attributes."""
+        """Structured assistant identity only — never user facts or personalization."""
+        from acm.identity.rendering import (
+            IdentityRenderTarget,
+            assistant_forbidden_from_user,
+            isolate_identity_text,
+        )
+
         self.ensure_schemas()
         agent = self.schema_concept("agent")
         user = self.schema_concept("user")
@@ -815,27 +881,21 @@ class IdentityOrgan:
             for a in user.attributes
             if a.key == "name" and a.active
         }
-        speak_keys = (
-            "name",
-            "role",
-            "description",
-            "capability",
-            "personality",
-            "statement",
-        )
+        # Prefer operational attributes; never speak contaminated user-name copies.
+        speak_keys = ("name", "role", "description", "capability", "personality")
         lines: list[str] = []
         attr_confs: list[float] = []
         spoken_name = False
         for attr in agent.attributes:
             if not attr.active or attr.key not in speak_keys:
                 continue
-            # Never speak a non-operational agent name that matches the user
             if (
                 attr.key == "name"
                 and attr.value.casefold() in user_names
                 and _OPERATIONAL_TAG not in attr.context_tags
             ):
                 continue
+            # Skip non-operational statements that could personalize
             if attr.key == "name":
                 lines.append(f"My name is {attr.value}.")
                 attr_confs.append(float(attr.confidence))
@@ -852,33 +912,51 @@ class IdentityOrgan:
             elif attr.key == "personality":
                 lines.append(str(attr.value).rstrip(".") + ".")
                 attr_confs.append(float(attr.confidence))
-            elif attr.key == "statement":
-                val = str(attr.value or "").strip()
-                low = val.lower()
-                if "please remember" in low:
-                    continue
-                # Drop statements that claim the user name
-                if any(n and n in low for n in user_names):
-                    continue
-                lines.append(val.rstrip(".") + ".")
-                attr_confs.append(float(attr.confidence))
 
         if not spoken_name:
             name = self.profile.resolved_name(self.agent_id)
             lines.insert(0, f"My name is {name}.")
             attr_confs.insert(0, 0.95)
 
+        raw = " ".join(lines).strip()
+        forbidden = assistant_forbidden_from_user(
+            [(a.key, a.value) for a in user.attributes if a.active]
+        )
+        text = isolate_identity_text(
+            raw,
+            target=IdentityRenderTarget.ASSISTANT,
+            forbidden_values=forbidden,
+        )
+        # Isolation must never erase operational name — re-seed if over-filtered
+        if not text:
+            name = self.profile.resolved_name(self.agent_id)
+            text = f"My name is {name}."
+            attr_confs = [0.95]
+
         conf = max(attr_confs) if attr_confs else 0.95
-        snap = self.snapshot()
-        agent_body = snap.schemas.get("agent", {})
+        agent_body = {
+            "concept_id": agent.id,
+            "label": agent.labels[0] if agent.labels else f"agent:{self.agent_id}",
+            "attributes": [
+                {
+                    "key": a.key,
+                    "value": a.value,
+                    "confidence": a.confidence,
+                    "operational": _OPERATIONAL_TAG in a.context_tags,
+                }
+                for a in agent.attributes
+                if a.active and a.key in speak_keys
+            ],
+        }
         return {
-            "answer": " ".join(lines).strip(),
+            "answer": text,
             "confidence": conf,
             "explanation_class": "experience",
             "schemas": {"agent": agent_body},
-            "evolution": snap.evolution,
+            "evolution": self.snapshot().evolution,
             "central_concepts": [],
             "source": "assistant_identity",
+            "isolated": True,
         }
 
     def _scrub_assistant_user_name_collision(self, user_name: str) -> None:

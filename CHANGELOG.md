@@ -2,6 +2,24 @@
 
 All notable changes to ACM are documented here.
 
+## [0.18.3] — 2026-07-16
+
+### Fixed — Identity rendering isolation (implementation debug)
+
+- Identity answers compose only from the requested identity (D044)
+- `isolate_identity_text()` strips relationship glue / foreign names / blend forms
+- `render_user_identity()` + strengthened `render_assistant_identity()`
+- Pipeline + speak apply identity isolation before host speech
+- Bans `you know me as`, `I am known as <user>`, user address on assistant answers
+- Docs: `IDENTITY_RENDERING_ISOLATION.md`, `IDENTITY_RENDERING_PIPELINE.md`,
+  `IDENTITY_CONTEXT_FILTERING.md`
+- Decision **D044**; tests `tests/cognitive/test_identity_rendering_isolation.py`
+
+### Notes
+
+- Standalone ACM only — **not** promoted into Aria until explicit approval
+- No new organs; no architectural redesign
+
 ## [0.18.2] — 2026-07-16
 
 ### Fixed — Assistant Identity pipeline (implementation debug)

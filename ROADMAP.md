@@ -15,6 +15,7 @@ Milestones are cognitive, not storage-tech. Each milestone requires the permanen
 | **Semantic Extraction** | NL → structured cognitive facts before organ storage | **Done (v0.18.0)** — D041; promote-to-Aria pending approval |
 | **Identity Pipeline Debug** | Fix encode→retrieve confidence/pollution for user name | **Done (v0.18.1)** — D042; promote-to-Aria pending approval |
 | **Assistant Identity Pipeline** | Separate operational assistant identity from user autobiography | **Done (v0.18.2)** — D043; promote-to-Aria pending approval |
+| **Identity Rendering Isolation** | No cross-identity blend in Who am I / Who are you speech | **Done (v0.18.3)** — D044; promote-to-Aria pending approval |
 | **Next (approval)** | Promote certified ACM into Aria vendored copy (as approved) | **Awaiting approval** |
 | **Later** | Unqualified ACM 1.0 label | Evidence-driven |
 | **Later** | Planning / Decision / Creativity | Deferred |
@@ -24,7 +25,7 @@ Milestones are cognitive, not storage-tech. Each milestone requires the permanen
 > **Cognitive Intent:** [`docs/COGNITIVE_INTENT_CLASSIFICATION.md`](docs/COGNITIVE_INTENT_CLASSIFICATION.md)  
 > **Cognitive Dispatch:** [`docs/COGNITIVE_DISPATCH_ENGINE.md`](docs/COGNITIVE_DISPATCH_ENGINE.md)  
 > **Semantic Extraction:** [`docs/SEMANTIC_EXTRACTION.md`](docs/SEMANTIC_EXTRACTION.md)  
-> **Integration policy:** D036 · D037 · **D038** · **D039** · **D040** · **D041** · **D042** · **D043**.  
+> **Integration policy:** D036 · D037 · **D038** · **D039** · **D040** · **D041** · **D042** · **D043** · **D044**.  
 > Standalone ACM stays research/reference — **not** Aria’s runtime shared library. Cognition improvements: implement here → certify → **explicit promotion**.
 
 ## Host integration

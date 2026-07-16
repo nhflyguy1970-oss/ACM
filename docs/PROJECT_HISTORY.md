@@ -31,6 +31,7 @@ Implementation was authorized as a **new standalone engine**, not a rename of Ar
 - **2026-07:** **Semantic Extraction** implementation correction (D041) — NL → structured cognitive facts before organ storage; perspective resolution; instructional strip; evidence separation. Released as **v0.18.0**. Standalone only until promotion approval.
 - **2026-07:** **Identity pipeline debug** (D042) — stop identity-schema cue pollution; user-identity confidence from name attributes; `Who am I?` → `Your name is Jeff.` Released as **v0.18.1**. Standalone only until promotion approval.
 - **2026-07:** **Assistant Identity pipeline** (D043) — operational assistant identity separated from user autobiography; `Who are you?` never resolves to user name. Released as **v0.18.2**. Standalone only until promotion approval.
+- **2026-07:** **Identity rendering isolation** (D044) — Who am I / Who are you speech never blends identities or personalization. Released as **v0.18.3**. Standalone only until promotion approval.
 
 ## Milestone cognitive questions
 
