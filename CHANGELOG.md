@@ -2,6 +2,24 @@
 
 All notable changes to ACM are documented here.
 
+## [0.18.1] — 2026-07-16
+
+### Fixed — Identity memory pipeline (implementation debug)
+
+- Concept cue ingest no longer writes `mentioned`/noise onto privileged identity schemas
+  (label collision on `user` from summary `User name is Jeff`)
+- User-identity retrieval uses structured attribute confidence (name @ ~0.92), not schema
+  nucleus confidence (~0.4)
+- `_user_identity` speaks only structured autobiographical keys → clean `Your name is Jeff.`
+- Observable `trace_identity_pipeline()` for encode→retrieve evidence
+- Docs: `IDENTITY_PIPELINE_TRACE.md`, `IDENTITY_IMPLEMENTATION_DEBUG.md`
+- Decision **D042**; tests `tests/cognitive/test_identity_pipeline_debug.py`
+
+### Notes
+
+- Standalone ACM only — **not** promoted into Aria until explicit approval
+- No new organs; no architectural redesign
+
 ## [0.18.0] — 2026-07-16
 
 ### Added — Semantic Extraction (implementation correction)

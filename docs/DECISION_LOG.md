@@ -356,3 +356,11 @@ Matrix, API, migration, rollback, and test plans must not authorize permanent du
 **Why:** Daily Use showed Identity storing utterances (`My name is Jeff. Please remember that.`) instead of the cognitive fact (User · Name · Jeff). Language must be translated into cognition before memory formation.
 
 **Status:** Accepted. Docs: `SEMANTIC_EXTRACTION.md`, `IDENTITY_EXTRACTION.md`, `PERSPECTIVE_RESOLUTION.md`, `COGNITIVE_FACT_MODEL.md`, `FACT_EXTRACTION_RULES.md`. Version **v0.18.0**. Standalone only until promoted into Aria.
+
+## D042 — Identity pipeline debug: structured attribute confidence & schema pollution (2026-07-16)
+
+**Decision:** Fix the identity encode→retrieve implementation defect without architectural change. Privileged identity schemas SHALL NOT absorb concept-token `mentioned` cues. User-identity reconstruction SHALL speak structured autobiographical attributes and SHALL use attribute confidence (not schema-nucleus confidence alone). Observable `trace_identity_pipeline` documents stage evidence. After `My name is Jeff.`, `Who am I?` returns `Your name is Jeff.` at known status.
+
+**Why:** Behavioral validation showed correct Semantic Extraction then low-confidence refusal / polluted speech — information was stored but retrieval confidence and rendering were wrong.
+
+**Status:** Accepted. Docs: `IDENTITY_PIPELINE_TRACE.md`, `IDENTITY_IMPLEMENTATION_DEBUG.md`. Version **v0.18.1**. Standalone only until promoted into Aria.

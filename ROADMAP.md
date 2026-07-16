@@ -13,6 +13,7 @@ Milestones are cognitive, not storage-tech. Each milestone requires the permanen
 | **Cognitive Intent & Routing** | Classify cognitive ownership; route to owning organ | **Done (v0.16.0)** — D039; promote-to-Aria pending approval |
 | **Cognitive Dispatch** | End-to-end organ termination; no infrastructure endpoints | **Done (v0.17.0)** — D040; promote-to-Aria pending approval |
 | **Semantic Extraction** | NL → structured cognitive facts before organ storage | **Done (v0.18.0)** — D041; promote-to-Aria pending approval |
+| **Identity Pipeline Debug** | Fix encode→retrieve confidence/pollution for user name | **Done (v0.18.1)** — D042; promote-to-Aria pending approval |
 | **Next (approval)** | Promote certified ACM into Aria vendored copy (as approved) | **Awaiting approval** |
 | **Later** | Unqualified ACM 1.0 label | Evidence-driven |
 | **Later** | Planning / Decision / Creativity | Deferred |
