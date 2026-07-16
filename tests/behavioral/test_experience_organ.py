@@ -69,7 +69,7 @@ def test_multimodal_envelope_equal_status() -> None:
 def test_identity_and_goal_influence_on_experience() -> None:
     engine = CognitiveEngine(agent_id="exp")
     engine.open_goal("Become reliable")
-    out = engine.encode("I am a portable memory engine.", kind="identity")
+    out = engine.encode("I am a portable memory engine.", kind="identity", speaker="assistant")
     assert out["experience"]["cognitive_kind"] == CognitiveKind.IDENTITY_CHANGE.value
     assert out["experience"]["identity_influenced"] is True
     assert out["experience"]["goal_ids"]

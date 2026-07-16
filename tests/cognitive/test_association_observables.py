@@ -64,7 +64,7 @@ def test_long_running_association_evolution() -> None:
 
 def test_concept_experience_identity_interaction() -> None:
     engine = CognitiveEngine(agent_id="aobs")
-    engine.encode("I am an association cartographer.", kind="identity")
+    engine.encode("I am an association cartographer.", kind="identity", speaker="assistant")
     engine.encode("Cartography relates to maps.", pin=True)
     engine.encode("Maps relate to navigation.", pin=True)
     who = engine.who_am_i()

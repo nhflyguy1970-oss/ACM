@@ -80,7 +80,7 @@ def test_neighborhood_and_clusters() -> None:
 def test_identity_and_goal_influence_stamps() -> None:
     engine = CognitiveEngine(agent_id="asc")
     engine.open_goal("Master fly tying", importance=0.9)
-    engine.encode("I am a craftsperson.", kind="identity")
+    engine.encode("I am a craftsperson.", kind="identity", speaker="assistant")
     engine.encode("Fly tying and craftsmanship share practice.", pin=True)
     snap = engine.validation.snapshot()["association"]
     assert snap["births"] >= 1

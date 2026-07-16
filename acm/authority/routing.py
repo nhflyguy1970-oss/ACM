@@ -281,14 +281,14 @@ class CognitiveRoutingEngine:
             if intent == CognitiveIntent.USER_IDENTITY:
                 path.append("user_identity_reconstruct")
                 return self._user_identity(request)
-            path.append("who_am_i")
-            who = engine.who_am_i()
+            path.append("assistant_identity_reconstruct")
+            who = engine.identity.render_assistant_identity()
             return {
                 "memory": who.get("answer"),
                 "confidence": float(who.get("confidence") or 0.0),
                 "explanation_class": who.get("explanation_class") or "experience",
                 "ambiguous": False,
-                "concepts": who.get("central_concepts") or [],
+                "concepts": [{"id": engine.identity.schema_concept("agent").id}],
                 "cue_matched": True,
                 "experiences": [],
                 "associations": [],
@@ -448,7 +448,17 @@ class CognitiveRoutingEngine:
                 "associations": [],
                 "raw": {"user_schema": user.id, "structured": True},
             }
-        return self._remember(request)
+        return {
+            "memory": None,
+            "confidence": 0.0,
+            "explanation_class": "unknown",
+            "ambiguous": False,
+            "concepts": [{"id": user.id}],
+            "cue_matched": False,
+            "experiences": [],
+            "associations": [],
+            "raw": {"user_schema": user.id, "structured": False, "insufficient": True},
+        }
 
     def _goals(self, request: str) -> dict[str, Any]:
         engine = self.engine

@@ -15,7 +15,11 @@ def test_m0_harness_records_activation_and_lifecycle(engine: CognitiveEngine) ->
 
 
 def test_identity_touch(engine: CognitiveEngine) -> None:
-    engine.encode("I am a coding assistant that helps with memory research.", kind="identity")
+    engine.encode(
+        "I am a coding assistant that helps with memory research.",
+        kind="identity",
+        speaker="assistant",
+    )
     assert engine.validation.identity_touches
     sketch = engine.metacognitive_sketch()
     assert sketch["what_i_know_count"] >= 1

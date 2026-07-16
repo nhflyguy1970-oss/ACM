@@ -241,20 +241,24 @@ class CognitiveOrganHandlers:
     def _identity(self, request: str, *, intent: CognitiveIntent) -> OrganContribution:
         if intent == CognitiveIntent.USER_IDENTITY:
             return self._user_identity(request)
-        steps = ["identity.who_am_i"]
-        who = self.engine.who_am_i()
+        return self._assistant_identity(request)
+
+    def _assistant_identity(self, request: str) -> OrganContribution:
+        """Assistant Identity path — operational/agent schema only; never user."""
+        _ = request
+        steps = ["identity.assistant_schema", "identity.operational"]
+        who = self.engine.identity.render_assistant_identity()
         answer = who.get("answer") if isinstance(who.get("answer"), str) else None
         text = sanitize_cognitive_text(answer)
+        conf = float(who.get("confidence") or 0.0)
         return OrganContribution(
             organ=ORGAN_IDENTITY,
             memory=text,
-            confidence=float(who.get("confidence") or 0.0),
+            confidence=conf,
             explanation_class=str(who.get("explanation_class") or "experience"),
             ambiguous=False,
             cue_matched=True,
-            concepts=list(who.get("central_concepts") or [])[:8]
-            if isinstance(who.get("central_concepts"), list)
-            else [],
+            concepts=[{"id": self.engine.identity.schema_concept("agent").id}],
             reconstruction_steps=steps,
             substrate_touched=("cognitive_store",),
         )
@@ -305,17 +309,12 @@ class CognitiveOrganHandlers:
             steps.append("identity.structured_attributes")
             conf = max(attr_confs) if attr_confs else float(user.confidence or 0.4)
         else:
-            # Cue remembering toward the *user*, never the assistant who-am-i path.
-            steps.append("remembering.user_biography_cue")
-            bio = engine.remember("what do you know about the user")
-            mem = sanitize_cognitive_text(
-                (bio.answer or "").strip() if hasattr(bio, "answer") else None,
-                agent_id=str(engine.agent_id or ""),
-            )
-            text = mem or None
-            conf = float(user.confidence or 0.4)
-            if hasattr(bio, "confidence") and text:
-                conf = max(conf, float(bio.confidence or 0))
+            # No autobiographical user attributes yet — honest unknown.
+            # Do NOT fall back to general remembering: activation can surface
+            # operational assistant identity (D043 contamination).
+            steps.append("identity.user_insufficient")
+            text = None
+            conf = 0.0
 
         if text and _ASSISTANT_BLEED.search(text) and "you" not in text.lower():
             text = sanitize_cognitive_text(text, agent_id=str(engine.agent_id or ""))

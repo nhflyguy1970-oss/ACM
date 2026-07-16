@@ -36,9 +36,14 @@ def test_perspective_remember_instruction_is_user() -> None:
     assert "remember" in p.reason
 
 
-def test_perspective_identity_kind_is_assistant() -> None:
+def test_perspective_identity_kind_requires_speaker() -> None:
+    """kind=identity alone no longer flips to assistant (D043)."""
     p = resolve_perspective("I am a research assistant.", kind="identity")
-    assert p.first_person == PerspectiveSubject.ASSISTANT
+    assert p.first_person == PerspectiveSubject.USER
+    p2 = resolve_perspective(
+        "I am a research assistant.", kind="identity", speaker="assistant"
+    )
+    assert p2.first_person == PerspectiveSubject.ASSISTANT
 
 
 def test_perspective_explicit_speaker() -> None:
@@ -122,7 +127,7 @@ def test_encode_stores_fact_not_utterance() -> None:
 
 def test_encode_assistant_identity_unchanged_path() -> None:
     eng = CognitiveEngine(agent_id="guide")
-    eng.encode("I am a research assistant.", kind="identity")
+    eng.encode("I am a research assistant.", kind="identity", speaker="assistant")
     who = eng.who_am_i()
     assert "research assistant" in who["answer"].lower()
 

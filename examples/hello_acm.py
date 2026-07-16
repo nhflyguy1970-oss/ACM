@@ -9,7 +9,7 @@ from acm import CognitiveEngine
 def main() -> None:
     engine = CognitiveEngine(agent_id="demo-agent")
     engine.open_goal("Learn user preferences", importance=0.7)
-    engine.encode("I am a portable cognitive memory engine.", kind="identity")
+    engine.encode("I am a portable cognitive memory engine.", kind="identity", speaker="assistant")
     engine.encode("My favorite coffee is dark roast.", kind="preference")
     print(engine.who_am_i()["answer"])
     print("what_happened:", [e["cognitive_kind"] for e in engine.what_happened()])

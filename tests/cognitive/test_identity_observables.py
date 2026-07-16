@@ -17,9 +17,9 @@ class ProbeExtension(BaseExtension):
 
 def test_harness_identity_metrics() -> None:
     engine = CognitiveEngine(agent_id="obs")
-    engine.encode("I am an experimenter.", kind="identity")
-    engine.encode("I am an experimenter.", kind="identity")
-    engine.encode("I am a cartographer.", kind="identity")
+    engine.encode("I am an experimenter.", kind="identity", speaker="assistant")
+    engine.encode("I am an experimenter.", kind="identity", speaker="assistant")
+    engine.encode("I am a cartographer.", kind="identity", speaker="assistant")
     engine.who_am_i()
     snap = engine.validation.snapshot()
     assert snap["schema"] == "acm.validation/0.13"
@@ -32,8 +32,8 @@ def test_harness_identity_metrics() -> None:
 
 def test_identity_reconstruction_and_confidence() -> None:
     engine = CognitiveEngine(agent_id="obs")
-    engine.encode("My name is ACM-Guide.", kind="identity")
-    engine.encode("I can form identity from experience.", kind="identity")
+    engine.encode("My name is ACM-Guide.", kind="identity", speaker="assistant")
+    engine.encode("I can form identity from experience.", kind="identity", speaker="assistant")
     snap = engine.identity_snapshot()
     assert snap["schemas"]["agent"]["attributes"]
     assert snap["lineage_tail"]
@@ -47,15 +47,15 @@ def test_extension_registry_hook() -> None:
     engine = CognitiveEngine(agent_id="obs")
     probe = ProbeExtension()
     engine.extensions.register(probe)
-    engine.encode("I am a plugin host.", kind="identity")
+    engine.encode("I am a plugin host.", kind="identity", speaker="assistant")
     assert probe.encodes == 1
     assert "test.probe" in engine.metacognitive_sketch()["extensions"]
 
 
 def test_reject_preserves_prior_identity() -> None:
     engine = CognitiveEngine(agent_id="obs")
-    engine.encode("I am stable.", kind="identity")
-    conflict = engine.encode("I am volatile.", kind="identity")
+    engine.encode("I am a stable system.", kind="identity", speaker="assistant")
+    conflict = engine.encode("I am a volatile system.", kind="identity", speaker="assistant")
     engine.reject_identity(conflict["identity"]["proposal_id"])
     who = engine.who_am_i()
     assert "stable" in who["answer"].lower()

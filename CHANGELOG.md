@@ -2,6 +2,25 @@
 
 All notable changes to ACM are documented here.
 
+## [0.18.2] — 2026-07-16
+
+### Fixed — Assistant Identity pipeline (implementation debug)
+
+- Assistant Identity is operational (config / `agent_id`), not learned user autobiography
+- `kind=identity` no longer flips first-person to assistant (requires `speaker="assistant"`)
+- Legacy identity signal no longer maps `my name is` onto the agent schema
+- Dedicated `render_assistant_identity()` / `_assistant_identity` path (agent schema only)
+- User/assistant dispatch no longer gap-fills from remembering (contamination path)
+- Reject assistant name writes that collide with active user names (unless assent)
+- Scrub non-operational agent names that equal the user name after user teach
+- Docs: `ASSISTANT_IDENTITY.md`, `ASSISTANT_IDENTITY_PIPELINE.md`, `IDENTITY_SEPARATION.md`
+- Decision **D043**; tests `tests/cognitive/test_assistant_identity_separation.py`
+
+### Notes
+
+- Standalone ACM only — **not** promoted into Aria until explicit approval
+- No new organs; no architectural redesign
+
 ## [0.18.1] — 2026-07-16
 
 ### Fixed — Identity memory pipeline (implementation debug)

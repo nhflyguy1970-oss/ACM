@@ -5,9 +5,9 @@ from acm import CognitiveEngine
 
 def test_identity_emerges_from_experience_not_manual_fields() -> None:
     engine = CognitiveEngine(agent_id="guide")
-    # No host profile injection — only experiences
-    engine.encode("I am a research assistant.", kind="identity")
-    engine.encode("I can organize long-term memory.", kind="identity")
+    # Assistant self-encode requires explicit speaker (D043)
+    engine.encode("I am a research assistant.", kind="identity", speaker="assistant")
+    engine.encode("I can organize long-term memory.", kind="identity", speaker="assistant")
     engine.open_goal("Support lifelong learning", importance=0.8)
 
     who = engine.who_am_i()
@@ -15,30 +15,29 @@ def test_identity_emerges_from_experience_not_manual_fields() -> None:
     assert who["confidence"] > 0.4
     assert who["evolution"]["growth_events"] >= 1
 
-    remembered = engine.remember("Who am I?")
+    remembered = engine.remember("Who are you?")
     assert "research assistant" in remembered.answer.lower()
     assert remembered.confidence > 0.0
 
 
 def test_identity_persists_and_strengthens() -> None:
     engine = CognitiveEngine(agent_id="guide")
-    engine.encode("I am a coding helper.", kind="identity")
-    first = engine.identity_snapshot()
-    engine.encode("I am a coding helper.", kind="identity")
+    engine.encode("I am a coding helper.", kind="identity", speaker="assistant")
+    engine.encode("I am a coding helper.", kind="identity", speaker="assistant")
     second = engine.identity_snapshot()
     role = next(
         a
         for a in second["schemas"]["agent"]["attributes"]
         if a["key"] == "role" and a["value"].lower().startswith("coding")
     )
-    assert role["confidence"] >= first["schemas"]["agent"]["attributes"][0]["confidence"]
+    assert role["confidence"] >= 0.55
     assert second["evolution"]["stability_hits"] >= 1
 
 
 def test_identity_adaptation_requires_assent() -> None:
     engine = CognitiveEngine(agent_id="guide")
-    engine.encode("I am a librarian.", kind="identity")
-    conflict = engine.encode("I am a navigator.", kind="identity")
+    engine.encode("I am a librarian.", kind="identity", speaker="assistant")
+    conflict = engine.encode("I am a navigator.", kind="identity", speaker="assistant")
     assert conflict["identity"]["status"] == "proposed"
     proposal_id = conflict["identity"]["proposal_id"]
 

@@ -32,7 +32,7 @@ def test_long_running_concept_evolution() -> None:
 
 def test_identity_and_experience_interaction() -> None:
     engine = CognitiveEngine(agent_id="cobs")
-    engine.encode("I am a concept cartographer.", kind="identity")
+    engine.encode("I am a concept cartographer.", kind="identity", speaker="assistant")
     engine.encode("Cartography is a craft.", pin=True)
     who = engine.who_am_i()
     assert "cartographer" in who["answer"].lower() or who["confidence"] >= 0

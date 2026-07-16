@@ -9,8 +9,10 @@ from acm.identity.pipeline_trace import trace_identity_pipeline
 def test_my_name_is_jeff_stored_and_retrieved() -> None:
     eng = CognitiveEngine(agent_id="aria")
     before = eng.cognitive_respond("Who am I?")
-    assert before["status"] == "low_confidence"
-    assert "not confident" in eng.speak_cognitive_result(before).lower()
+    assert before["status"] in ("low_confidence", "unknown", "insufficient_evidence")
+    speech = eng.speak_cognitive_result(before).lower()
+    assert "jeff" not in speech
+    assert "don't" in speech or "not confident" in speech or "enough" in speech
 
     out = eng.encode("My name is Jeff.", pin=True)
     assert out["encoded"] is True

@@ -31,7 +31,7 @@ def test_activation_propagation_and_decay_observable() -> None:
 
 def test_identity_influence_on_remembering() -> None:
     engine = CognitiveEngine(agent_id="robs")
-    engine.encode("I am a research cartographer.", kind="identity")
+    engine.encode("I am a research cartographer.", kind="identity", speaker="assistant")
     who = engine.remember("Who am I?")
     assert who.confidence >= 0
     assert "cartograph" in who.answer.lower() or who.activated_concept_ids

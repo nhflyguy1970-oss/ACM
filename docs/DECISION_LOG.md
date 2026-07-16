@@ -364,3 +364,11 @@ Matrix, API, migration, rollback, and test plans must not authorize permanent du
 **Why:** Behavioral validation showed correct Semantic Extraction then low-confidence refusal / polluted speech — information was stored but retrieval confidence and rendering were wrong.
 
 **Status:** Accepted. Docs: `IDENTITY_PIPELINE_TRACE.md`, `IDENTITY_IMPLEMENTATION_DEBUG.md`. Version **v0.18.1**. Standalone only until promoted into Aria.
+
+## D043 — Assistant Identity pipeline: operational identity separated from user (2026-07-16)
+
+**Decision:** Fix the Assistant Identity implementation defect without architectural change. Assistant Identity is **operational** (configuration / `agent_id`), not autobiographical memory. `Who are you?` reconstructs only the agent schema via `render_assistant_identity()`. `kind=identity` no longer flips first-person to assistant — assistant self-encode requires `speaker="assistant"`. User and assistant intents never gap-fill from remembering. User-name collisions on the agent schema are rejected/scrubbed. User and Assistant identities never resolve to each other.
+
+**Why:** After user teach (`My name is Jeff.`), `Who are you?` incorrectly answered with the user name (`I'm Jeff…`) because first-person / `kind=identity` paths and remembering gap-fill contaminated the agent schema and speech.
+
+**Status:** Accepted. Docs: `ASSISTANT_IDENTITY.md`, `ASSISTANT_IDENTITY_PIPELINE.md`, `IDENTITY_SEPARATION.md`. Version **v0.18.2**. Standalone only until promoted into Aria.
