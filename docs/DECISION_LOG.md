@@ -546,3 +546,21 @@ Recognition adds no ingestion path that bypasses them.
 `tests/cognitive/test_preference_pipeline_debug.py`
 (`test_teach_statement_encodes_before_dispatch`). Version **v0.22.0**.
 Standalone only — **do not promote into Aria** until explicit approval.
+
+## Multi-Domain Preference Isolation + Evidence Lineage (2026-07-17) — v0.23.0
+
+**Not a new architectural decision.** Corrects live M0K certification failures:
+
+1. Distinct favorite domains (color / food / fish) collapsed under the shared
+   token ``favorite``, so retrieval answered the wrong domain or conflicted.
+2. Evidence requests were either non-memory or returned preference answers
+   instead of attribute lineage.
+
+**Correction:** domain-aware answerability in Remembering (normalize cue
+tokens; require named favorite domain; colour≡color); evidence cues classify
+as remembering and reconstruct active/retired attribute versions read-only.
+No new organ. Trust / provenance / Teaching Recognition unchanged.
+
+**Status:** Accepted (certification correction). Tests:
+`tests/cognitive/test_m0k_multi_domain_evidence.py`. Version **v0.23.0**.
+

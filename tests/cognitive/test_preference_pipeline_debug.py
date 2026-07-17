@@ -208,24 +208,28 @@ def test_teach_statement_encodes_before_dispatch() -> None:
     )
 
 
-def test_deferred_evidence_inspection_bypassed_to_preference() -> None:
-    """DEFERRED (not D045): evidence requests swallowed by preference cue.
+def test_evidence_inspection_reconstructs_lineage() -> None:
+    """RESOLVED (M0K): evidence requests reconstruct preference lineage.
 
-    'Show the evidence for my favorite color.' matches preference_cue in Band B
-    (there is no evidence/introspection intent in the taxonomy), so it routes to
-    remembering and terminates at the same reconstruction terminal as the plain
-    preference question. After D045 both correctly answer known instead of the
-    false conflict, but the classification bypass remains a deferred decision.
+    'Show the evidence for my favorite color.' classifies as remembering
+    (evidence_cue) ahead of preference, and Remembering returns the attribute
+    version lineage (active/retired) without mutating memory.
     """
     eng = _engine()
     cl = eng.classify_request("Show the evidence for my favorite color.")
     intent = cl["intent"] if isinstance(cl, dict) else cl.intent.value
-    assert intent == "preference"  # not an evidence/introspection intent
+    assert intent == "remembering"
 
     eng.encode("My favorite color is blue.", kind="preference", provenance=TRUSTED_USER_STATEMENT)
     eng.encode("What is my favorite color?", provenance=TRUSTED_USER_STATEMENT)
     evidence = eng.cognitive_respond("Show the evidence for my favorite color.")
     assert evidence["diagnostics"]["primary_organ"] == "remembering"
-    # D045: no more false conflict on the evidence request either.
     assert evidence["status"] == "known"
     assert evidence["uncertainty"] is None
+    assert "favorite color" in (evidence["memory"] or "").lower()
+    assert "blue" in (evidence["memory"] or "").lower()
+    assert "active" in (evidence["memory"] or "").lower()
+    # Retrieval still answers the preference itself
+    assert eng.cognitive_respond("What is my favorite color?")["memory"] == (
+        "Your favorite color is blue."
+    )

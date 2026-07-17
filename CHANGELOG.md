@@ -2,6 +2,31 @@
 
 All notable changes to ACM are documented here.
 
+## [0.23.0] — 2026-07-17
+
+### Fixed — Multi-domain preference isolation + evidence lineage (M0K)
+
+Live Aria certification showed:
+
+1. **Domain collapse** — after teaching favorite color / food / fish, every
+   query answered with the most recent preference (or conflicted). Root cause:
+   cue token ``favorite`` made every ``favorite_*`` attribute answerable, and
+   punctuation left ``color?`` unmatched so domain selection never fired.
+2. **Evidence failure** — ``Show me the evidence.`` classified as
+   ``not_memory``; scoped evidence cues were swallowed by preference
+   reconstruction and returned the active value (or unknown) instead of
+   lineage.
+
+**Corrections (no redesign):**
+
+- Cue tokens strip punctuation; favorite-domain extraction stops at the
+  domain noun (``food is pizza`` → domain ``food``).
+- Answerability / cue relevance require the named domain for ``favorite_*``
+  keys; ``color``/``colour`` normalize as one domain so true conflicts remain.
+- Evidence cues classify as remembering ahead of preference; Remembering
+  reconstructs attribute version lineage (active/retired + teaching text)
+  read-only (no reconsolidation).
+
 ## [0.22.0] — 2026-07-17
 
 ### Fixed — Valid preference teaching regression (Teaching Recognition)

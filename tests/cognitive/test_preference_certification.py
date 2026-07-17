@@ -123,13 +123,18 @@ def test_preference_certification_contamination_ignored(engine: CognitiveEngine)
     ]
     assert active == [("favorite_color", "red")]
 
-    # Evidence ask returns supporting experiences; does not mutate memory
+    # Evidence ask returns lineage; does not mutate memory
     n = len(engine.store.experiences)
     er = engine.cognitive_respond("Show the evidence for my favorite color.")
     assert er["status"] == "known"
-    assert er["memory"] == "Your favorite color is red."
-    assert er.get("supporting_experiences")
+    assert "favorite color" in (er["memory"] or "").lower()
+    assert "red" in (er["memory"] or "").lower()
+    assert er.get("supporting_experiences") or "v1" in (er["memory"] or "")
     assert len(engine.store.experiences) == n
+    # Preference retrieval still returns the active value
+    assert engine.cognitive_respond("What is my favorite color?")["memory"] == (
+        "Your favorite color is red."
+    )
 
     # Repeat contamination — preference remains red
     for _ in range(5):
@@ -287,11 +292,17 @@ def test_valid_teaching_updates_via_cognitive_respond(tmp_path) -> None:
     # Evidence shows the teaching history and never mutates memory
     er = e.cognitive_respond("Show the evidence for my favorite color.")
     assert er["status"] == "known"
-    assert er["memory"] == "Your favorite color is green."
-    assert er.get("supporting_experiences")
+    assert "favorite color" in (er["memory"] or "").lower()
+    assert "blue" in (er["memory"] or "").lower()
+    assert "green" in (er["memory"] or "").lower()
+    assert "retired" in (er["memory"] or "").lower()
+    assert er.get("supporting_experiences") or "v1" in (er["memory"] or "")
     n = len(e.store.experiences)
     e.cognitive_respond("Show the evidence for my favorite color.")
     assert len(e.store.experiences) == n
+    assert e.cognitive_respond("What is my favorite color?")["memory"] == (
+        "Your favorite color is green."
+    )
 
     # Teach green again → no duplicate active attribute
     e.cognitive_respond("My favorite color is green.")
