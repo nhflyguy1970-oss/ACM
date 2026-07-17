@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from acm import CognitiveEngine
 from acm.identity.pipeline_trace import trace_identity_pipeline
+from acm.provenance import TRUSTED_USER_STATEMENT
 
 
 def test_my_name_is_jeff_stored_and_retrieved() -> None:
@@ -14,7 +15,7 @@ def test_my_name_is_jeff_stored_and_retrieved() -> None:
     assert "jeff" not in speech
     assert "don't" in speech or "not confident" in speech or "enough" in speech
 
-    out = eng.encode("My name is Jeff.", pin=True)
+    out = eng.encode("My name is Jeff.", pin=True, provenance=TRUSTED_USER_STATEMENT)
     assert out["encoded"] is True
     user = eng.identity.schema_concept("user")
     names = [a for a in user.attributes if a.key == "name" and a.active]
@@ -37,11 +38,11 @@ def test_my_name_is_jeff_stored_and_retrieved() -> None:
 
 def test_im_jeff_and_call_me() -> None:
     eng = CognitiveEngine(agent_id="aria")
-    eng.encode("I'm Jeff.", pin=True)
+    eng.encode("I'm Jeff.", pin=True, provenance=TRUSTED_USER_STATEMENT)
     r = eng.cognitive_respond("Who am I?")
     assert "jeff" in (r.get("memory") or "").lower()
     eng2 = CognitiveEngine(agent_id="aria2")
-    eng2.encode("Call me Jeff.", pin=True)
+    eng2.encode("Call me Jeff.", pin=True, provenance=TRUSTED_USER_STATEMENT)
     user = eng2.identity.schema_concept("user")
     prefs = [a.value for a in user.attributes if a.key == "preferred_name" and a.active]
     assert prefs == ["Jeff"]
@@ -49,8 +50,8 @@ def test_im_jeff_and_call_me() -> None:
 
 def test_name_update_jeffrey_no_duplicate() -> None:
     eng = CognitiveEngine(agent_id="aria")
-    eng.encode("My name is Jeff.", pin=True)
-    eng.encode("My name is Jeffrey.", pin=True)
+    eng.encode("My name is Jeff.", pin=True, provenance=TRUSTED_USER_STATEMENT)
+    eng.encode("My name is Jeffrey.", pin=True, provenance=TRUSTED_USER_STATEMENT)
     user = eng.identity.schema_concept("user")
     active = [a.value for a in user.attributes if a.key == "name" and a.active]
     assert active == ["Jeffrey"]
@@ -61,8 +62,8 @@ def test_name_update_jeffrey_no_duplicate() -> None:
 
 def test_no_assistant_user_confusion() -> None:
     eng = CognitiveEngine(agent_id="aria")
-    eng.encode("My name is Jeff.", pin=True)
-    eng.encode("You are ARIA.", pin=True)
+    eng.encode("My name is Jeff.", pin=True, provenance=TRUSTED_USER_STATEMENT)
+    eng.encode("You are ARIA.", pin=True, provenance=TRUSTED_USER_STATEMENT)
     user = eng.identity.schema_concept("user")
     agent = eng.identity.schema_concept("agent")
     assert any(a.key == "name" and a.value == "Jeff" and a.active for a in user.attributes)
@@ -74,7 +75,7 @@ def test_no_assistant_user_confusion() -> None:
 
 def test_pipeline_trace_evidence() -> None:
     eng = CognitiveEngine(agent_id="trace")
-    report = trace_identity_pipeline(eng)
+    report = trace_identity_pipeline(eng, provenance=TRUSTED_USER_STATEMENT)
     assert report["ok"] is True
     stages = {s["stage"]: s for s in report["stages"]}
     assert stages["semantic_extraction"]["arrived"]

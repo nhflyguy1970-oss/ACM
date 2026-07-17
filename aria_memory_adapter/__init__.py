@@ -12,6 +12,7 @@ from typing import Any, Protocol
 
 from acm import CognitiveEngine
 from acm._version import __version__ as acm_version
+from acm.provenance import IngestionProvenance
 
 
 class LegacyMemoryBackend(Protocol):
@@ -138,7 +139,13 @@ class AcmMemoryAdapter:
 
     # --- public memory interface ---------------------------------------------
 
-    def remember(self, text: str, **kwargs: Any) -> dict[str, Any]:
+    def remember(
+        self,
+        text: str,
+        *,
+        ingestion_provenance: IngestionProvenance | None = None,
+        **kwargs: Any,
+    ) -> dict[str, Any]:
         """Legacy authoritative write; optional ACM shadow encode."""
         t0 = perf_counter()
         legacy_result = self.legacy.remember(text, **kwargs)
@@ -151,23 +158,11 @@ class AcmMemoryAdapter:
         if self.flags.shadow_write and not self.flags.rollback_to_legacy:
             try:
                 t1 = perf_counter()
-                origin = str(kwargs.get("provenance_origin") or "legacy_import")
-                acm_result = self.engine.encode(text, pin=True)
-                # stamp provenance when encode succeeded
-                if acm_result.get("encoded") and acm_result.get("experience_id"):
-                    from acm.provenance import ProvenanceSource, stamp_provenance
-
-                    stamp_provenance(
-                        self.engine.store,
-                        artifact_kind="experience",
-                        artifact_id=str(acm_result["experience_id"]),
-                        origin=ProvenanceSource(origin)
-                        if origin in ProvenanceSource._value2member_map_
-                        else ProvenanceSource.LEGACY_IMPORT,
-                        experience_ids=[str(acm_result["experience_id"])],
-                        contributor_ids=[str(acm_result.get("concept_id") or "")],
-                        explain="Shadow encode from adapter remember()",
-                    )
+                acm_result = self.engine.encode(
+                    text,
+                    pin=True,
+                    provenance=ingestion_provenance,
+                )
                 acm_ms = (perf_counter() - t1) * 1000
                 self.metrics.acm_latency_ms_total += acm_ms
             except Exception as exc:  # noqa: BLE001 — shadow must never break legacy

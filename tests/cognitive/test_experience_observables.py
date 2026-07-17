@@ -1,13 +1,20 @@
 from __future__ import annotations
 
 from acm import CognitiveEngine
+from acm.provenance import TRUSTED_USER_CORRECTION, TRUSTED_USER_STATEMENT
 
 
 def test_harness_experience_metrics() -> None:
     engine = CognitiveEngine(agent_id="exobs")
     engine.open_goal("Observe experiences")
-    first = engine.encode("I noticed a surprising result.", pin=True)
-    engine.revise_experience(first["experience_id"], "Actually, the result was expected.")
+    first = engine.encode(
+        "I noticed a surprising result.", pin=True, provenance=TRUSTED_USER_STATEMENT
+    )
+    engine.revise_experience(
+        first["experience_id"],
+        "Actually, the result was expected.",
+        provenance=TRUSTED_USER_CORRECTION,
+    )
     engine.experiences.touch(first["experience_id"])
     snap = engine.validation.snapshot()
     assert snap["schema"] == "acm.validation/0.13"
@@ -20,7 +27,9 @@ def test_harness_experience_metrics() -> None:
 
 def test_salience_evolution_does_not_mutate_birth() -> None:
     engine = CognitiveEngine(agent_id="exobs")
-    out = engine.encode("I asked a hard question about time?", pin=True)
+    out = engine.encode(
+        "I asked a hard question about time?", pin=True, provenance=TRUSTED_USER_STATEMENT
+    )
     eid = out["experience_id"]
     birth = engine.store.experiences[eid].salience_birth.composite()
     engine.experiences.touch(eid, boost=0.2)
@@ -35,10 +44,16 @@ def test_long_running_experience_evolution() -> None:
     engine = CognitiveEngine(agent_id="exobs")
     ids: list[str] = []
     for i in range(25):
-        out = engine.encode(f"Observation number {i} about sequencing.", pin=True)
+        out = engine.encode(
+            f"Observation number {i} about sequencing.", pin=True, provenance=TRUSTED_USER_STATEMENT
+        )
         ids.append(out["experience_id"])
     # Reflect on an early event
-    engine.reflect_on(ids[0], "I realized early ordering mattered.")
+    engine.reflect_on(
+        ids[0],
+        "I realized early ordering mattered.",
+        provenance=TRUSTED_USER_STATEMENT,
+    )
     events = engine.what_happened(limit=50, include_dormant=True)
     assert len(events) >= 26
     assert events[0]["sequence"] <= events[-1]["sequence"]

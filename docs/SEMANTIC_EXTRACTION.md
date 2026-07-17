@@ -34,8 +34,9 @@ Memory Formation
 
 ## Insertion point
 
-`CognitiveEngine.encode()` — after speech-contamination protection and context
-inference, **before** Concept / Experience / Identity organ storage.
+`CognitiveEngine.encode()` — after D046 Trusted Memory Ingestion eligibility,
+speech-contamination protection, and context inference, **before** Concept /
+Experience / Identity organ storage. Rejected sources never reach this module.
 
 ## API
 
@@ -53,7 +54,8 @@ result = extract_semantics(
 ```
 
 `encode(..., speaker=...)` accepts an optional speaker hint for hosts that know
-who is talking.
+who is talking. `speaker` controls grammatical perspective, not source trust;
+every encode also requires an eligible `IngestionProvenance`.
 
 ## Packages
 

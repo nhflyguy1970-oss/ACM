@@ -14,6 +14,7 @@ must be updated when their own corrections land.
 from __future__ import annotations
 
 from acm import CognitiveEngine
+from acm.provenance import TRUSTED_USER_STATEMENT
 from acm.semantic import extract_semantics
 from acm.types import ConceptRole
 
@@ -60,7 +61,9 @@ def test_semantic_extraction_single_preference_fact() -> None:
 def test_single_preference_teach_then_known() -> None:
     """Teach once → ask → known, no conflict."""
     eng = _engine()
-    out = eng.encode("My favorite color is blue.", kind="preference")
+    out = eng.encode(
+        "My favorite color is blue.", kind="preference", provenance=TRUSTED_USER_STATEMENT
+    )
     assert out["encoded"] is True
     result = eng.cognitive_respond("What is my favorite color?")
     assert result["status"] == "known"
@@ -75,8 +78,8 @@ def test_single_preference_teach_then_known() -> None:
 def test_repeated_identical_preference_no_conflict() -> None:
     """Repeating the identical teach must not manufacture a conflict."""
     eng = _engine()
-    eng.encode("My favorite color is blue.", kind="preference")
-    eng.encode("My favorite color is blue.", kind="preference")
+    eng.encode("My favorite color is blue.", kind="preference", provenance=TRUSTED_USER_STATEMENT)
+    eng.encode("My favorite color is blue.", kind="preference", provenance=TRUSTED_USER_STATEMENT)
     result = eng.cognitive_respond("What is my favorite color?")
     assert result["status"] == "known"
     assert result["memory"] == "Your favorite color is blue."
@@ -87,8 +90,10 @@ def test_repeated_identical_preference_no_conflict() -> None:
 def test_preference_update_replaces_value() -> None:
     """blue → red: old value deactivated, new value active, answer updates."""
     eng = _engine()
-    eng.encode("My favorite color is blue.", kind="preference")
-    eng.encode("Actually, my favorite color is red.", kind="preference")
+    eng.encode("My favorite color is blue.", kind="preference", provenance=TRUSTED_USER_STATEMENT)
+    eng.encode(
+        "Actually, my favorite color is red.", kind="preference", provenance=TRUSTED_USER_STATEMENT
+    )
     result = eng.cognitive_respond("What is my favorite color?")
     assert result["status"] == "known"
     assert result["memory"] == "Your favorite color is red."
@@ -105,8 +110,8 @@ def test_contradictory_preference_current_semantics_last_write_wins() -> None:
     is a design question outside this investigation.
     """
     eng = _engine()
-    eng.encode("My favorite color is blue.", kind="preference")
-    eng.encode("My favorite color is red.", kind="preference")
+    eng.encode("My favorite color is blue.", kind="preference", provenance=TRUSTED_USER_STATEMENT)
+    eng.encode("My favorite color is red.", kind="preference", provenance=TRUSTED_USER_STATEMENT)
     result = eng.cognitive_respond("What is my favorite color?")
     assert result["status"] == "known"
     assert result["memory"] == "Your favorite color is red."
@@ -127,8 +132,10 @@ def test_token_nucleus_never_competes_after_d045() -> None:
     known: there is exactly ONE preference fact in the store.
     """
     eng = _engine()
-    eng.encode("My favorite color is blue.", kind="preference")
-    eng.encode("What is my favorite color?")  # conversation turn, kind=experience
+    eng.encode("My favorite color is blue.", kind="preference", provenance=TRUSTED_USER_STATEMENT)
+    eng.encode(
+        "What is my favorite color?", provenance=TRUSTED_USER_STATEMENT
+    )  # conversation turn, kind=experience
 
     active = [(c, a) for c, a in _favorite_color_attrs(eng) if a.active]
     assert len(active) == 1
@@ -161,7 +168,7 @@ def test_deferred_question_turn_stored_as_preference_fact() -> None:
     branch and stores the raw question text as attr preference=<question>.
     """
     eng = _engine()
-    eng.encode("What is my favorite color?")
+    eng.encode("What is my favorite color?", provenance=TRUSTED_USER_STATEMENT)
     stored = [
         (c, a)
         for c in eng.store.concepts.values()
@@ -203,8 +210,8 @@ def test_deferred_evidence_inspection_bypassed_to_preference() -> None:
     intent = cl["intent"] if isinstance(cl, dict) else cl.intent.value
     assert intent == "preference"  # not an evidence/introspection intent
 
-    eng.encode("My favorite color is blue.", kind="preference")
-    eng.encode("What is my favorite color?")
+    eng.encode("My favorite color is blue.", kind="preference", provenance=TRUSTED_USER_STATEMENT)
+    eng.encode("What is my favorite color?", provenance=TRUSTED_USER_STATEMENT)
     evidence = eng.cognitive_respond("Show the evidence for my favorite color.")
     assert evidence["diagnostics"]["primary_organ"] == "remembering"
     # D045: no more false conflict on the evidence request either.

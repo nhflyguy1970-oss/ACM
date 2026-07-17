@@ -2,12 +2,13 @@ from __future__ import annotations
 
 from acm import CognitiveEngine
 from acm.associations.model import RelationKind
+from acm.provenance import TRUSTED_USER_STATEMENT
 
 
 def test_analogy_is_explainable_and_non_executive() -> None:
     engine = CognitiveEngine(agent_id="anl")
-    engine.encode("A husky is a dog.", pin=True)
-    engine.encode("A beagle is a dog.", pin=True)
+    engine.encode("A husky is a dog.", pin=True, provenance=TRUSTED_USER_STATEMENT)
+    engine.encode("A beagle is a dog.", pin=True, provenance=TRUSTED_USER_STATEMENT)
     dogs = engine.store.find_concepts_by_label("dog")
     husky = engine.store.find_concepts_by_label("husky")
     beagle = engine.store.find_concepts_by_label("beagle")
@@ -31,11 +32,9 @@ def test_analogy_is_explainable_and_non_executive() -> None:
 
 def test_learning_and_offline_improve_analogy_confidence() -> None:
     engine = CognitiveEngine(agent_id="anl")
-    engine.encode("Fly tying requires fine tools.", pin=True)
-    engine.encode("Woodworking requires fine tools.", pin=True)
-    a = engine.store.find_concepts_by_label("fly") or engine.store.find_concepts_by_label(
-        "tying"
-    )
+    engine.encode("Fly tying requires fine tools.", pin=True, provenance=TRUSTED_USER_STATEMENT)
+    engine.encode("Woodworking requires fine tools.", pin=True, provenance=TRUSTED_USER_STATEMENT)
+    a = engine.store.find_concepts_by_label("fly") or engine.store.find_concepts_by_label("tying")
     b = engine.store.find_concepts_by_label("woodworking")
     if a and b:
         engine.associations.relate(

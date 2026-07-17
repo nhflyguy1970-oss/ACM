@@ -4,6 +4,13 @@ from __future__ import annotations
 
 from acm import CognitiveEngine
 from acm.authority.result import MemoryStatus
+from acm.provenance import (
+    TRUSTED_USER_STATEMENT,
+    HostOperation,
+    IngestionActor,
+    IngestionProvenance,
+    MessageRole,
+)
 
 
 def _speech(eng: CognitiveEngine, q: str) -> tuple[str, str, str]:
@@ -38,7 +45,7 @@ def test_user_teach_does_not_change_assistant() -> None:
         assistant_identity={"name": "Aria"},
     )
     before = _speech(eng, "Who are you?")
-    eng.encode("My name is Jeff.")
+    eng.encode("My name is Jeff.", provenance=TRUSTED_USER_STATEMENT)
     st_u, mem_u, speech_u = _speech(eng, "Who am I?")
     assert st_u == MemoryStatus.KNOWN.value
     assert "your name is jeff" in speech_u.lower()
@@ -50,15 +57,13 @@ def test_user_teach_does_not_change_assistant() -> None:
     assert before[2].split(".")[0] in speech_a or "aria" in speech_a.lower()
 
     agent = eng.identity.schema_concept("agent")
-    assert not any(
-        a.key == "name" and a.value == "Jeff" and a.active for a in agent.attributes
-    )
+    assert not any(a.key == "name" and a.value == "Jeff" and a.active for a in agent.attributes)
 
 
 def test_user_rename_leaves_assistant() -> None:
     eng = CognitiveEngine(agent_id="aria", assistant_identity={"name": "Aria"})
-    eng.encode("My name is Jeff.")
-    eng.encode("My name is Bob.")
+    eng.encode("My name is Jeff.", provenance=TRUSTED_USER_STATEMENT)
+    eng.encode("My name is Bob.", provenance=TRUSTED_USER_STATEMENT)
     assert "bob" in _speech(eng, "Who am I?")[2].lower()
     assert "jeff" not in _speech(eng, "Who am I?")[2].lower()
     assert "aria" in _speech(eng, "Who are you?")[2].lower()
@@ -67,8 +72,18 @@ def test_user_rename_leaves_assistant() -> None:
 
 def test_tool_outcome_kind_identity_no_assistant_user_name() -> None:
     eng = CognitiveEngine(agent_id="aria", assistant_identity={"name": "Aria"})
-    eng.encode("My name is Jeff.")
-    eng.encode("Tool `memory_search` worked for: My name is Jeff.", kind="identity")
+    eng.encode("My name is Jeff.", provenance=TRUSTED_USER_STATEMENT)
+    rejected = eng.encode(
+        "Tool `memory_search` worked for: My name is Jeff.",
+        kind="identity",
+        provenance=IngestionProvenance(
+            actor=IngestionActor.TOOL,
+            host_operation=HostOperation.MEMORY_SEARCH,
+            message_role=MessageRole.TOOL_RESULT,
+        ),
+    )
+    assert rejected["encoded"] is False
+    assert rejected["reason"] == "memory_trust"
     speech = _speech(eng, "Who are you?")[2].lower()
     assert "aria" in speech
     assert "jeff" not in speech
@@ -76,8 +91,10 @@ def test_tool_outcome_kind_identity_no_assistant_user_name() -> None:
 
 def test_your_name_jeff_rejected_when_user_is_jeff() -> None:
     eng = CognitiveEngine(agent_id="aria", assistant_identity={"name": "Aria"})
-    eng.encode("My name is Jeff.")
-    eng.encode("Your name is Jeff.")  # would map to assistant without collision guard
+    eng.encode("My name is Jeff.", provenance=TRUSTED_USER_STATEMENT)
+    eng.encode(
+        "Your name is Jeff.", provenance=TRUSTED_USER_STATEMENT
+    )  # would map to assistant without collision guard
     speech = _speech(eng, "Who are you?")[2].lower()
     assert "jeff" not in speech
     assert "aria" in speech
@@ -85,7 +102,7 @@ def test_your_name_jeff_rejected_when_user_is_jeff() -> None:
 
 def test_no_duplicate_active_user_and_assistant_names() -> None:
     eng = CognitiveEngine(agent_id="aria", assistant_identity={"name": "Aria"})
-    eng.encode("My name is Jeff.")
+    eng.encode("My name is Jeff.", provenance=TRUSTED_USER_STATEMENT)
     user_names = {
         a.value
         for a in eng.identity.schema_concept("user").attributes
@@ -105,6 +122,6 @@ def test_host_independence_default_agent_id() -> None:
     eng = CognitiveEngine(agent_id="solo-bot")
     speech = _speech(eng, "Who are you?")[2].lower()
     assert "solo-bot" in speech
-    eng.encode("My name is Pat.")
+    eng.encode("My name is Pat.", provenance=TRUSTED_USER_STATEMENT)
     assert "pat" in _speech(eng, "Who am I?")[2].lower()
     assert "pat" not in _speech(eng, "Who are you?")[2].lower()

@@ -1,11 +1,17 @@
 from __future__ import annotations
 
 from acm import CognitiveEngine
+from acm.provenance import TRUSTED_USER_STATEMENT
 
 
 def test_attention_improves_encoding_priority() -> None:
     engine = CognitiveEngine(agent_id="attn")
-    enc = engine.encode("My favorite coffee is Ethiopian pour-over.", kind="preference", pin=True)
+    enc = engine.encode(
+        "My favorite coffee is Ethiopian pour-over.",
+        kind="preference",
+        pin=True,
+        provenance=TRUSTED_USER_STATEMENT,
+    )
     cid = enc["concept_id"]
     priority = engine.attention.priority_of(cid)
     assert priority > 0.5
@@ -19,7 +25,7 @@ def test_attention_improves_encoding_priority() -> None:
 
 def test_priority_evolves_with_remembering() -> None:
     engine = CognitiveEngine(agent_id="attn")
-    enc = engine.encode("Husky dogs love snow.", pin=True)
+    enc = engine.encode("Husky dogs love snow.", pin=True, provenance=TRUSTED_USER_STATEMENT)
     cid = enc["concept_id"]
     before = engine.attention.priority_of(cid)
     engine.remember("husky")

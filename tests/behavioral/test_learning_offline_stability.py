@@ -1,12 +1,18 @@
 from __future__ import annotations
 
 from acm import CognitiveEngine
+from acm.provenance import TRUSTED_USER_STATEMENT
 
 
 def test_long_running_learn_sleep_cycle_stable() -> None:
     engine = CognitiveEngine(agent_id="long")
-    engine.encode("My favorite coffee is Ethiopian pour-over.", kind="preference", pin=True)
-    engine.encode("Husky dogs love the snow.", pin=True)
+    engine.encode(
+        "My favorite coffee is Ethiopian pour-over.",
+        kind="preference",
+        pin=True,
+        provenance=TRUSTED_USER_STATEMENT,
+    )
+    engine.encode("Husky dogs love the snow.", pin=True, provenance=TRUSTED_USER_STATEMENT)
     for i in range(15):
         engine.what_do_i_think("favorite coffee" if i % 2 == 0 else "husky")
         if i % 3 == 0:

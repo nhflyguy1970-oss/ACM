@@ -1,5 +1,11 @@
 # Tool Artifact Contamination Analysis
 
+> **Resolution (D046 / v0.19.0):** This document preserves the pre-correction
+> investigation against v0.18.4. Trusted Memory Ingestion now rejects missing,
+> tool, retrieval, diagnostic, system, reflection-output, metadata, and
+> infrastructure provenance before Semantic Extraction. See
+> `TRUSTED_MEMORY_INGESTION.md` and `MEMORY_TRUST_MODEL.md`.
+
 **Repository:** standalone ACM reference implementation  
 **Runtime inspected:** `01b0a43a16b059fbb619aaaa46d2c50a9f719a3c`
 (code-equivalent to certified `v0.18.4` / `3023ed85b1de5a9b19c5058509f1fda870f45555`;

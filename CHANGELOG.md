@@ -12,6 +12,33 @@ All notable changes to ACM are documented here.
   `FUTURE_RELEASE_CANDIDATES.md`
 - No runtime behavior, architecture, or D045 release artifact changed
 
+## [0.19.0] — 2026-07-17
+
+### Fixed — Trusted Memory Ingestion (D046)
+
+- Added explicit actor / host-operation / message-role provenance to every
+  external `encode` request
+- Missing, unknown, tool, assistant, system, diagnostic, retrieval, reflection,
+  prompt, metadata, and infrastructure sources now reject before Semantic
+  Extraction or any cognitive-memory mutation
+- Genuine user statements, teachings, and corrections remain eligible
+- Accepted Experience and Concept provenance records now retain source actor,
+  entry operation, message role, and eligibility reason across persistence
+- `revise_experience`, host-supplied `reflect_on`, identity trace, examples,
+  certification, and compatibility adapter now use explicit ingestion
+  provenance
+- D038–D045 behavior remains unchanged; no new organs or architecture changes
+- Docs: `TRUSTED_MEMORY_INGESTION.md`, `MEMORY_TRUST_MODEL.md`
+- Decision **D046**; tests
+  `tests/cognitive/test_trusted_memory_ingestion.py`
+
+### Notes
+
+- Standalone ACM only — **not** promoted into Aria until explicit approval
+- v0.19.0 is a host-contract change: `encode` rejects missing provenance
+- No deferred teach/query, evidence, diagnostic, editing, or presentation
+  enhancement was implemented
+
 ## [0.18.4] — 2026-07-17
 
 ### Fixed — Preference reconstruction competitor admissibility (D045)

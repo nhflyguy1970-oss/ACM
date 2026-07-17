@@ -1,14 +1,20 @@
 from __future__ import annotations
 
 from acm import CognitiveEngine
+from acm.provenance import TRUSTED_USER_STATEMENT
 
 
 def test_long_running_priority_accessibility_cycle() -> None:
     engine = CognitiveEngine(agent_id="long-af")
     coffee = engine.encode(
-        "My favorite coffee is Ethiopian pour-over.", kind="preference", pin=True
+        "My favorite coffee is Ethiopian pour-over.",
+        kind="preference",
+        pin=True,
+        provenance=TRUSTED_USER_STATEMENT,
     )["concept_id"]
-    husky = engine.encode("Husky dogs love the snow.", pin=True)["concept_id"]
+    husky = engine.encode("Husky dogs love the snow.", pin=True, provenance=TRUSTED_USER_STATEMENT)[
+        "concept_id"
+    ]
     exp_count = len(engine.store.experiences)
     for i in range(12):
         engine.remember("coffee" if i % 2 == 0 else "husky")
@@ -24,9 +30,10 @@ def test_long_running_priority_accessibility_cycle() -> None:
     assert len(engine.store.experiences) >= exp_count  # never shrinks via cool
     assert engine.store.concepts[coffee].importance > 0.4
     # Husky should be recoverable
-    assert engine.store.concepts[husky].active is True or "husky" in engine.remember(
-        "husky"
-    ).answer.lower()
+    assert (
+        engine.store.concepts[husky].active is True
+        or "husky" in engine.remember("husky").answer.lower()
+    )
     snap = engine.validation.snapshot()
     assert snap["schema"] == "acm.validation/0.13"
     assert "attention" in snap and "forgetting" in snap

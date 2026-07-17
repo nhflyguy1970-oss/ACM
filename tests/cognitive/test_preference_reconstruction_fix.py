@@ -11,6 +11,7 @@ from __future__ import annotations
 
 from acm import CognitiveEngine
 from acm.concepts.model import Concept
+from acm.provenance import TRUSTED_USER_STATEMENT
 from acm.remembering.organ import LEXICAL_SUPPORT_KEYS, _answerable
 from acm.types import Attribute, ConceptRole, ExplanationClass
 
@@ -26,9 +27,9 @@ def _conversational_session(question_turns: int = 2) -> CognitiveEngine:
     're-mention inflation' mechanism from PREFERENCE_CONFLICT_ANALYSIS.md).
     """
     eng = _engine()
-    eng.encode("My favorite color is blue.", kind="preference")
+    eng.encode("My favorite color is blue.", kind="preference", provenance=TRUSTED_USER_STATEMENT)
     for _ in range(question_turns):
-        eng.encode("What is my favorite color?")
+        eng.encode("What is my favorite color?", provenance=TRUSTED_USER_STATEMENT)
     return eng
 
 
@@ -46,7 +47,9 @@ def test_unknown_preference_stays_unknown() -> None:
 
 def test_teach_store_retrieve_blue() -> None:
     eng = _engine()
-    out = eng.encode("My favorite color is blue.", kind="preference")
+    out = eng.encode(
+        "My favorite color is blue.", kind="preference", provenance=TRUSTED_USER_STATEMENT
+    )
     assert out["encoded"] is True
     result = eng.cognitive_respond("What is my favorite color?")
     assert result["status"] == "known"
@@ -56,8 +59,8 @@ def test_teach_store_retrieve_blue() -> None:
 
 def test_repeated_identical_teach_no_conflict_no_duplicate() -> None:
     eng = _engine()
-    eng.encode("My favorite color is blue.", kind="preference")
-    eng.encode("My favorite color is blue.", kind="preference")
+    eng.encode("My favorite color is blue.", kind="preference", provenance=TRUSTED_USER_STATEMENT)
+    eng.encode("My favorite color is blue.", kind="preference", provenance=TRUSTED_USER_STATEMENT)
     result = eng.cognitive_respond("What is my favorite color?")
     assert result["status"] == "known"
     assert result["memory"] == "Your favorite color is blue."
@@ -72,8 +75,10 @@ def test_repeated_identical_teach_no_conflict_no_duplicate() -> None:
 
 def test_preference_update_retires_old_value() -> None:
     eng = _engine()
-    eng.encode("My favorite color is blue.", kind="preference")
-    eng.encode("Actually, my favorite color is red.", kind="preference")
+    eng.encode("My favorite color is blue.", kind="preference", provenance=TRUSTED_USER_STATEMENT)
+    eng.encode(
+        "Actually, my favorite color is red.", kind="preference", provenance=TRUSTED_USER_STATEMENT
+    )
     result = eng.cognitive_respond("What is my favorite color?")
     assert result["status"] == "known"
     assert result["memory"] == "Your favorite color is red."
@@ -105,9 +110,11 @@ def test_reported_behavioral_session_end_to_end() -> None:
     eng = _engine()
     fresh = eng.cognitive_respond("What is my favorite color?")
     assert fresh["status"] == "unknown"
-    eng.encode("What is my favorite color?")
-    eng.encode("My favorite color is blue.", kind="preference")
-    eng.encode("My favorite color is blue.")  # teach turn also logged as experience
+    eng.encode("What is my favorite color?", provenance=TRUSTED_USER_STATEMENT)
+    eng.encode("My favorite color is blue.", kind="preference", provenance=TRUSTED_USER_STATEMENT)
+    eng.encode(
+        "My favorite color is blue.", provenance=TRUSTED_USER_STATEMENT
+    )  # teach turn also logged as experience
     asked = eng.cognitive_respond("What is my favorite color?")
     assert asked["status"] == "known"
     assert asked["memory"] == "Your favorite color is blue."
@@ -119,8 +126,10 @@ def test_reported_behavioral_session_end_to_end() -> None:
 def test_true_semantic_conflict_still_reports_competing_recollections() -> None:
     """Two distinct stored semantic preference concepts genuinely compete."""
     eng = _engine()
-    eng.encode("My favorite color is blue.", kind="preference")
-    eng.encode("My favourite colour is red.", kind="preference")  # distinct concept/key
+    eng.encode("My favorite color is blue.", kind="preference", provenance=TRUSTED_USER_STATEMENT)
+    eng.encode(
+        "My favourite colour is red.", kind="preference", provenance=TRUSTED_USER_STATEMENT
+    )  # distinct concept/key
     reconstruction = eng.remembering.what_do_i_remember("What is my favorite color?")
     assert reconstruction.ambiguous is True
     assert reconstruction.competing

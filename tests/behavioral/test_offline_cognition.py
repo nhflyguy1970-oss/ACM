@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from acm import CognitiveEngine
+from acm.provenance import TRUSTED_USER_STATEMENT
 from acm.types import EdgeType
 
 
@@ -20,7 +21,9 @@ def test_sleep_consolidates_and_prunes_weak_edges() -> None:
 
 def test_offline_replay_strengthens_after_reflection() -> None:
     engine = CognitiveEngine(agent_id="sleep")
-    enc = engine.encode("Husky dogs are energetic companions.", pin=True)
+    enc = engine.encode(
+        "Husky dogs are energetic companions.", pin=True, provenance=TRUSTED_USER_STATEMENT
+    )
     concept_id = enc["concept_id"]
     engine.what_do_i_think("husky")
     strength_before = engine.store.concepts[concept_id].strength
@@ -38,7 +41,7 @@ def test_offline_replay_strengthens_after_reflection() -> None:
 
 def test_sleep_does_not_invent_experiences() -> None:
     engine = CognitiveEngine(agent_id="sleep")
-    engine.encode("Sensor reading morning light.", pin=True)
+    engine.encode("Sensor reading morning light.", pin=True, provenance=TRUSTED_USER_STATEMENT)
     before = len(engine.store.experiences)
     engine.sleep()
     after = len(engine.store.experiences)

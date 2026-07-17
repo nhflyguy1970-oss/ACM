@@ -1,11 +1,14 @@
 from __future__ import annotations
 
 from acm import CognitiveEngine
+from acm.provenance import TRUSTED_USER_STATEMENT
 
 
 def test_attention_and_forgetting_observables() -> None:
     engine = CognitiveEngine(agent_id="afobs")
-    enc = engine.encode("Favorite tea is oolong.", kind="preference", pin=True)
+    enc = engine.encode(
+        "Favorite tea is oolong.", kind="preference", pin=True, provenance=TRUSTED_USER_STATEMENT
+    )
     engine.remember("tea")
     engine.cool_memory(enc["concept_id"], steps=2)
     engine.reactivate_memory(enc["concept_id"], steps=1)
@@ -19,8 +22,12 @@ def test_attention_and_forgetting_observables() -> None:
 
 def test_priority_affects_offline_replay_selection() -> None:
     engine = CognitiveEngine(agent_id="afobs")
-    a = engine.encode("Module gamma firmware update.", pin=True)["concept_id"]
-    b = engine.encode("Unrelated weather anecdote.", pin=True)["concept_id"]
+    a = engine.encode("Module gamma firmware update.", pin=True, provenance=TRUSTED_USER_STATEMENT)[
+        "concept_id"
+    ]
+    b = engine.encode("Unrelated weather anecdote.", pin=True, provenance=TRUSTED_USER_STATEMENT)[
+        "concept_id"
+    ]
     engine.attention.invest(a, delta=0.2, source="test", factors=["importance"])
     ranked = engine.attention.replay_candidates(limit=8)
     assert a in ranked

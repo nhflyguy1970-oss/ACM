@@ -1,5 +1,11 @@
 # Memory Ingestion Audit
 
+> **Resolution (D046 / v0.19.0):** This audit records the pre-correction
+> ingestion surface. External `CognitiveEngine.encode` requests now fail closed
+> unless actor, host operation, and message role identify eligible user
+> knowledge. The existing internal organ paths described below were not
+> redesigned. See `TRUSTED_MEMORY_INGESTION.md` and `MEMORY_TRUST_MODEL.md`.
+
 **Repository:** standalone ACM reference implementation  
 **Runtime inspected:** `01b0a43a16b059fbb619aaaa46d2c50a9f719a3c`  
 **Certified code baseline:** `v0.18.4` /

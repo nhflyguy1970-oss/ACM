@@ -4,12 +4,13 @@ from pathlib import Path
 
 from acm import CognitiveEngine
 from acm.persistence import DurableCognitiveStore, export_store, verify_snapshot
+from acm.provenance import TRUSTED_USER_STATEMENT
 
 
 def test_sqlite_persist_roundtrip(tmp_path: Path) -> None:
     db = tmp_path / "acm.sqlite"
     eng = CognitiveEngine(agent_id="p", persist_path=str(db), auto_persist=True)
-    eng.encode("Harbor lights guide ships.", pin=True)
+    eng.encode("Harbor lights guide ships.", pin=True, provenance=TRUSTED_USER_STATEMENT)
     eng.flush()
     assert eng.verify_persistence()["ok"] is True
     eng2 = CognitiveEngine(agent_id="p", persist_path=str(db))
@@ -19,7 +20,7 @@ def test_sqlite_persist_roundtrip(tmp_path: Path) -> None:
 
 def test_export_import_checksum(tmp_path: Path) -> None:
     eng = CognitiveEngine(agent_id="p")
-    eng.encode("Tea is warm.", pin=True)
+    eng.encode("Tea is warm.", pin=True, provenance=TRUSTED_USER_STATEMENT)
     dest = tmp_path / "snap.json"
     out = eng.export_snapshot(str(dest))
     assert out["ok"] is True
@@ -35,12 +36,12 @@ def test_backup_restore(tmp_path: Path) -> None:
     bak = tmp_path / "acm.bak"
     durable = DurableCognitiveStore(db)
     eng = CognitiveEngine(agent_id="p")
-    eng.encode("Backup subject.", pin=True)
+    eng.encode("Backup subject.", pin=True, provenance=TRUSTED_USER_STATEMENT)
     durable.store = eng.store
     durable.flush()
     durable.backup(bak)
     n = len(durable.store.experiences)
-    eng.encode("After backup.", pin=True)
+    eng.encode("After backup.", pin=True, provenance=TRUSTED_USER_STATEMENT)
     durable.flush()
     durable.restore(bak)
     assert len(durable.store.experiences) == n
@@ -49,7 +50,7 @@ def test_backup_restore(tmp_path: Path) -> None:
 
 def test_provenance_not_fabricated() -> None:
     eng = CognitiveEngine(agent_id="prov")
-    payload = eng.encode("Source provenance sample.", pin=True)
+    payload = eng.encode("Source provenance sample.", pin=True, provenance=TRUSTED_USER_STATEMENT)
     rows = eng.provenance_of(payload["experience_id"])
     assert rows
     assert all(r["fabricated"] is False for r in rows)

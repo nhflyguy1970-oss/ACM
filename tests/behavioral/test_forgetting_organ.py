@@ -2,12 +2,15 @@ from __future__ import annotations
 
 from acm import CognitiveEngine
 from acm.forgetting import AccessibilityLevel
+from acm.provenance import TRUSTED_USER_STATEMENT
 from acm.types import EdgeType
 
 
 def test_cool_changes_accessibility_without_deleting_history() -> None:
     engine = CognitiveEngine(agent_id="forget")
-    enc = engine.encode("Ephemeral sensor note about humidity.", pin=True)
+    enc = engine.encode(
+        "Ephemeral sensor note about humidity.", pin=True, provenance=TRUSTED_USER_STATEMENT
+    )
     cid = enc["concept_id"]
     exp_id = enc["experience_id"]
     before_summary = engine.store.experiences[exp_id].summary
@@ -31,7 +34,9 @@ def test_cool_changes_accessibility_without_deleting_history() -> None:
 
 def test_dormant_reactivates_on_strong_cue() -> None:
     engine = CognitiveEngine(agent_id="forget")
-    enc = engine.encode("Woodworking chisel set storage tip.", pin=True)
+    enc = engine.encode(
+        "Woodworking chisel set storage tip.", pin=True, provenance=TRUSTED_USER_STATEMENT
+    )
     cid = enc["concept_id"]
     engine.cool_memory(cid, steps=4)
     assert engine.store.concepts[cid].active is False

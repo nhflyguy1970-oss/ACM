@@ -2,11 +2,14 @@ from __future__ import annotations
 
 from acm import CognitiveEngine
 from acm.experiences.kinds import CognitiveKind
+from acm.provenance import TRUSTED_USER_STATEMENT
 
 
 def test_what_do_i_think_creates_reflective_experience() -> None:
     engine = CognitiveEngine(agent_id="ref")
-    out = engine.encode("My favorite coffee is dark roast.", kind="preference")
+    out = engine.encode(
+        "My favorite coffee is dark roast.", kind="preference", provenance=TRUSTED_USER_STATEMENT
+    )
     prior_id = out["experience_id"]
     prior_summary = engine.store.experiences[prior_id].summary
     result = engine.what_do_i_think("What is my favorite coffee?")
@@ -35,7 +38,7 @@ def test_uncertainty_when_unknown() -> None:
 
 def test_no_silent_concept_mutation_on_reflection() -> None:
     engine = CognitiveEngine(agent_id="ref")
-    engine.encode("Athena is a husky.", pin=True)
+    engine.encode("Athena is a husky.", pin=True, provenance=TRUSTED_USER_STATEMENT)
     before = {
         c.id: (c.confidence, c.strength, tuple(c.labels))
         for c in engine.store.concepts.values()
@@ -55,8 +58,8 @@ def test_no_silent_concept_mutation_on_reflection() -> None:
 
 def test_pattern_and_confidence_assessment() -> None:
     engine = CognitiveEngine(agent_id="ref")
-    engine.encode("A husky is a dog.", pin=True)
-    engine.encode("Athena is a husky.", pin=True)
+    engine.encode("A husky is a dog.", pin=True, provenance=TRUSTED_USER_STATEMENT)
+    engine.encode("Athena is a husky.", pin=True, provenance=TRUSTED_USER_STATEMENT)
     result = engine.what_do_i_think("husky")
     assert result["confidence_assessment"] >= 0.0
     assert result["activation_reused"] is True

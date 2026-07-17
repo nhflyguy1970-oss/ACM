@@ -2,19 +2,21 @@ from __future__ import annotations
 
 from acm import CognitiveEngine
 from acm.associations.model import RelationKind
+from acm.provenance import TRUSTED_USER_STATEMENT
 
 
 def test_long_running_reconciliation_confidence_cycle() -> None:
     engine = CognitiveEngine(agent_id="long-rcl")
-    engine.encode("Harbor lights guide inbound ships.", pin=True)
-    engine.encode("Harbor lights confuse inbound ships.", pin=True)
+    engine.encode("Harbor lights guide inbound ships.", pin=True, provenance=TRUSTED_USER_STATEMENT)
+    engine.encode(
+        "Harbor lights confuse inbound ships.", pin=True, provenance=TRUSTED_USER_STATEMENT
+    )
     a = [c for c in engine.store.concepts.values() if "harbor" in " ".join(c.labels).lower()]
     if len(a) >= 2:
         engine.associations.relate(a[0].id, a[1].id, RelationKind.CONFLICTS_WITH)
     elif len(a) == 1:
         other = next(
-            c for c in engine.store.concepts.values()
-            if not c.identity and c.id != a[0].id
+            c for c in engine.store.concepts.values() if not c.identity and c.id != a[0].id
         )
         engine.associations.relate(a[0].id, other.id, RelationKind.CONFLICTS_WITH)
     for i in range(8):

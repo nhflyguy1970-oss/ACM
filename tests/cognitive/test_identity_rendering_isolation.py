@@ -5,6 +5,7 @@ from __future__ import annotations
 from acm import CognitiveEngine
 from acm.authority.result import MemoryStatus
 from acm.identity.rendering import IdentityRenderTarget, isolate_identity_text
+from acm.provenance import TRUSTED_USER_STATEMENT
 
 
 def _speech(eng: CognitiveEngine, q: str) -> tuple[str, str, str]:
@@ -31,7 +32,7 @@ def test_who_are_you_never_mentions_user() -> None:
         agent_id="aria",
         assistant_identity={"name": "ARIA", "role": "assistant"},
     )
-    eng.encode("My name is Jeff.")
+    eng.encode("My name is Jeff.", provenance=TRUSTED_USER_STATEMENT)
     st, mem, speech = _speech(eng, "Who are you?")
     assert st == MemoryStatus.KNOWN.value
     low = speech.lower()
@@ -47,7 +48,7 @@ def test_who_am_i_never_mentions_assistant() -> None:
         agent_id="aria",
         assistant_identity={"name": "ARIA", "role": "assistant"},
     )
-    eng.encode("My name is Jeff.")
+    eng.encode("My name is Jeff.", provenance=TRUSTED_USER_STATEMENT)
     st, mem, speech = _speech(eng, "Who am I?")
     assert st == MemoryStatus.KNOWN.value
     low = speech.lower()
@@ -58,8 +59,8 @@ def test_who_am_i_never_mentions_assistant() -> None:
 
 def test_call_me_jeffrey_leaves_assistant() -> None:
     eng = CognitiveEngine(agent_id="aria", assistant_identity={"name": "ARIA"})
-    eng.encode("My name is Jeff.")
-    eng.encode("Call me Jeffrey.")
+    eng.encode("My name is Jeff.", provenance=TRUSTED_USER_STATEMENT)
+    eng.encode("Call me Jeffrey.", provenance=TRUSTED_USER_STATEMENT)
     user_speech = _speech(eng, "Who am I?")[2].lower()
     assert "jeffrey" in user_speech or "jeff" in user_speech
     asst = _speech(eng, "Who are you?")[2].lower()
@@ -70,8 +71,8 @@ def test_call_me_jeffrey_leaves_assistant() -> None:
 
 def test_your_name_is_aria_leaves_user() -> None:
     eng = CognitiveEngine(agent_id="aria", assistant_identity={"name": "ARIA"})
-    eng.encode("My name is Jeff.")
-    eng.encode("Your name is ARIA.", assent=True)
+    eng.encode("My name is Jeff.", provenance=TRUSTED_USER_STATEMENT)
+    eng.encode("Your name is ARIA.", assent=True, provenance=TRUSTED_USER_STATEMENT)
     assert "jeff" in _speech(eng, "Who am I?")[2].lower()
     assert "aria" not in _speech(eng, "Who am I?")[2].lower()
     asst = _speech(eng, "Who are you?")[2].lower()
@@ -92,7 +93,7 @@ def test_forced_blend_memory_is_isolated_by_filter() -> None:
 
 def test_host_independence_render_isolation() -> None:
     eng = CognitiveEngine(agent_id="solo", assistant_identity={"name": "Solo"})
-    eng.encode("My name is Pat.")
+    eng.encode("My name is Pat.", provenance=TRUSTED_USER_STATEMENT)
     assert "pat" in _speech(eng, "Who am I?")[2].lower()
     assert "solo" in _speech(eng, "Who are you?")[2].lower()
     assert "pat" not in _speech(eng, "Who are you?")[2].lower()

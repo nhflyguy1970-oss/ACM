@@ -1,11 +1,12 @@
 from __future__ import annotations
 
 from acm import CognitiveEngine
+from acm.provenance import TRUSTED_USER_STATEMENT
 
 
 def test_harness_remembering_metrics() -> None:
     engine = CognitiveEngine(agent_id="robs")
-    engine.encode("My favorite tea is green.", kind="preference")
+    engine.encode("My favorite tea is green.", kind="preference", provenance=TRUSTED_USER_STATEMENT)
     engine.remember("What is my favorite tea?")
     snap = engine.validation.snapshot()
     assert snap["schema"] == "acm.validation/0.13"
@@ -18,8 +19,8 @@ def test_harness_remembering_metrics() -> None:
 
 def test_activation_propagation_and_decay_observable() -> None:
     engine = CognitiveEngine(agent_id="robs")
-    engine.encode("A robin is a bird.", pin=True)
-    engine.encode("Birds migrate in seasons.", pin=True)
+    engine.encode("A robin is a bird.", pin=True, provenance=TRUSTED_USER_STATEMENT)
+    engine.encode("Birds migrate in seasons.", pin=True, provenance=TRUSTED_USER_STATEMENT)
     result = engine.remember("robin")
     act = result.reconstruction["activation"]
     assert act["seed_count"] >= 1
@@ -31,7 +32,12 @@ def test_activation_propagation_and_decay_observable() -> None:
 
 def test_identity_influence_on_remembering() -> None:
     engine = CognitiveEngine(agent_id="robs")
-    engine.encode("I am a research cartographer.", kind="identity", speaker="assistant")
+    engine.encode(
+        "I am a research cartographer.",
+        kind="identity",
+        speaker="assistant",
+        provenance=TRUSTED_USER_STATEMENT,
+    )
     who = engine.remember("Who am I?")
     assert who.confidence >= 0
     assert "cartograph" in who.answer.lower() or who.activated_concept_ids
@@ -42,7 +48,11 @@ def test_identity_influence_on_remembering() -> None:
 def test_long_running_remember_evolution() -> None:
     engine = CognitiveEngine(agent_id="robs")
     for i in range(15):
-        engine.encode(f"Practice session {i} improves fly tying skill.", pin=True)
+        engine.encode(
+            f"Practice session {i} improves fly tying skill.",
+            pin=True,
+            provenance=TRUSTED_USER_STATEMENT,
+        )
     confidences = []
     for _ in range(5):
         confidences.append(engine.remember("fly tying").confidence)

@@ -10,6 +10,7 @@ from acm.api.engine import CognitiveEngine
 from acm.authority.classification import classify_memory_request, classify_request
 from acm.authority.routing import CognitiveRoutingEngine, ownership_for_intent
 from acm.authority.taxonomy import ORGAN_NONE, CognitiveIntent
+from acm.provenance import TRUSTED_USER_STATEMENT
 
 
 @pytest.fixture()
@@ -183,7 +184,12 @@ def test_pipeline_goals(eng):
 
 
 def test_pipeline_projects(eng):
-    eng.encode("We are working on the ACM cognitive routing project", kind="experience", pin=True)
+    eng.encode(
+        "We are working on the ACM cognitive routing project",
+        kind="experience",
+        pin=True,
+        provenance=TRUSTED_USER_STATEMENT,
+    )
     result = eng.cognitive_respond("What projects are we working on?")
     assert result["is_memory_request"] is True
     assert result["intent"] == CognitiveIntent.PROJECT.value
@@ -205,7 +211,12 @@ def test_pipeline_understanding_change_is_reflection(eng):
 
 
 def test_pipeline_remembering(eng):
-    eng.encode("User practices fly tying on weekends", kind="experience", pin=True)
+    eng.encode(
+        "User practices fly tying on weekends",
+        kind="experience",
+        pin=True,
+        provenance=TRUSTED_USER_STATEMENT,
+    )
     result = eng.cognitive_respond("What do you remember about fly tying?")
     assert result["intent"] == CognitiveIntent.REMEMBERING.value
     assert result["is_memory_request"] is True

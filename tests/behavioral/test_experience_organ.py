@@ -2,13 +2,14 @@ from __future__ import annotations
 
 from acm import CognitiveEngine
 from acm.experiences import CognitiveKind, ExperienceLifecycle
+from acm.provenance import TRUSTED_USER_CORRECTION, TRUSTED_USER_STATEMENT
 
 
 def test_what_happened_answers_chronology() -> None:
     engine = CognitiveEngine(agent_id="exp")
     engine.open_goal("Ship M2")
-    engine.encode("I discovered a chronology bug.", pin=True)
-    engine.encode("I decided to fix the ordering.", pin=True)
+    engine.encode("I discovered a chronology bug.", pin=True, provenance=TRUSTED_USER_STATEMENT)
+    engine.encode("I decided to fix the ordering.", pin=True, provenance=TRUSTED_USER_STATEMENT)
     events = engine.what_happened()
     assert len(events) >= 2
     assert events[0]["sequence"] < events[1]["sequence"]
@@ -24,10 +25,16 @@ def test_what_happened_answers_chronology() -> None:
 
 def test_immutability_and_lineage_on_revise() -> None:
     engine = CognitiveEngine(agent_id="exp")
-    first = engine.encode("The build failed unexpectedly.", pin=True)
+    first = engine.encode(
+        "The build failed unexpectedly.", pin=True, provenance=TRUSTED_USER_STATEMENT
+    )
     eid = first["experience_id"]
     original = engine.store.experiences[eid]
-    revised = engine.revise_experience(eid, "Actually, the build succeeded after retry.")
+    revised = engine.revise_experience(
+        eid,
+        "Actually, the build succeeded after retry.",
+        provenance=TRUSTED_USER_CORRECTION,
+    )
     assert revised["encoded"] is True
     # Prior content unchanged
     still = engine.store.experiences[eid]
@@ -53,12 +60,14 @@ def test_multimodal_envelope_equal_status() -> None:
         pin=True,
         external_kind="image",
         envelope_ids=(env_img,),
+        provenance=TRUSTED_USER_STATEMENT,
     )
     b = engine.encode(
         "I learned from the code sample.",
         pin=True,
         external_kind="code",
         envelope_ids=(env_code,),
+        provenance=TRUSTED_USER_STATEMENT,
     )
     assert a["experience"]["external_kind"] == "image"
     assert b["experience"]["external_kind"] == "code"
@@ -69,7 +78,12 @@ def test_multimodal_envelope_equal_status() -> None:
 def test_identity_and_goal_influence_on_experience() -> None:
     engine = CognitiveEngine(agent_id="exp")
     engine.open_goal("Become reliable")
-    out = engine.encode("I am a portable memory engine.", kind="identity", speaker="assistant")
+    out = engine.encode(
+        "I am a portable memory engine.",
+        kind="identity",
+        speaker="assistant",
+        provenance=TRUSTED_USER_STATEMENT,
+    )
     assert out["experience"]["cognitive_kind"] == CognitiveKind.IDENTITY_CHANGE.value
     assert out["experience"]["identity_influenced"] is True
     assert out["experience"]["goal_ids"]

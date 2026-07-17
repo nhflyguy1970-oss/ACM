@@ -2,13 +2,14 @@ from __future__ import annotations
 
 from acm import CognitiveEngine
 from acm.associations.model import RelationKind
+from acm.provenance import TRUSTED_USER_STATEMENT
 from acm.types import Attribute
 
 
 def test_reconciliation_never_rewrites_history() -> None:
     engine = CognitiveEngine(agent_id="rcl")
-    engine.encode("Coffee supports morning focus.", pin=True)
-    engine.encode("Tea supports morning focus.", pin=True)
+    engine.encode("Coffee supports morning focus.", pin=True, provenance=TRUSTED_USER_STATEMENT)
+    engine.encode("Tea supports morning focus.", pin=True, provenance=TRUSTED_USER_STATEMENT)
     before = len(engine.store.experiences)
     before_ids = set(engine.store.experiences)
     result = engine.how_should_memory_reconcile("morning focus")
@@ -25,8 +26,12 @@ def test_reconciliation_never_rewrites_history() -> None:
 
 def test_conflict_preserves_lineage_and_lowers_confidence() -> None:
     engine = CognitiveEngine(agent_id="rcl")
-    a = engine.encode("Northward passage is preferred for cargo.", pin=True)
-    b = engine.encode("Southward corridor is preferred for cargo.", pin=True)
+    a = engine.encode(
+        "Northward passage is preferred for cargo.", pin=True, provenance=TRUSTED_USER_STATEMENT
+    )
+    b = engine.encode(
+        "Southward corridor is preferred for cargo.", pin=True, provenance=TRUSTED_USER_STATEMENT
+    )
     ca = engine.store.concepts[a["concept_id"]]
     cb = engine.store.concepts[b["concept_id"]]
     assert ca.id != cb.id
@@ -51,8 +56,10 @@ def test_conflict_preserves_lineage_and_lowers_confidence() -> None:
 
 def test_corroboration_strengthens_confidence() -> None:
     engine = CognitiveEngine(agent_id="rcl")
-    engine.encode("Sunrise comes after night.", pin=True)
-    engine.encode("Dawn follows night and brings sunrise.", pin=True)
+    engine.encode("Sunrise comes after night.", pin=True, provenance=TRUSTED_USER_STATEMENT)
+    engine.encode(
+        "Dawn follows night and brings sunrise.", pin=True, provenance=TRUSTED_USER_STATEMENT
+    )
     # Ensure activated concepts have multi-evidence for reinforce path
     concepts = [
         c
@@ -83,9 +90,9 @@ def test_corroboration_strengthens_confidence() -> None:
 def test_context_dependent_coexistence() -> None:
     engine = CognitiveEngine(agent_id="rcl")
     engine.set_context("home", activity="kitchen")
-    engine.encode("Mug lives in kitchen cabinet.", pin=True)
+    engine.encode("Mug lives in kitchen cabinet.", pin=True, provenance=TRUSTED_USER_STATEMENT)
     engine.set_context("office", activity="desk")
-    engine.encode("Mug lives on office desk.", pin=True)
+    engine.encode("Mug lives on office desk.", pin=True, provenance=TRUSTED_USER_STATEMENT)
     concepts = [
         c
         for c in engine.store.concepts.values()
@@ -119,7 +126,7 @@ def test_context_dependent_coexistence() -> None:
 
 def test_confidence_assessment_is_memory_only() -> None:
     engine = CognitiveEngine(agent_id="conf")
-    engine.encode("Lake water feels cold in winter.", pin=True)
+    engine.encode("Lake water feels cold in winter.", pin=True, provenance=TRUSTED_USER_STATEMENT)
     result = engine.how_certain_am_i("lake water")
     assert result["question"].startswith("How certain am I")
     assert result["plans"] is False

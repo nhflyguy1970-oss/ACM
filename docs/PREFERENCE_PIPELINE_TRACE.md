@@ -156,10 +156,17 @@ demoted it because of the false rival.
 ## Reproduction (minimal)
 
 ```python
-from acm import CognitiveEngine
+from acm import CognitiveEngine, TRUSTED_USER_STATEMENT
 eng = CognitiveEngine(agent_id="repro")
-eng.encode("My favorite color is blue.", kind="preference")  # correct teach
-eng.encode("What is my favorite color?")                     # question logged as turn
+eng.encode(
+    "My favorite color is blue.",
+    kind="preference",
+    provenance=TRUSTED_USER_STATEMENT,
+)
+eng.encode(
+    "What is my favorite color?",
+    provenance=TRUSTED_USER_STATEMENT,
+)
 eng.cognitive_respond("What is my favorite color?")
 # → status='conflicting', uncertainty='competing_recollections'
 ```

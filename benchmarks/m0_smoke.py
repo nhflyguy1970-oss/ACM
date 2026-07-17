@@ -6,13 +6,18 @@ from __future__ import annotations
 from time import perf_counter
 
 from acm import CognitiveEngine
+from acm.provenance import TRUSTED_USER_STATEMENT
 
 
 def main() -> None:
     engine = CognitiveEngine(agent_id="bench")
     t0 = perf_counter()
     for i in range(50):
-        engine.encode(f"My favorite item{i} is value{i}.", kind="preference")
+        engine.encode(
+            f"My favorite item{i} is value{i}.",
+            kind="preference",
+            provenance=TRUSTED_USER_STATEMENT,
+        )
     for i in range(50):
         engine.remember(f"What is my favorite item{i}?")
     elapsed = perf_counter() - t0

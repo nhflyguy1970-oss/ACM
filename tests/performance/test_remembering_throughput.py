@@ -3,12 +3,17 @@ from __future__ import annotations
 from time import perf_counter
 
 from acm import CognitiveEngine
+from acm.provenance import TRUSTED_USER_STATEMENT
 
 
 def test_remember_activation_throughput() -> None:
     engine = CognitiveEngine(agent_id="perf-rem")
     for i in range(40):
-        engine.encode(f"Fact {i} about module alpha relates to beta.", pin=True)
+        engine.encode(
+            f"Fact {i} about module alpha relates to beta.",
+            pin=True,
+            provenance=TRUSTED_USER_STATEMENT,
+        )
     t0 = perf_counter()
     for _ in range(20):
         engine.remember("module alpha")

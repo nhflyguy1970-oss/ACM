@@ -1,12 +1,15 @@
 from __future__ import annotations
 
 from acm import CognitiveEngine
+from acm.provenance import TRUSTED_USER_STATEMENT
 from acm.types import ExplanationClass
 
 
 def test_what_do_i_remember_reconstruction() -> None:
     engine = CognitiveEngine(agent_id="rem")
-    engine.encode("My favorite coffee is dark roast.", kind="preference")
+    engine.encode(
+        "My favorite coffee is dark roast.", kind="preference", provenance=TRUSTED_USER_STATEMENT
+    )
     result = engine.remember("What is my favorite coffee?")
     assert "dark roast" in result.answer.lower()
     assert result.explanation_class == ExplanationClass.PREFERENCE
@@ -18,8 +21,8 @@ def test_what_do_i_remember_reconstruction() -> None:
 
 def test_spreading_activation_uses_associations() -> None:
     engine = CognitiveEngine(agent_id="rem")
-    engine.encode("A husky is a dog.", pin=True)
-    engine.encode("Athena is a husky.", pin=True)
+    engine.encode("A husky is a dog.", pin=True, provenance=TRUSTED_USER_STATEMENT)
+    engine.encode("Athena is a husky.", pin=True, provenance=TRUSTED_USER_STATEMENT)
     result = engine.remember("husky")
     assert result.activated_concept_ids
     steps = result.reconstruction["activation"]["propagation_steps"]
@@ -32,6 +35,7 @@ def test_context_sensitive_emphasis() -> None:
         "At home my favorite coffee is dark roast.",
         kind="preference",
         context_tags=("home",),
+        provenance=TRUSTED_USER_STATEMENT,
     )
     engine.set_context("home")
     home = engine.remember("What is my favorite coffee?")
@@ -41,7 +45,9 @@ def test_context_sensitive_emphasis() -> None:
 
 def test_historical_integrity_of_experiences() -> None:
     engine = CognitiveEngine(agent_id="rem")
-    out = engine.encode("Zeus went camping near water.", pin=True)
+    out = engine.encode(
+        "Zeus went camping near water.", pin=True, provenance=TRUSTED_USER_STATEMENT
+    )
     eid = out["experience_id"]
     before = engine.store.experiences[eid]
     summary = before.summary
@@ -56,8 +62,12 @@ def test_historical_integrity_of_experiences() -> None:
 
 def test_competing_recollections_surface_ambiguity() -> None:
     engine = CognitiveEngine(agent_id="rem")
-    engine.encode("My favorite beverage is coffee.", kind="preference")
-    engine.encode("My favorite beverage is tea.", kind="preference")
+    engine.encode(
+        "My favorite beverage is coffee.", kind="preference", provenance=TRUSTED_USER_STATEMENT
+    )
+    engine.encode(
+        "My favorite beverage is tea.", kind="preference", provenance=TRUSTED_USER_STATEMENT
+    )
     # Two active preference attributes can compete depending on supersede behavior
     result = engine.remember("What is my favorite beverage?")
     # Either superseded single answer OR ambiguity — never silent dual actives without signal
@@ -70,8 +80,8 @@ def test_competing_recollections_surface_ambiguity() -> None:
 
 def test_working_memory_bias() -> None:
     engine = CognitiveEngine(agent_id="rem", buffer_capacity=3)
-    engine.encode("Fly tying is a craft.", pin=True)
-    engine.encode("Woodworking is a craft.", pin=True)
+    engine.encode("Fly tying is a craft.", pin=True, provenance=TRUSTED_USER_STATEMENT)
+    engine.encode("Woodworking is a craft.", pin=True, provenance=TRUSTED_USER_STATEMENT)
     first = engine.remember("fly tying")
     assert first.activated_concept_ids
     second = engine.remember("craft")

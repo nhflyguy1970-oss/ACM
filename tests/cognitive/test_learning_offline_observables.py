@@ -1,11 +1,14 @@
 from __future__ import annotations
 
 from acm import CognitiveEngine
+from acm.provenance import TRUSTED_USER_STATEMENT
 
 
 def test_learning_observables_in_harness() -> None:
     engine = CognitiveEngine(agent_id="lobs")
-    engine.encode("My favorite tea is oolong.", kind="preference", pin=True)
+    engine.encode(
+        "My favorite tea is oolong.", kind="preference", pin=True, provenance=TRUSTED_USER_STATEMENT
+    )
     thought = engine.what_do_i_think("What is my favorite tea?")
     engine.learn(reflective_experience_id=thought["reflective_experience_id"])
     snap = engine.validation.snapshot()
@@ -17,7 +20,9 @@ def test_learning_observables_in_harness() -> None:
 
 def test_offline_observables_in_harness() -> None:
     engine = CognitiveEngine(agent_id="oobs")
-    engine.encode("Module gamma firmware update complete.", pin=True)
+    engine.encode(
+        "Module gamma firmware update complete.", pin=True, provenance=TRUSTED_USER_STATEMENT
+    )
     engine.what_do_i_think("module gamma")
     engine.sleep()
     snap = engine.validation.snapshot()
@@ -28,7 +33,9 @@ def test_offline_observables_in_harness() -> None:
 
 def test_no_prompts_in_learning_trace() -> None:
     engine = CognitiveEngine(agent_id="lobs")
-    engine.encode("I enjoy fly tying.", kind="preference", pin=True)
+    engine.encode(
+        "I enjoy fly tying.", kind="preference", pin=True, provenance=TRUSTED_USER_STATEMENT
+    )
     thought = engine.what_do_i_think("fly tying")
     engine.learn(reflective_experience_id=thought["reflective_experience_id"])
     snap = engine.validation.snapshot()

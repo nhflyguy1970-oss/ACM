@@ -3,12 +3,15 @@ from __future__ import annotations
 from time import perf_counter
 
 from acm import CognitiveEngine
+from acm.provenance import TRUSTED_USER_STATEMENT
 
 
 def test_recombination_analogy_throughput() -> None:
     engine = CognitiveEngine(agent_id="perf-ra")
     for i in range(8):
-        engine.encode(f"Craft domain {i} uses specialized tools.", pin=True)
+        engine.encode(
+            f"Craft domain {i} uses specialized tools.", pin=True, provenance=TRUSTED_USER_STATEMENT
+        )
     t0 = perf_counter()
     for i in range(12):
         engine.what_new_memories_can_emerge(f"tools {i % 8}", blends=2)

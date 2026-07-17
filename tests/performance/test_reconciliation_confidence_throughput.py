@@ -3,12 +3,15 @@ from __future__ import annotations
 from time import perf_counter
 
 from acm import CognitiveEngine
+from acm.provenance import TRUSTED_USER_STATEMENT
 
 
 def test_reconciliation_confidence_throughput() -> None:
     engine = CognitiveEngine(agent_id="perf-rcl")
     for i in range(8):
-        engine.encode(f"Beacon channel {i} reports weather.", pin=True)
+        engine.encode(
+            f"Beacon channel {i} reports weather.", pin=True, provenance=TRUSTED_USER_STATEMENT
+        )
     t0 = perf_counter()
     for i in range(12):
         engine.how_should_memory_reconcile(f"beacon {i % 8}")

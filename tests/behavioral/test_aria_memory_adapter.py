@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from acm.provenance import TRUSTED_USER_STATEMENT
 from aria_memory_adapter import AcmMemoryAdapter, FeatureFlags
 
 
@@ -16,10 +17,14 @@ class _Legacy:
 
 def test_shadow_legacy_authoritative() -> None:
     ad = AcmMemoryAdapter(legacy=_Legacy(), flags=FeatureFlags())
-    remembered = ad.remember("Coffee is bitter.")
+    remembered = ad.remember(
+        "Coffee is bitter.",
+        ingestion_provenance=TRUSTED_USER_STATEMENT,
+    )
     assert remembered["authoritative"] == "legacy"
     assert remembered["user_visible_changed"] is False
     assert remembered["acm_shadow"] is not None
+    assert remembered["acm_shadow"]["encoded"] is True
     recalled = ad.recall("coffee")
     assert recalled["authoritative"] == "legacy"
     assert recalled["result"]["answer"] == "legacy coffee facts"
@@ -40,3 +45,12 @@ def test_adapter_capabilities_and_health() -> None:
     report = ad.shadow_report()
     assert report["certified"] is False
     assert "mission_control" in report
+
+
+def test_adapter_does_not_invent_trusted_provenance() -> None:
+    ad = AcmMemoryAdapter(legacy=_Legacy(), flags=FeatureFlags())
+    remembered = ad.remember("My favorite color is adapter-blue.")
+    assert remembered["legacy"]["ok"] is True
+    assert remembered["acm_shadow"]["encoded"] is False
+    assert remembered["acm_shadow"]["reason"] == "memory_trust"
+    assert len(ad.engine.store.experiences) == 0

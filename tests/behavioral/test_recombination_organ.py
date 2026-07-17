@@ -1,12 +1,15 @@
 from __future__ import annotations
 
 from acm import CognitiveEngine
+from acm.provenance import TRUSTED_USER_STATEMENT
 
 
 def test_recombination_never_alters_history() -> None:
     engine = CognitiveEngine(agent_id="rcb")
-    engine.encode("Fly tying uses feathers and thread.", pin=True)
-    engine.encode("Woodworking uses chisels and wood.", pin=True)
+    engine.encode(
+        "Fly tying uses feathers and thread.", pin=True, provenance=TRUSTED_USER_STATEMENT
+    )
+    engine.encode("Woodworking uses chisels and wood.", pin=True, provenance=TRUSTED_USER_STATEMENT)
     before = len(engine.store.experiences)
     before_ids = set(engine.store.experiences)
     result = engine.what_new_memories_can_emerge("craft tools", blends=3)
@@ -25,8 +28,8 @@ def test_recombination_never_alters_history() -> None:
 
 def test_prediction_and_simulation_influence_recombination() -> None:
     engine = CognitiveEngine(agent_id="rcb")
-    engine.encode("Breakfast precedes coffee.", pin=True)
-    engine.encode("Coffee supports morning focus.", pin=True)
+    engine.encode("Breakfast precedes coffee.", pin=True, provenance=TRUSTED_USER_STATEMENT)
+    engine.encode("Coffee supports morning focus.", pin=True, provenance=TRUSTED_USER_STATEMENT)
     result = engine.what_new_memories_can_emerge("morning coffee", blends=2)
     assert any(r.get("prediction_id") or r.get("simulation_id") for r in result["recombinations"])
     snap = engine.validation.snapshot()

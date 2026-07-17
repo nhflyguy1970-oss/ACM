@@ -34,6 +34,13 @@ Implementation was authorized as a **new standalone engine**, not a rename of Ar
 - **2026-07:** **Identity rendering isolation** (D044) — Who am I / Who are you speech never blends identities or personalization. Released as **v0.18.3**. Standalone only until promotion approval.
 - **2026-07:** **Preference reconstruction fix** (D045) — lexical support concepts never compete with semantic preferences; false `competing_recollections` eliminated. Released as **v0.18.4**. Standalone only until promotion approval.
 - **2026-07:** **Post-D045 future-work capture** — audited Identity, Preference, readiness, maturity, scientific-gap, validation, and engineering notes; consolidated 52 intentionally postponed enhancements into the authoritative `FUTURE_ENHANCEMENTS_ROADMAP.md`, `ENGINEERING_BACKLOG.md`, and `FUTURE_RELEASE_CANDIDATES.md`. Documentation only; no deferred behavior implemented.
+- **2026-07:** **Trusted Memory Ingestion** (D046) — explicit actor,
+  host-operation, and message-role provenance now gates every external encode
+  before Semantic Extraction. Only trusted user statements/teachings/corrections
+  are eligible; tool, system, diagnostic, retrieval, reflection-output,
+  metadata, infrastructure, missing, and unknown sources reject with zero
+  semantic-memory mutation. Source eligibility persists in Experience/Concept
+  provenance. Released as **v0.19.0**. Standalone only until promotion approval.
 
 ## Milestone cognitive questions
 
@@ -83,7 +90,11 @@ Implementation was authorized as a **new standalone engine**, not a rename of Ar
 
 ### What new cognitive capability exists today that did not exist yesterday?
 
-**Preference Reconstruction Fix (v0.18.4 / D045):** Remembering only admits answerable semantic concepts as primary/competing recollections. Lexical support concepts keep supporting retrieval but never manufacture ambiguity. Not a new organ — an implementation correction to reconstruction.
+**Trusted Memory Ingestion (v0.19.0 / D046):** External content must pass a
+closed source-eligibility gate before Semantic Extraction. Tool, system,
+diagnostic, retrieval, reflection-output, and unknown sources cannot become
+autobiographical memory. Not a new organ — an implementation correction at the
+existing ingestion boundary.
 
 
 ## Relationship to Aria

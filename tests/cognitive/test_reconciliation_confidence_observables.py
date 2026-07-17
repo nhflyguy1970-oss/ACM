@@ -2,12 +2,13 @@ from __future__ import annotations
 
 from acm import CognitiveEngine
 from acm.associations.model import RelationKind
+from acm.provenance import TRUSTED_USER_STATEMENT
 
 
 def test_reconciliation_confidence_observables() -> None:
     engine = CognitiveEngine(agent_id="rclobs")
-    a = engine.encode("Signal alpha is reliable.", pin=True)
-    b = engine.encode("Signal beta is unreliable.", pin=True)
+    a = engine.encode("Signal alpha is reliable.", pin=True, provenance=TRUSTED_USER_STATEMENT)
+    b = engine.encode("Signal beta is unreliable.", pin=True, provenance=TRUSTED_USER_STATEMENT)
     engine.associations.relate(
         a["concept_id"],
         b["concept_id"],

@@ -1,11 +1,14 @@
 from __future__ import annotations
 
 from acm import CognitiveEngine
+from acm.provenance import TRUSTED_USER_STATEMENT
 from acm.types import ExplanationClass
 
 
 def test_encode_preference_and_remember(engine: CognitiveEngine) -> None:
-    out = engine.encode("My favorite coffee is dark roast.", kind="preference")
+    out = engine.encode(
+        "My favorite coffee is dark roast.", kind="preference", provenance=TRUSTED_USER_STATEMENT
+    )
     assert out["encoded"] is True
     result = engine.remember("What is my favorite coffee?")
     assert "dark roast" in result.answer.lower()
@@ -15,7 +18,7 @@ def test_encode_preference_and_remember(engine: CognitiveEngine) -> None:
 
 
 def test_low_attention_skips_ordinary_chatter(engine: CognitiveEngine) -> None:
-    out = engine.encode("um okay sure")
+    out = engine.encode("um okay sure", provenance=TRUSTED_USER_STATEMENT)
     assert out["encoded"] is False
     assert out["reason"] == "low_attention"
 

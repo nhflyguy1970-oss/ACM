@@ -1,13 +1,24 @@
 from __future__ import annotations
 
 from acm import CognitiveEngine
+from acm.provenance import TRUSTED_USER_STATEMENT
 
 
 def test_identity_emerges_from_experience_not_manual_fields() -> None:
     engine = CognitiveEngine(agent_id="guide")
     # Assistant self-encode requires explicit speaker (D043)
-    engine.encode("I am a research assistant.", kind="identity", speaker="assistant")
-    engine.encode("I can organize long-term memory.", kind="identity", speaker="assistant")
+    engine.encode(
+        "I am a research assistant.",
+        kind="identity",
+        speaker="assistant",
+        provenance=TRUSTED_USER_STATEMENT,
+    )
+    engine.encode(
+        "I can organize long-term memory.",
+        kind="identity",
+        speaker="assistant",
+        provenance=TRUSTED_USER_STATEMENT,
+    )
     engine.open_goal("Support lifelong learning", importance=0.8)
 
     who = engine.who_am_i()
@@ -22,8 +33,18 @@ def test_identity_emerges_from_experience_not_manual_fields() -> None:
 
 def test_identity_persists_and_strengthens() -> None:
     engine = CognitiveEngine(agent_id="guide")
-    engine.encode("I am a coding helper.", kind="identity", speaker="assistant")
-    engine.encode("I am a coding helper.", kind="identity", speaker="assistant")
+    engine.encode(
+        "I am a coding helper.",
+        kind="identity",
+        speaker="assistant",
+        provenance=TRUSTED_USER_STATEMENT,
+    )
+    engine.encode(
+        "I am a coding helper.",
+        kind="identity",
+        speaker="assistant",
+        provenance=TRUSTED_USER_STATEMENT,
+    )
     second = engine.identity_snapshot()
     role = next(
         a
@@ -36,8 +57,12 @@ def test_identity_persists_and_strengthens() -> None:
 
 def test_identity_adaptation_requires_assent() -> None:
     engine = CognitiveEngine(agent_id="guide")
-    engine.encode("I am a librarian.", kind="identity", speaker="assistant")
-    conflict = engine.encode("I am a navigator.", kind="identity", speaker="assistant")
+    engine.encode(
+        "I am a librarian.", kind="identity", speaker="assistant", provenance=TRUSTED_USER_STATEMENT
+    )
+    conflict = engine.encode(
+        "I am a navigator.", kind="identity", speaker="assistant", provenance=TRUSTED_USER_STATEMENT
+    )
     assert conflict["identity"]["status"] == "proposed"
     proposal_id = conflict["identity"]["proposal_id"]
 
@@ -61,11 +86,15 @@ def test_identity_adaptation_requires_assent() -> None:
 def test_identity_influence_on_attention_and_goals() -> None:
     engine = CognitiveEngine(agent_id="guide")
     engine.open_goal("Become a reliable memory engine")
-    out = engine.encode("I can remember user preferences over years.")
+    out = engine.encode(
+        "I can remember user preferences over years.", provenance=TRUSTED_USER_STATEMENT
+    )
     assert out["encoded"] is True
     assert out["identity"]["identity"] is True
     # Preference becomes adjacent to identity
-    pref = engine.encode("My favorite coffee is dark roast.", kind="preference")
+    pref = engine.encode(
+        "My favorite coffee is dark roast.", kind="preference", provenance=TRUSTED_USER_STATEMENT
+    )
     assert pref["identity"]["status"] == "adjacent"
     snap = engine.identity_snapshot()
     assert "Become a reliable memory engine" in snap["active_goals"]

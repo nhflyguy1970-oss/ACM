@@ -8,6 +8,7 @@ from acm.api.engine import CognitiveEngine
 from acm.authority.classification import MemoryIntent, classify_memory_request
 from acm.authority.result import CognitiveMemoryResult, MemoryStatus
 from acm.authority.speak import speak_cognitive_result
+from acm.provenance import TRUSTED_USER_STATEMENT
 
 
 @pytest.fixture()
@@ -37,7 +38,12 @@ def test_classify_identity_and_remembering():
 
 
 def test_known_memory_pipeline(eng: CognitiveEngine):
-    eng.encode("User favorite coffee is medium roast", kind="preference", pin=True)
+    eng.encode(
+        "User favorite coffee is medium roast",
+        kind="preference",
+        pin=True,
+        provenance=TRUSTED_USER_STATEMENT,
+    )
     result = eng.cognitive_respond("What is my favorite coffee?")
     assert result["is_memory_request"] is True
     assert result["allow_encode_from_speech"] is False
@@ -97,6 +103,7 @@ def test_memory_protection_blocks_llm_tags(eng: CognitiveEngine):
         "I made up that the user loves pineapple pizza",
         kind="experience",
         context_tags=("llm_generated",),
+        provenance=TRUSTED_USER_STATEMENT,
     )
     assert blocked.get("encoded") is False
     assert blocked.get("reason") == "memory_protection"
@@ -105,6 +112,7 @@ def test_memory_protection_blocks_llm_tags(eng: CognitiveEngine):
         "fabricated autobiography",
         kind="experience",
         external_kind="llm",
+        provenance=TRUSTED_USER_STATEMENT,
     )
     assert blocked2.get("encoded") is False
 
@@ -115,10 +123,13 @@ def test_generated_response_isolation(eng: CognitiveEngine):
         "As an AI language model I conclude your dog is named Spot",
         kind="experience",
         context_tags=("speech_output", "assistant_utterance"),
+        provenance=TRUSTED_USER_STATEMENT,
     )
     assert out.get("encoded") is False
     # legitimate encode still works
-    ok = eng.encode("User dog is named River", kind="experience", pin=True)
+    ok = eng.encode(
+        "User dog is named River", kind="experience", pin=True, provenance=TRUSTED_USER_STATEMENT
+    )
     assert ok.get("encoded") is True
 
 
@@ -132,7 +143,9 @@ def test_identity_recall_via_pipeline(eng: CognitiveEngine):
 
 def test_low_confidence_and_false_memory_prevention(eng: CognitiveEngine):
     # Neighborhood bleed: encode unrelated fact, ask distant question
-    eng.encode("Workspace uses Python 3.12", kind="experience", pin=True)
+    eng.encode(
+        "Workspace uses Python 3.12", kind="experience", pin=True, provenance=TRUSTED_USER_STATEMENT
+    )
     result = eng.cognitive_respond("What is my mother's birthday?")
     assert result["is_memory_request"] is True
     # Must not invent a birthday
@@ -154,7 +167,12 @@ def test_non_memory_request_skips_reconstruction(eng: CognitiveEngine):
 
 
 def test_provenance_and_supporting_structure(eng: CognitiveEngine):
-    eng.encode("User prefers terse documentation", kind="preference", pin=True)
+    eng.encode(
+        "User prefers terse documentation",
+        kind="preference",
+        pin=True,
+        provenance=TRUSTED_USER_STATEMENT,
+    )
     result = eng.cognitive_respond("What are my documentation preferences?")
     assert "supporting_concepts" in result
     assert "reasoning_path" in result
@@ -176,7 +194,9 @@ def test_classify_request_engine_api(eng: CognitiveEngine):
 
 
 def test_regression_remember_still_works(eng: CognitiveEngine):
-    eng.encode("Favorite tea is green tea", kind="preference", pin=True)
+    eng.encode(
+        "Favorite tea is green tea", kind="preference", pin=True, provenance=TRUSTED_USER_STATEMENT
+    )
     r = eng.remember("favorite tea")
     assert r.answer is not None
     assert r.confidence >= 0.0

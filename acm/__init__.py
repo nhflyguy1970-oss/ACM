@@ -13,6 +13,16 @@ from acm.authority import (
 )
 from acm.observability.trace import CognitiveTraceEvent
 from acm.plugins import BaseExtension, ExtensionRegistry
+from acm.provenance import (
+    TRUSTED_USER_CORRECTION,
+    TRUSTED_USER_STATEMENT,
+    TRUSTED_USER_TEACHING,
+    HostOperation,
+    IngestionActor,
+    IngestionDecision,
+    IngestionProvenance,
+    MessageRole,
+)
 from acm.validation.harness import ValidationHarness
 
 __all__ = [
@@ -25,6 +35,14 @@ __all__ = [
     "ValidationHarness",
     "BaseExtension",
     "ExtensionRegistry",
+    "HostOperation",
+    "IngestionActor",
+    "IngestionDecision",
+    "IngestionProvenance",
+    "MessageRole",
+    "TRUSTED_USER_CORRECTION",
+    "TRUSTED_USER_STATEMENT",
+    "TRUSTED_USER_TEACHING",
     "classify_memory_request",
     "speak_cognitive_result",
     "__version__",

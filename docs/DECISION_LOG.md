@@ -395,3 +395,37 @@ postponed work into `FUTURE_ENHANCEMENTS_ROADMAP.md`,
 are authoritative planning records only; they do not authorize or implement
 teach/query classification, evidence intent, introspection, diagnostic,
 editing, calibration, or other future behavior.
+
+## D046 — Trusted Memory Ingestion (2026-07-17)
+
+**Decision:** Every external autobiographical encode request SHALL carry
+explicit source provenance identifying actor, host operation, and message role.
+Eligibility SHALL be decided before context inference, Semantic Extraction, or
+any cognitive-memory mutation. The policy is closed: only user statements,
+explicit user teachings, and explicit user corrections entering through
+conversation/encoding are eligible. Missing, unknown, assistant, tool, system,
+diagnostic, retrieval, reflection-output, prompt, metadata, planner, scheduler,
+conversation-wrapper, and infrastructure sources reject by default.
+
+Accepted Experience and primary Concept provenance SHALL retain source actor,
+host operation, message role, and eligibility reason. Source metadata is
+audit-only and SHALL NOT become semantic content, activation cues, or rendered
+answers. Assistant operational identity remains configuration-driven. Existing
+speech-contamination protection remains defense in depth.
+
+**Why:** Post-D045 behavioral certification found a host tool-status artifact
+stored as a preference. Investigation proved D045, Preference storage,
+Reconstruction, Memory Authority response handling, and rendering were
+functioning correctly over contaminated graph state. The missing control was an
+ingestion trust boundary: untagged tool/status text could reach Semantic
+Extraction as ordinary conversation.
+
+**Architectural invariants:** No new organ. No redesign of Memory Authority,
+Semantic Extraction, Identity, Preference handling, Activation,
+Reconstruction, or rendering. D038–D045 remain behaviorally intact. D046 only
+controls whether external content may reach the existing encode pipeline.
+
+**Status:** Accepted (correction). Docs: `TRUSTED_MEMORY_INGESTION.md`,
+`MEMORY_TRUST_MODEL.md`, `TOOL_ARTIFACT_CONTAMINATION_ANALYSIS.md`, and
+`MEMORY_INGESTION_AUDIT.md`. Version **v0.19.0**. Standalone only until a
+separate Aria promotion is explicitly approved.

@@ -1,11 +1,17 @@
 from __future__ import annotations
 
 from acm import CognitiveEngine
+from acm.provenance import TRUSTED_USER_STATEMENT
 
 
 def test_learn_adapts_concepts_without_rewriting_experiences() -> None:
     engine = CognitiveEngine(agent_id="learn")
-    enc = engine.encode("My favorite coffee is Ethiopian pour-over.", kind="preference", pin=True)
+    enc = engine.encode(
+        "My favorite coffee is Ethiopian pour-over.",
+        kind="preference",
+        pin=True,
+        provenance=TRUSTED_USER_STATEMENT,
+    )
     experience_id = enc["experience_id"]
     before_summary = engine.store.experiences[experience_id].summary
     before_meta = dict(engine.store.experiences[experience_id].metadata)
@@ -51,7 +57,12 @@ def test_learn_abstains_on_uncertainty() -> None:
 
 def test_adaptation_rollback_restores_before() -> None:
     engine = CognitiveEngine(agent_id="learn")
-    engine.encode("I like woodworking as a hobby.", kind="preference", pin=True)
+    engine.encode(
+        "I like woodworking as a hobby.",
+        kind="preference",
+        pin=True,
+        provenance=TRUSTED_USER_STATEMENT,
+    )
     thought = engine.what_do_i_think("woodworking")
     learned = engine.learn(reflective_experience_id=thought["reflective_experience_id"])
     applied = [a for a in learned["adaptations"] if a["applied"] and a["before"]]

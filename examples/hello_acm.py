@@ -4,17 +4,25 @@
 from __future__ import annotations
 
 from acm import CognitiveEngine
+from acm.provenance import TRUSTED_USER_STATEMENT
 
 
 def main() -> None:
     engine = CognitiveEngine(agent_id="demo-agent")
     engine.open_goal("Learn user preferences", importance=0.7)
-    engine.encode("I am a portable cognitive memory engine.", kind="identity", speaker="assistant")
-    engine.encode("My favorite coffee is dark roast.", kind="preference")
+    engine.encode(
+        "I am a portable cognitive memory engine.",
+        kind="identity",
+        speaker="assistant",
+        provenance=TRUSTED_USER_STATEMENT,
+    )
+    engine.encode(
+        "My favorite coffee is dark roast.", kind="preference", provenance=TRUSTED_USER_STATEMENT
+    )
     print(engine.who_am_i()["answer"])
     print("what_happened:", [e["cognitive_kind"] for e in engine.what_happened()])
     print("what_is_this:", engine.what_is_this("coffee")["answer"])
-    engine.encode("A husky is a dog.", pin=True)
+    engine.encode("A husky is a dog.", pin=True, provenance=TRUSTED_USER_STATEMENT)
     print("how_related:", engine.how_related("husky", "dog")["answer"])
     remembered = engine.what_do_i_remember("What is my favorite coffee?")
     print("what_do_i_remember:", remembered["answer"], "ambiguous=", remembered.get("ambiguous"))

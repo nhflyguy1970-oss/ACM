@@ -10,6 +10,7 @@ from acm.api.engine import CognitiveEngine
 from acm.authority.dispatch import CognitiveDispatchEngine
 from acm.authority.handlers import FORBIDDEN_TERMINALS, sanitize_cognitive_text
 from acm.authority.taxonomy import CognitiveIntent
+from acm.provenance import TRUSTED_USER_STATEMENT
 
 
 @pytest.fixture()
@@ -22,7 +23,7 @@ def eng(tmp_path):
 
 
 def test_user_identity_does_not_return_assistant_identity(eng):
-    eng.encode("User's name is Jeff", kind="identity", pin=True)
+    eng.encode("User's name is Jeff", kind="identity", pin=True, provenance=TRUSTED_USER_STATEMENT)
     result = eng.cognitive_respond("Who am I?")
     assert result["intent"] == CognitiveIntent.USER_IDENTITY.value
     speech = eng.speak_cognitive_result(result).lower()
@@ -70,7 +71,12 @@ def test_goal_without_open_goals_still_cognitive(eng):
 
 
 def test_understanding_change_reflection_not_raw_storage(eng):
-    eng.encode("Learned that fly tying requires hackle", kind="experience", pin=True)
+    eng.encode(
+        "Learned that fly tying requires hackle",
+        kind="experience",
+        pin=True,
+        provenance=TRUSTED_USER_STATEMENT,
+    )
     result = eng.cognitive_respond("How has your understanding changed?")
     assert result["intent"] == CognitiveIntent.REFLECTION.value
     diag = result["diagnostics"]

@@ -1,10 +1,13 @@
 from __future__ import annotations
 
 from acm import CognitiveEngine
+from acm.provenance import TRUSTED_USER_STATEMENT
 
 
 def test_m0_harness_records_activation_and_lifecycle(engine: CognitiveEngine) -> None:
-    engine.encode("My favorite coffee is dark roast.", kind="preference")
+    engine.encode(
+        "My favorite coffee is dark roast.", kind="preference", provenance=TRUSTED_USER_STATEMENT
+    )
     engine.remember("What is my favorite coffee?")
     snap = engine.validation.snapshot()
     assert snap["schema"] == "acm.validation/0.13"
@@ -19,6 +22,7 @@ def test_identity_touch(engine: CognitiveEngine) -> None:
         "I am a coding assistant that helps with memory research.",
         kind="identity",
         speaker="assistant",
+        provenance=TRUSTED_USER_STATEMENT,
     )
     assert engine.validation.identity_touches
     sketch = engine.metacognitive_sketch()
@@ -29,12 +33,18 @@ def test_identity_touch(engine: CognitiveEngine) -> None:
 def test_working_transitions_under_pressure() -> None:
     engine = CognitiveEngine(agent_id="wm", buffer_capacity=3)
     for i in range(6):
-        engine.encode(f"My favorite snack{i} is item{i}.", kind="preference")
+        engine.encode(
+            f"My favorite snack{i} is item{i}.",
+            kind="preference",
+            provenance=TRUSTED_USER_STATEMENT,
+        )
     assert any(t.action == "displace" for t in engine.validation.working_transitions)
 
 
 def test_no_chain_of_thought_in_public_trace(engine: CognitiveEngine) -> None:
-    engine.encode("My favorite color is blue.", kind="preference")
+    engine.encode(
+        "My favorite color is blue.", kind="preference", provenance=TRUSTED_USER_STATEMENT
+    )
     result = engine.remember("favorite color?")
     blob = str(result.trace).lower()
     assert "chain of thought" not in blob
