@@ -2,6 +2,18 @@
 
 All notable changes to ACM are documented here.
 
+## [Unreleased]
+
+### Investigated — Preference subsystem false conflict (diagnostic only)
+
+- Root cause of false `competing_recollections` identified: token-nucleus
+  concepts admitted as competing recollections in `RememberingOrgan._reconstruct`
+- Full pipeline trace, conflict analysis, and introspection-bypass analysis
+- Docs: `PREFERENCE_PIPELINE_TRACE.md`, `PREFERENCE_CONFLICT_ANALYSIS.md`,
+  `PREFERENCE_INTROSPECTION.md`
+- Decision **D045**; diagnostic tests `tests/cognitive/test_preference_pipeline_debug.py`
+- **No behavior changed** — correction awaits review and approval
+
 ## [0.18.3] — 2026-07-16
 
 ### Fixed — Identity rendering isolation (implementation debug)

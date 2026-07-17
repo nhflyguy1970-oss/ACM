@@ -380,3 +380,11 @@ Matrix, API, migration, rollback, and test plans must not authorize permanent du
 **Why:** Behavioral validation showed correct assistant selection still blending user facts into speech (`I'm ARIA, and you know me as Jeff` / `I am known as Jeff`).
 
 **Status:** Accepted. Docs: `IDENTITY_RENDERING_ISOLATION.md`, `IDENTITY_RENDERING_PIPELINE.md`, `IDENTITY_CONTEXT_FILTERING.md`. Version **v0.18.3**. Standalone only until promoted into Aria.
+
+## D045 — Preference subsystem diagnostic: false competing_recollections root cause (2026-07-17)
+
+**Decision:** Record the diagnostic investigation of the Preference subsystem failure observed during behavioral validation. Root cause: conflict detection in `RememberingOrgan._reconstruct` admits lexical token-nucleus concepts (e.g. `favorite` with `mentioned='favorite'`) as competing recollections; re-mention of the word across conversation turns pushes the token concept inside `COMPETE_RATIO` of the true preference concept → false `ambiguous` → gate `CONFLICTING` → `competing_recollections`. Contributing: `extract_cues` stores interrogative text as preference attributes and renderable token nuclei; classification has no teach/query or evidence-inspection discrimination, so diagnostic questions re-terminate at the same reconstruction. Investigation only — **no fix implemented**; correction requires separate approval.
+
+**Why:** After a single healthy teach (`My favorite color is blue.`), retrieval returned `competing_recollections` although the store held exactly one active preference fact, and every diagnostic question terminated with the identical status.
+
+**Status:** Accepted (diagnosis). Docs: `PREFERENCE_PIPELINE_TRACE.md`, `PREFERENCE_CONFLICT_ANALYSIS.md`, `PREFERENCE_INTROSPECTION.md`. Tests: `tests/cognitive/test_preference_pipeline_debug.py`. No version bump — no behavior changed.
