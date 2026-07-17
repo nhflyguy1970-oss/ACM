@@ -96,6 +96,15 @@ diagnostic, retrieval, reflection-output, and unknown sources cannot become
 autobiographical memory. Not a new organ — an implementation correction at the
 existing ingestion boundary.
 
+**Legacy Memory Cleanup (v0.20.0 / D047):** A one-time idempotent migration
+removes pre-D046 autobiographical memories whose source would be rejected
+under the D046 trust policy — tool, memory-search, diagnostic, reflection,
+system, prompt, infrastructure, and metadata artifacts — while preserving
+legitimate user memories, identity, preferences, relationships, internal
+cognition, and valid provenance, and restoring attributes a contaminated
+encode had superseded. Not a cognition change — a maintenance operation over
+stored state.
+
 
 ## Relationship to Aria
 

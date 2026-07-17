@@ -17,7 +17,8 @@ Milestones are cognitive, not storage-tech. Each milestone requires the permanen
 | **Assistant Identity Pipeline** | Separate operational assistant identity from user autobiography | **Done (v0.18.2)** — D043; promote-to-Aria pending approval |
 | **Identity Rendering Isolation** | No cross-identity blend in Who am I / Who are you speech | **Done (v0.18.3)** — D044; promote-to-Aria pending approval |
 | **Preference Reconstruction Fix** | Lexical support concepts never compete with semantic preferences | **Done (v0.18.4)** — D045; promote-to-Aria pending approval |
-| **Trusted Memory Ingestion** | Explicit source eligibility before semantic memory formation | **Done (v0.19.0)** — D046; promote-to-Aria pending approval |
+| **Trusted Memory Ingestion** | Explicit source eligibility before semantic memory formation | **Done (v0.19.0)** — D046; promoted to Aria (M0G) |
+| **Legacy Memory Cleanup** | One-time removal of pre-D046 untrusted-source memories | **Done (v0.20.0)** — D047; promote-to-Aria pending approval |
 | **Future Enhancement Backlog** | Permanent post-D045 enhancement inventory and candidate ordering | **Captured (docs)** — 52 items; no implementation authorized |
 | **Next (approval)** | Promote certified ACM into Aria vendored copy (as approved) | **Awaiting approval** |
 | **Later** | Unqualified ACM 1.0 label | Evidence-driven |

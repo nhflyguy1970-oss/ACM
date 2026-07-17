@@ -115,7 +115,7 @@ UNTRUSTED_CASES = (
 
 
 def test_d046_version_pin() -> None:
-    assert __version__ == "0.19.0"
+    assert tuple(int(p) for p in __version__.split(".")) >= (0, 19, 0)
 
 
 def test_d046_missing_and_unknown_provenance_rejected_before_semantics(

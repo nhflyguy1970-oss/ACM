@@ -429,3 +429,43 @@ controls whether external content may reach the existing encode pipeline.
 `MEMORY_TRUST_MODEL.md`, `TOOL_ARTIFACT_CONTAMINATION_ANALYSIS.md`, and
 `MEMORY_INGESTION_AUDIT.md`. Version **v0.19.0**. Standalone only until a
 separate Aria promotion is explicitly approved.
+
+## D047 — Legacy Memory Contamination Cleanup (2026-07-17)
+
+**Decision:** Autobiographical memories persisted before D046 SHALL be
+remediated by a one-time, idempotent migration
+(`cleanup_legacy_contamination`) rather than by rewriting cognition. The
+migration removes an Experience, its solely-derived Concepts/attributes, and
+the provenance of removed artifacts when either (a) the record carries D046
+source metadata whose recorded actor / host operation / message role is
+ineligible under the current trust policy (fail-closed, covers imported
+fabricated metadata), or (b) the record is a legacy external encode
+(`semantic_extraction` metadata without `source_actor`) whose original
+evidence text bears an affirmative non-user artifact signature — tool
+wrappers, memory-search output, diagnostics, reflection traces, system
+messages, prompt fragments, infrastructure logs, implementation metadata.
+Legacy records without such a signature are presumed legitimate user
+knowledge and preserved. Internal cognition (Reflection organ births,
+goal-completion Experiences) is never external ingestion and is never
+removed. Attributes that a contaminated encode superseded are reactivated to
+the newest surviving version.
+
+**Why:** Post-D046 behavioral testing still recalled previously contaminated
+preferences (e.g. a diagnostic artifact that had superseded the taught blue
+preference on a pre-D046 graph). Investigation on a genuine v0.18.4 engine
+confirmed the contamination is legacy-only data: pre-D046 provenance carries
+only `origin=encode` with no source fields, and v0.19.0+ has no encode path
+that bypasses the trust gate. D046 intentionally does not rewrite existing
+semantic memory, so a separately approved remediation was required
+(anticipated in `TOOL_ARTIFACT_CONTAMINATION_ANALYSIS.md` §Recommended
+correction, item 6).
+
+**Architectural invariants:** No new organ. D046 Trusted Memory Ingestion,
+Semantic Extraction, Reconstruction, and rendering are unmodified. The
+migration is a maintenance operation over stored state, not a cognitive
+behavior change; running it on a clean graph is a checksum-identical no-op.
+
+**Status:** Accepted (remediation). Docs: `LEGACY_MEMORY_CLEANUP.md`. Tests:
+`tests/cognitive/test_legacy_memory_cleanup.py` against a genuine v0.18.4
+contaminated snapshot fixture. Version **v0.20.0**. Standalone only until a
+separate Aria promotion is explicitly approved.
