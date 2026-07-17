@@ -1,12 +1,14 @@
-"""Preference pipeline diagnostics — investigation of false competing_recollections.
+"""Preference pipeline diagnostics — D045 investigation and correction record.
 
-These tests document the CURRENT behavior of the Preference subsystem as traced
-in docs/PREFERENCE_PIPELINE_TRACE.md and docs/PREFERENCE_CONFLICT_ANALYSIS.md.
+These tests document the behavior of the Preference subsystem as traced in
+docs/PREFERENCE_PIPELINE_TRACE.md and docs/PREFERENCE_CONFLICT_ANALYSIS.md.
 
-Tests named ``test_defect_*`` reproduce implementation defects on purpose and
-assert the *observed defective* behavior so the investigation is executable.
-They must be updated when the approved correction lands. No production
-behavior is changed by this investigation.
+The false competing_recollections defect was corrected by D045
+(competitor admissibility — see docs/PREFERENCE_RECONSTRUCTION_FIX.md and
+tests/cognitive/test_preference_reconstruction_fix.py). Tests named
+``test_deferred_*`` pin defects that are intentionally NOT part of D045
+(teach/query classification, evidence intent, introspection quality) and
+must be updated when their own corrections land.
 """
 
 from __future__ import annotations
@@ -111,48 +113,48 @@ def test_contradictory_preference_current_semantics_last_write_wins() -> None:
 
 
 # ---------------------------------------------------------------------------
-# Defect demonstrations — current (incorrect) behavior, per investigation
+# D045 corrected behavior — token nuclei never manufacture ambiguity
 # ---------------------------------------------------------------------------
 
 
-def test_defect_false_conflict_from_token_nucleus_concept() -> None:
-    """DEFECT (root cause): lexical token concepts count as competing recollections.
+def test_token_nucleus_never_competes_after_d045() -> None:
+    """FIXED by D045: lexical token concepts no longer count as competitors.
 
-    Encoding any additional sentence containing the word 'favorite' (here the
-    user's own question logged as a conversation turn) re-ingests the token
-    nucleus concept 'favorite' (attr mentioned='favorite'). Its activation
-    energy then falls within COMPETE_RATIO of the true preference concept and
-    RememberingOrgan._reconstruct records it as a CompetingRecollection →
-    ambiguous → gate CONFLICTING → 'competing_recollections'.
-
-    There is exactly ONE preference fact in the store. The 'conflict' is the
-    word 'favorite' itself, not a contradictory memory.
+    Encoding the user's own question as a conversation turn re-ingests the
+    token nucleus concept 'favorite' (attr mentioned='favorite'). Before D045
+    its energy within COMPETE_RATIO made it a CompetingRecollection → false
+    'competing_recollections'. With competitor admissibility, retrieval stays
+    known: there is exactly ONE preference fact in the store.
     """
     eng = _engine()
     eng.encode("My favorite color is blue.", kind="preference")
     eng.encode("What is my favorite color?")  # conversation turn, kind=experience
 
-    # Storage truth: still a single active preference fact — no real conflict.
     active = [(c, a) for c, a in _favorite_color_attrs(eng) if a.active]
     assert len(active) == 1
     assert active[0][1].value == "blue"
 
     reconstruction = eng.remembering.what_do_i_remember("What is my favorite color?")
     assert reconstruction.answer == "Your favorite color is blue."
-    # Current defective behavior: ambiguity from a token-nucleus rival.
-    assert reconstruction.ambiguous is True
-    assert reconstruction.competing, "expected the false competitor to be recorded"
-    rival = eng.store.concepts[reconstruction.competing[0].concept_id]
-    assert rival.role == ConceptRole.ENTITY  # not a preference concept
-    assert any(a.key == "mentioned" for a in rival.attributes)  # lexical noise
+    assert reconstruction.ambiguous is False
+    assert reconstruction.competing == []
 
     result = eng.cognitive_respond("What is my favorite color?")
-    assert result["status"] == "conflicting"
-    assert result["uncertainty"] == "competing_recollections"
+    assert result["status"] == "known"
+    assert result["memory"] == "Your favorite color is blue."
+    assert result["uncertainty"] is None
+    # The token nucleus still exists and keeps supporting retrieval.
+    nuclei = [
+        c
+        for c in eng.store.concepts.values()
+        if c.role == ConceptRole.ENTITY
+        and any(a.key == "mentioned" and a.value == "favorite" for a in c.attributes)
+    ]
+    assert nuclei, "token nucleus must remain for cueing/emergence support"
 
 
-def test_defect_question_turn_stored_as_preference_fact() -> None:
-    """DEFECT (contributing): interrogative text stored as a preference attribute.
+def test_deferred_question_turn_stored_as_preference_fact() -> None:
+    """DEFERRED (not D045): interrogative text stored as a preference attribute.
 
     extract_cues treats any sentence containing 'favorite' as preference-bearing;
     a question that does not match 'favorite X is Y' falls into the fallback
@@ -170,8 +172,8 @@ def test_defect_question_turn_stored_as_preference_fact() -> None:
     assert stored[0][1].value == "What is my favorite color?"
 
 
-def test_defect_teach_statement_classified_as_retrieval() -> None:
-    """DEFECT (contributing): declarative teach dispatches as a preference query.
+def test_deferred_teach_statement_classified_as_retrieval() -> None:
+    """DEFERRED (not D045): declarative teach dispatches as a preference query.
 
     'My favorite color is blue.' classifies as intent=preference /
     is_memory_request=True and routes to remembering (retrieval). There is no
@@ -187,53 +189,24 @@ def test_defect_teach_statement_classified_as_retrieval() -> None:
     assert ownership.get("primary_organ") == "remembering"
 
 
-def test_defect_evidence_inspection_bypassed_to_preference() -> None:
-    """DEFECT (introspection): evidence requests swallowed by preference cue.
+def test_deferred_evidence_inspection_bypassed_to_preference() -> None:
+    """DEFERRED (not D045): evidence requests swallowed by preference cue.
 
     'Show the evidence for my favorite color.' matches preference_cue in Band B
     (there is no evidence/introspection intent in the taxonomy), so it routes to
-    remembering and terminates with the same reconstruction terminal as the
-    plain preference question — introspection is bypassed at classification.
+    remembering and terminates at the same reconstruction terminal as the plain
+    preference question. After D045 both correctly answer known instead of the
+    false conflict, but the classification bypass remains a deferred decision.
     """
     eng = _engine()
     cl = eng.classify_request("Show the evidence for my favorite color.")
     intent = cl["intent"] if isinstance(cl, dict) else cl.intent.value
     assert intent == "preference"  # not an evidence/introspection intent
 
-    # On identically contaminated stores both requests terminate at the same
-    # remembering reconstruction terminal with the same conflicting status.
-    # Two question turns are needed: the false conflict scales with how often
-    # the word 'favorite' has been re-encoded (see conflict analysis), and the
-    # longer evidence cue dilutes activation slightly. Two engines are used
-    # because each query mutates confidence via reconsolidation.
-    def _contaminated() -> CognitiveEngine:
-        e = _engine()
-        e.encode("My favorite color is blue.", kind="preference")
-        e.encode("What is my favorite color?")
-        e.encode("What is my favorite color?")
-        return e
-
-    base = _contaminated().cognitive_respond("What is my favorite color?")
-    evidence = _contaminated().cognitive_respond("Show the evidence for my favorite color.")
-    assert base["status"] == "conflicting"
-    assert evidence["status"] == "conflicting"
-    assert evidence["uncertainty"] == base["uncertainty"] == "competing_recollections"
-    assert evidence["diagnostics"]["primary_organ"] == "remembering"
-
-
-def test_defect_conflict_explanation_does_not_name_competitors() -> None:
-    """DEFECT (introspection): 'Why ... conflicting?' routes to reflection but the
-    terminal memory text never names the actual competing facts, and the status
-    again gates on the same ambiguous reconstruction.
-    """
-    eng = _engine()
     eng.encode("My favorite color is blue.", kind="preference")
     eng.encode("What is my favorite color?")
-    cl = eng.classify_request("Why do you think my favorite color is conflicting?")
-    intent = cl["intent"] if isinstance(cl, dict) else cl.intent.value
-    assert intent == "reflection"
-    result = eng.cognitive_respond("Why do you think my favorite color is conflicting?")
-    memory = (result["memory"] or "").lower()
-    # The specific competing concept ('favorite' token nucleus) is never named.
-    assert "competing recollection" not in memory
-    assert "blue" not in memory or "favorite" not in memory
+    evidence = eng.cognitive_respond("Show the evidence for my favorite color.")
+    assert evidence["diagnostics"]["primary_organ"] == "remembering"
+    # D045: no more false conflict on the evidence request either.
+    assert evidence["status"] == "known"
+    assert evidence["uncertainty"] is None

@@ -32,6 +32,7 @@ Implementation was authorized as a **new standalone engine**, not a rename of Ar
 - **2026-07:** **Identity pipeline debug** (D042) — stop identity-schema cue pollution; user-identity confidence from name attributes; `Who am I?` → `Your name is Jeff.` Released as **v0.18.1**. Standalone only until promotion approval.
 - **2026-07:** **Assistant Identity pipeline** (D043) — operational assistant identity separated from user autobiography; `Who are you?` never resolves to user name. Released as **v0.18.2**. Standalone only until promotion approval.
 - **2026-07:** **Identity rendering isolation** (D044) — Who am I / Who are you speech never blends identities or personalization. Released as **v0.18.3**. Standalone only until promotion approval.
+- **2026-07:** **Preference reconstruction fix** (D045) — lexical support concepts never compete with semantic preferences; false `competing_recollections` eliminated. Released as **v0.18.4**. Standalone only until promotion approval.
 
 ## Milestone cognitive questions
 
@@ -81,7 +82,7 @@ Implementation was authorized as a **new standalone engine**, not a rename of Ar
 
 ### What new cognitive capability exists today that did not exist yesterday?
 
-**Semantic Extraction (v0.18.0 / D041):** encode now forms structured cognitive facts before organ storage. Not a new organ — an implementation correction to the existing pipeline.
+**Preference Reconstruction Fix (v0.18.4 / D045):** Remembering only admits answerable semantic concepts as primary/competing recollections. Lexical support concepts keep supporting retrieval but never manufacture ambiguity. Not a new organ — an implementation correction to reconstruction.
 
 
 ## Relationship to Aria

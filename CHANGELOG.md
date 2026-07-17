@@ -2,17 +2,25 @@
 
 All notable changes to ACM are documented here.
 
-## [Unreleased]
+## [0.18.4] — 2026-07-17
 
-### Investigated — Preference subsystem false conflict (diagnostic only)
+### Fixed — Preference reconstruction competitor admissibility (D045)
 
-- Root cause of false `competing_recollections` identified: token-nucleus
-  concepts admitted as competing recollections in `RememberingOrgan._reconstruct`
-- Full pipeline trace, conflict analysis, and introspection-bypass analysis
-- Docs: `PREFERENCE_PIPELINE_TRACE.md`, `PREFERENCE_CONFLICT_ANALYSIS.md`,
-  `PREFERENCE_INTROSPECTION.md`
-- Decision **D045**; diagnostic tests `tests/cognitive/test_preference_pipeline_debug.py`
-- **No behavior changed** — correction awaits review and approval
+- Lexical support concepts (token nuclei, mentioned-only, cue/index concepts)
+  no longer become primary answers or competing recollections
+- `_answerable()` admissibility rule + lexical-metadata rendering exclusion in
+  `RememberingOrgan._reconstruct` / `_format_from_concept`
+- Artificial `competing_recollections` after a single healthy preference teach
+  is eliminated; true semantic preference conflicts still report conflict
+- Docs: `PREFERENCE_RECONSTRUCTION_FIX.md` (plus prior investigation docs)
+- Decision **D045** (diagnosis + correction); tests
+  `tests/cognitive/test_preference_reconstruction_fix.py`
+
+### Notes
+
+- Standalone ACM only — **not** promoted into Aria until explicit approval
+- No new organs; no architectural redesign; deferred items (teach/query,
+  evidence intent, introspection quality) unchanged
 
 ## [0.18.3] — 2026-07-16
 

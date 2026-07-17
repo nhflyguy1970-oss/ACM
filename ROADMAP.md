@@ -16,6 +16,7 @@ Milestones are cognitive, not storage-tech. Each milestone requires the permanen
 | **Identity Pipeline Debug** | Fix encode→retrieve confidence/pollution for user name | **Done (v0.18.1)** — D042; promote-to-Aria pending approval |
 | **Assistant Identity Pipeline** | Separate operational assistant identity from user autobiography | **Done (v0.18.2)** — D043; promote-to-Aria pending approval |
 | **Identity Rendering Isolation** | No cross-identity blend in Who am I / Who are you speech | **Done (v0.18.3)** — D044; promote-to-Aria pending approval |
+| **Preference Reconstruction Fix** | Lexical support concepts never compete with semantic preferences | **Done (v0.18.4)** — D045; promote-to-Aria pending approval |
 | **Next (approval)** | Promote certified ACM into Aria vendored copy (as approved) | **Awaiting approval** |
 | **Later** | Unqualified ACM 1.0 label | Evidence-driven |
 | **Later** | Planning / Decision / Creativity | Deferred |
