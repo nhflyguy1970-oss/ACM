@@ -183,13 +183,14 @@ def test_interrogative_no_longer_stored_as_preference_fact() -> None:
     )
 
 
-def test_deferred_teach_statement_classified_as_retrieval() -> None:
-    """DEFERRED (not D045): declarative teach dispatches as a preference query.
+def test_teach_statement_encodes_before_dispatch() -> None:
+    """RESOLVED (Teaching Recognition): declarative teach encodes, then answers.
 
-    'My favorite color is blue.' classifies as intent=preference /
-    is_memory_request=True and routes to remembering (retrieval). There is no
-    declarative/teach discrimination, so the reply to a teach is a retrieval
-    result over whatever the store currently contains.
+    'My favorite color is blue.' still classifies as intent=preference and
+    routes to remembering, but the Cognitive Memory Response Pipeline now
+    recognizes the declarative teaching and encodes it (through the full trust
+    gate) before dispatch — so the retrieval reflects the updated memory
+    instead of silently discarding the teaching.
     """
     eng = _engine()
     cl = eng.classify_request("My favorite color is blue.")
@@ -198,6 +199,13 @@ def test_deferred_teach_statement_classified_as_retrieval() -> None:
     route = eng.route_request("My favorite color is blue.")
     ownership = route.get("ownership") or {}
     assert ownership.get("primary_organ") == "remembering"
+
+    result = eng.cognitive_respond("My favorite color is blue.")
+    assert "teaching_encoded" in result["reasoning_path"]
+    assert result["memory"] == "Your favorite color is blue."
+    assert eng.cognitive_respond("What is my favorite color?")["memory"] == (
+        "Your favorite color is blue."
+    )
 
 
 def test_deferred_evidence_inspection_bypassed_to_preference() -> None:

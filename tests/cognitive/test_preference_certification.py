@@ -247,6 +247,113 @@ def test_d046_provenance_gate_still_rejects_untrusted(engine: CognitiveEngine) -
     )
 
 
+def test_valid_teaching_updates_via_cognitive_respond(tmp_path) -> None:
+    """Live regression: a valid teaching spoken to Memory Authority must update.
+
+    'My favorite color is green.' previously dispatched as a retrieval and the
+    new value was never encoded — recall stayed 'blue'. Teaching Recognition
+    now encodes declarative user statements before dispatch.
+    """
+    path = str(tmp_path / "teach.db")
+    e = CognitiveEngine(agent_id="aria", persist_path=path, auto_persist=True)
+
+    # Fresh → unknown
+    assert e.cognitive_respond("What is my favorite color?")["status"] == "unknown"
+
+    # Teach blue via the conversational pipeline (no explicit encode call)
+    taught = e.cognitive_respond("My favorite color is blue.")
+    assert "teaching_encoded" in taught["reasoning_path"]
+    assert e.cognitive_respond("What is my favorite color?")["memory"] == (
+        "Your favorite color is blue."
+    )
+
+    # Teach green — the exact live certification failure
+    taught = e.cognitive_respond("My favorite color is green.")
+    assert "teaching_encoded" in taught["reasoning_path"]
+    assert taught["memory"] == "Your favorite color is green."
+    assert e.cognitive_respond("What is my favorite color?")["memory"] == (
+        "Your favorite color is green."
+    )
+
+    # Blue is retired; green active
+    values = {
+        (a.value, a.active)
+        for c in e.store.concepts.values()
+        for a in c.attributes
+        if a.key == "favorite_color"
+    }
+    assert values == {("blue", False), ("green", True)}
+
+    # Evidence shows the teaching history and never mutates memory
+    er = e.cognitive_respond("Show the evidence for my favorite color.")
+    assert er["status"] == "known"
+    assert er["memory"] == "Your favorite color is green."
+    assert er.get("supporting_experiences")
+    n = len(e.store.experiences)
+    e.cognitive_respond("Show the evidence for my favorite color.")
+    assert len(e.store.experiences) == n
+
+    # Teach green again → no duplicate active attribute
+    e.cognitive_respond("My favorite color is green.")
+    active = [
+        a
+        for c in e.store.concepts.values()
+        for a in c.attributes
+        if a.key == "favorite_color" and a.active
+    ]
+    assert len(active) == 1 and active[0].value == "green"
+
+    e.flush()
+    # Restart → still green (no cache survives; state is persisted)
+    e2 = CognitiveEngine(agent_id="aria", persist_path=path, auto_persist=True)
+    assert e2.cognitive_respond("What is my favorite color?")["memory"] == (
+        "Your favorite color is green."
+    )
+
+
+def test_teaching_recognition_never_teaches_questions_or_artifacts() -> None:
+    """Questions and artifact payloads remain non-teaching through the pipeline."""
+    e = CognitiveEngine(agent_id="aria")
+    e.cognitive_respond("My favorite color is green.")
+    before_attrs = {
+        (a.key, a.value)
+        for c in e.store.concepts.values()
+        for a in c.attributes
+        if a.active
+    }
+
+    # Interrogatives never teach — including ones that embed declarative shapes
+    for q in (
+        "Is my favorite color yellow?",
+        "What is my favorite color?",
+        "Is my name Bob?",
+        "Show the evidence for my favorite color.",
+    ):
+        r = e.cognitive_respond(q)
+        assert "teaching_encoded" not in r["reasoning_path"], q
+
+    # Artifact payloads are detected as teachings but rejected by content trust
+    for wrap in LIVE_TOOL_WRAPPERS:
+        r = e.cognitive_respond(wrap)
+        assert "teaching_encoded" not in r["reasoning_path"], wrap
+    r = e.cognitive_respond(
+        "Tool `memory_search` worked for: My favorite color is mauve."
+    )
+    assert "teaching_encoded" not in r["reasoning_path"]
+    assert any(p.startswith("teaching_rejected:") for p in r["reasoning_path"])
+
+    after_attrs = {
+        (a.key, a.value)
+        for c in e.store.concepts.values()
+        for a in c.attributes
+        if a.active
+    }
+    assert after_attrs == before_attrs
+    assert e.cognitive_respond("What is my favorite color?")["memory"] == (
+        "Your favorite color is green."
+    )
+
+
 def test_d047_fixture_cleanup_still_passes() -> None:
     """Prior D047 fixture still cleans and restores blue."""
     from pathlib import Path

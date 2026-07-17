@@ -1,9 +1,51 @@
-# Preference Behavioral Certification — v0.21.0
+# Preference Behavioral Certification — v0.22.0
 
 **Status:** CERTIFIED (standalone ACM)  
 **Date:** 2026-07-17  
-**Version:** 0.21.0  
+**Version:** 0.22.0 (v0.21.0 corrections + Teaching Recognition)  
 **Scope:** Standalone ACM reference implementation only — not promoted into Aria.
+
+## v0.22.0 — Valid teaching regression (Teaching Recognition)
+
+Live certification after v0.21.0 exposed one remaining defect: a VALID
+teaching did not update the stored preference.
+
+```
+My favorite color is green.
+What is my favorite color?
+→ Your favorite color is blue.
+```
+
+**Root cause:** the Cognitive Memory Response Pipeline dispatched declarative
+teachings as retrievals — intent=preference routed to the Remembering Organ,
+which answered from the current store. No encode was invoked, so nothing
+downstream (supersede, retirement, persistence, reconstruction, evidence)
+ever saw the new value. All downstream stages were verified correct when
+encode is reached; the update was lost exclusively at dispatch.
+
+**Correction:** Teaching Recognition (`acm/authority/teaching.py`).
+`CognitiveResponsePipeline.respond` encodes declarative, non-interrogative
+requests bearing extracted cognitive facts as trusted user statements before
+dispatch. The D046 trust gate and content-level artifact protection apply
+unchanged inside the encode; interrogatives never teach; artifacts are
+rejected (`teaching_rejected:memory_trust`); evidence queries never mutate.
+
+**Certified sequence (all through `cognitive_respond` alone):**
+
+| Step | Expected | Result |
+|------|----------|--------|
+| Fresh store → favorite color? | Unknown | Pass |
+| "My favorite color is blue." | Blue | Pass |
+| "My favorite color is green." | Green; blue retired | Pass |
+| Evidence | Teaching history; no mutation | Pass |
+| Teach green again | No duplicate active attribute | Pass |
+| Restart | Green | Pass |
+| Artifact payloads | Rejected | Pass |
+| Questions | Non-teaching | Pass |
+
+---
+
+# v0.21.0 certification record
 
 ## Live blocker (evidence)
 

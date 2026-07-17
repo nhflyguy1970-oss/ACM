@@ -2,6 +2,52 @@
 
 All notable changes to ACM are documented here.
 
+## [0.22.0] — 2026-07-17
+
+### Fixed — Valid preference teaching regression (Teaching Recognition)
+
+Live Preference behavioral certification failed on a VALID teaching:
+
+> User: "My favorite color is green."
+> User: "What is my favorite color?"
+> → "Your favorite color is blue."
+
+Invalid teachings (tool wrappers, questions) were correctly rejected — the
+regression was that a legitimate declarative teaching never updated memory.
+
+**Root cause (single defect, located by full pipeline trace):** the
+Cognitive Memory Response Pipeline had no declarative/teach discrimination.
+"My favorite color is green." classified as intent=preference and dispatched
+to the Remembering Organ as a *retrieval*, answering from the current store
+("blue"). No encode was ever invoked, so extraction, supersede, persistence,
+reconstruction, and evidence all operated on the stale value. (Identity
+teachings such as "My name is Jeff." were similarly discarded — classified
+``not_memory``.) This gap was previously pinned as a deferred decision in
+``test_deferred_teach_statement_classified_as_retrieval``.
+
+**Correction — Teaching Recognition (`acm/authority/teaching.py`):**
+
+- `CognitiveResponsePipeline.respond` now runs a Teaching stage before
+  dispatch: declarative, non-interrogative requests with extracted cognitive
+  facts are encoded as trusted user statements, then dispatch proceeds so
+  the reconstruction answers from the *updated* memory.
+- No protection is weakened: the encode passes through the full D046
+  Trusted Memory Ingestion gate and content-level artifact rejection.
+  Tool/system/infra payloads are detected but rejected
+  (``teaching_rejected:memory_trust`` in the reasoning path); interrogatives
+  never reach the encode; evidence and retrieval requests carry no
+  declarative facts and never mutate memory.
+- Reasoning path exposes ``teaching_detected`` / ``teaching_encoded`` /
+  ``teaching_rejected:<reason>`` for auditability.
+
+**Certification:** fresh→unknown, teach blue→blue, teach green→green with
+blue retired, re-teach green→no duplicate active attribute, restart→green,
+artifacts rejected, questions non-teaching, evidence queries non-mutating —
+all through ``cognitive_respond`` alone (no host-side explicit encode).
+See ``tests/cognitive/test_preference_certification.py``
+(``test_valid_teaching_updates_via_cognitive_respond``,
+``test_teaching_recognition_never_teaches_questions_or_artifacts``).
+
 ## [0.21.0] — 2026-07-17
 
 ### Fixed — Preference Behavioral Certification (Memory Foundation completion)

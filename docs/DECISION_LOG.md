@@ -510,3 +510,39 @@ Standalone only — **do not promote into Aria** until explicit approval.
 Architecture unchanged; no new organ; no redesign of Memory Authority,
 Semantic Extraction, Reconstruction, or Rendering beyond the proven
 failure modes above.
+
+## Valid Teaching Regression Correction (2026-07-17) — v0.22.0
+
+**Not a new engineering decision.** Completes Preference behavioral
+certification after live evidence showed a VALID teaching failing to update:
+
+> "My favorite color is green." → "What is my favorite color?" → "blue"
+
+**Root cause (full pipeline trace, single defect):** the Cognitive Memory
+Response Pipeline had no declarative/teach discrimination — a teaching
+dispatched as a *retrieval* (intent=preference → Remembering Organ) and the
+new value was never encoded. Every downstream stage (extraction, supersede,
+retirement, persistence, reconstruction, evidence) was verified correct when
+encode is reached. The gap was previously pinned as a deferred decision
+(`test_deferred_teach_statement_classified_as_retrieval`).
+
+**Correction — Teaching Recognition (`acm/authority/teaching.py`):**
+`CognitiveResponsePipeline.respond` encodes declarative, non-interrogative
+requests bearing extracted cognitive facts as trusted user statements
+*before* dispatch, so reconstruction answers from the updated memory. The
+encode remains the single enforcement point: D046 Trusted Memory Ingestion
+and content-level artifact protection are applied unchanged — artifacts are
+rejected (`teaching_rejected:memory_trust`), interrogatives never teach,
+evidence/retrieval requests carry no declarative facts and never mutate.
+
+**Architectural invariants:** No new organ. No special cases per fact kind.
+Artifact protections and the trust gate are not weakened — Teaching
+Recognition adds no ingestion path that bypasses them.
+
+**Status:** Accepted (certification correction). Tests:
+`tests/cognitive/test_preference_certification.py`
+(`test_valid_teaching_updates_via_cognitive_respond`,
+`test_teaching_recognition_never_teaches_questions_or_artifacts`),
+`tests/cognitive/test_preference_pipeline_debug.py`
+(`test_teach_statement_encodes_before_dispatch`). Version **v0.22.0**.
+Standalone only — **do not promote into Aria** until explicit approval.
