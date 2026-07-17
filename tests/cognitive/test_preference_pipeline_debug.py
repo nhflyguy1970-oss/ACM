@@ -14,7 +14,7 @@ must be updated when their own corrections land.
 from __future__ import annotations
 
 from acm import CognitiveEngine
-from acm.provenance import TRUSTED_USER_STATEMENT
+from acm.provenance import TRUSTED_USER_STATEMENT, TRUSTED_USER_TEACHING
 from acm.semantic import extract_semantics
 from acm.types import ConceptRole
 
@@ -160,12 +160,12 @@ def test_token_nucleus_never_competes_after_d045() -> None:
     assert nuclei, "token nucleus must remain for cueing/emergence support"
 
 
-def test_deferred_question_turn_stored_as_preference_fact() -> None:
-    """DEFERRED (not D045): interrogative text stored as a preference attribute.
+def test_interrogative_no_longer_stored_as_preference_fact() -> None:
+    """Preference certification: interrogatives must not mint preference attrs.
 
-    extract_cues treats any sentence containing 'favorite' as preference-bearing;
-    a question that does not match 'favorite X is Y' falls into the fallback
-    branch and stores the raw question text as attr preference=<question>.
+    Previously (deferred under D045) any sentence containing 'favorite' that
+    did not match 'favorite X is Y' dumped the raw question onto
+    preference=<question>. That path is closed — questions are retrieval cues.
     """
     eng = _engine()
     eng.encode("What is my favorite color?", provenance=TRUSTED_USER_STATEMENT)
@@ -175,8 +175,12 @@ def test_deferred_question_turn_stored_as_preference_fact() -> None:
         for a in c.attributes
         if a.key == "preference" and a.active
     ]
-    assert stored, "current behavior: question text lands on a preference concept"
-    assert stored[0][1].value == "What is my favorite color?"
+    assert not stored, "interrogatives must not mint preference attributes"
+    # Teaching still works after a question turn.
+    eng.encode("My favorite color is blue.", provenance=TRUSTED_USER_TEACHING)
+    assert eng.cognitive_respond("What is my favorite color?")["memory"] == (
+        "Your favorite color is blue."
+    )
 
 
 def test_deferred_teach_statement_classified_as_retrieval() -> None:

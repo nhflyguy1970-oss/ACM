@@ -469,3 +469,44 @@ behavior change; running it on a clean graph is a checksum-identical no-op.
 `tests/cognitive/test_legacy_memory_cleanup.py` against a genuine v0.18.4
 contaminated snapshot fixture. Version **v0.20.0**. Standalone only until a
 separate Aria promotion is explicitly approved.
+
+## Preference Behavioral Certification Correction (2026-07-17) — v0.21.0
+
+**Not a new engineering decision.** Completes Memory Foundation Preference
+behavioral certification by correcting defects discovered against live Aria
+evidence of the still-failing answer:
+
+> Your preference is Tool \`memory_search\` worked for:
+> Show the evidence for my favorite color.
+
+**Corrections applied to existing surfaces (D041 / D046 / D047 / reconstruction):**
+
+1. Artifact signatures cover live backtick-quoted tool wrappers and host
+   autosave lines; preference values like ``probe-yellow`` are not themselves
+   classified as diagnostic lines.
+2. Cleanup condemns content artifacts even when metadata is empty / lacks
+   ``semantic_extraction``; removes orphaned artifact-valued attributes;
+   reactivates superseded legitimate preferences.
+3. Content-level trust rejection in ``reject_speech_contamination`` — tool /
+   system / infra wrappers cannot enter memory even when a host mislabels
+   them as trusted user speech.
+4. Interrogatives never mint preference facts or preference concept cues;
+   unmatched ``favorite`` mentions no longer dump the full text as a
+   preference attribute.
+5. Reconstruction refuses artifact attribute values and prefers structured
+   ``favorite_*`` keys over a generic ``preference`` dump.
+
+**Why previous validation missed this:** D047 fixtures used bare-word tool
+wrappers (``Tool memory_search worked for:``) that matched the classifier;
+live Aria used backtick-quoted wrappers that did not. D046 trusted declared
+provenance alone; live hosts can wrap tool output and declare it as user
+speech. Preference certification was blocked before these surfaces were
+exercised together against live formats.
+
+**Status:** Accepted (certification correction). Docs:
+`PREFERENCE_CERTIFICATION.md`. Tests:
+`tests/cognitive/test_preference_certification.py`. Version **v0.21.0**.
+Standalone only — **do not promote into Aria** until explicit approval.
+Architecture unchanged; no new organ; no redesign of Memory Authority,
+Semantic Extraction, Reconstruction, or Rendering beyond the proven
+failure modes above.

@@ -2,6 +2,49 @@
 
 All notable changes to ACM are documented here.
 
+## [0.21.0] — 2026-07-17
+
+### Fixed — Preference Behavioral Certification (Memory Foundation completion)
+
+Live Aria evidence showed Preferences still answering:
+
+> Your preference is Tool \`memory_search\` worked for:
+> Show the evidence for my favorite color.
+
+Root causes (all in the standalone ACM reference implementation):
+
+1. **Artifact classifier gap** — D047 signatures matched
+   ``Tool memory_search worked for:`` but missed live backtick-quoted
+   wrappers ``Tool \`memory_search\` worked for:``.
+2. **Cleanup skip** — experiences with empty metadata / without
+   ``semantic_extraction`` were treated as internal cognition even when
+   their summary was a tool wrapper.
+3. **Provenance-only trust** — hosts can mislabel tool output as trusted
+   user speech; D046 evaluated declared provenance only.
+4. **Interrogative / fallback preference minting** — questions and
+   unmatched ``favorite`` mentions minted preference attributes
+   (``conflicting?``, full tool strings) via Semantic Extraction and
+   concept cues.
+5. **Renderer** — reconstruction would answer from non-user artifact
+   attribute values.
+
+Corrections (architecture preserved — no organ redesign):
+
+- Expanded artifact signatures (backtick tool wrappers, host autosave)
+- Cleanup condemns content artifacts regardless of metadata survival;
+  removes orphaned artifact-valued attributes; reactivates legitimate
+  superseded preferences
+- Content-level trust rejection in ``reject_speech_contamination``
+- Interrogatives never mint preference facts or preference concept cues;
+  unmatched favorite mentions no longer dump the full text as preference
+- Reconstruction refuses artifact attribute values; prefers ``favorite_*``
+  keys over generic ``preference``
+
+Behavioral certification suite:
+``tests/cognitive/test_preference_certification.py``
+
+D038–D047 behavior retained. **Not promoted into Aria** until approval.
+
 ## [0.20.0] — 2026-07-17
 
 ### Added — Legacy memory contamination cleanup (D047)

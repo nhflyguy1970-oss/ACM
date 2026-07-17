@@ -105,6 +105,13 @@ cognition, and valid provenance, and restoring attributes a contaminated
 encode had superseded. Not a cognition change — a maintenance operation over
 stored state.
 
+**Preference Behavioral Certification (v0.21.0):** Completes Memory Foundation
+Preference certification. Corrects the live-blocker failure mode (tool-wrapper
+preference answers) via artifact-signature coverage, content-level trust,
+interrogative preference guards, orphaned-attribute cleanup, and reconstruction
+refusal of artifact values. Not a new organ or architectural decision —
+certification correction of D041/D046/D047 surfaces.
+
 
 ## Relationship to Aria
 
