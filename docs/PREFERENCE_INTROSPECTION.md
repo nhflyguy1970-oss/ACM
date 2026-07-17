@@ -2,7 +2,9 @@
 
 **Investigation:** Why diagnostic questions cannot explain the preference conflict
 **Date:** 2026-07-17
-**Status:** Investigation only — no behavior changed.
+**Status:** Historical D045 investigation. The false lexical conflict was fixed
+in v0.18.4; teach/query classification, evidence intent, reflection explanation,
+and diagnostic mutation remain deferred.
 
 Companion documents: `PREFERENCE_PIPELINE_TRACE.md`,
 `PREFERENCE_CONFLICT_ANALYSIS.md`.
@@ -108,10 +110,10 @@ Teach: My favorite color is blue.
 
 `tests/cognitive/test_preference_pipeline_debug.py`:
 
-- `test_defect_evidence_inspection_bypassed_to_preference`
-- `test_defect_conflict_explanation_does_not_name_competitors`
-- `test_defect_teach_statement_classified_as_retrieval`
+- `test_deferred_evidence_inspection_bypassed_to_preference`
+- `test_deferred_teach_statement_classified_as_retrieval`
 
-No fixes were implemented. Any correction to classification precedence, an
-evidence-inspection intent, or contradiction rendering requires review and
-approval first.
+D045 changed reconstruction admissibility only. Any correction to
+classification precedence, an evidence-inspection intent, contradiction
+rendering, or diagnostic mutation still requires review and approval. These
+items are tracked in `ENGINEERING_BACKLOG.md`.

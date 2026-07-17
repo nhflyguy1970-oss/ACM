@@ -2,6 +2,16 @@
 
 All notable changes to ACM are documented here.
 
+## [Unreleased]
+
+### Documentation — Authoritative future engineering backlog
+
+- Consolidated 52 intentionally postponed Identity, Preference, explainability,
+  diagnostic, scientific, operational, and ecosystem enhancements
+- Added `FUTURE_ENHANCEMENTS_ROADMAP.md`, `ENGINEERING_BACKLOG.md`, and
+  `FUTURE_RELEASE_CANDIDATES.md`
+- No runtime behavior, architecture, or D045 release artifact changed
+
 ## [0.18.4] — 2026-07-17
 
 ### Fixed — Preference reconstruction competitor admissibility (D045)

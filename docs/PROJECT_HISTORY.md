@@ -33,6 +33,7 @@ Implementation was authorized as a **new standalone engine**, not a rename of Ar
 - **2026-07:** **Assistant Identity pipeline** (D043) — operational assistant identity separated from user autobiography; `Who are you?` never resolves to user name. Released as **v0.18.2**. Standalone only until promotion approval.
 - **2026-07:** **Identity rendering isolation** (D044) — Who am I / Who are you speech never blends identities or personalization. Released as **v0.18.3**. Standalone only until promotion approval.
 - **2026-07:** **Preference reconstruction fix** (D045) — lexical support concepts never compete with semantic preferences; false `competing_recollections` eliminated. Released as **v0.18.4**. Standalone only until promotion approval.
+- **2026-07:** **Post-D045 future-work capture** — audited Identity, Preference, readiness, maturity, scientific-gap, validation, and engineering notes; consolidated 52 intentionally postponed enhancements into the authoritative `FUTURE_ENHANCEMENTS_ROADMAP.md`, `ENGINEERING_BACKLOG.md`, and `FUTURE_RELEASE_CANDIDATES.md`. Documentation only; no deferred behavior implemented.
 
 ## Milestone cognitive questions
 

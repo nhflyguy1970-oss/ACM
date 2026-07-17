@@ -139,8 +139,11 @@ decision on scope.
 
 ## Reproduction and executable evidence
 
-- `tests/cognitive/test_preference_pipeline_debug.py` — 11 diagnostic tests:
-  healthy stages (unknown / single / repeated / update / reconstruction) pass
-  as designed; `test_defect_*` tests reproduce and pin the defective behavior
-  for the record. These assertions must be updated when the approved
-  correction lands.
+- `tests/cognitive/test_preference_pipeline_debug.py` — healthy stages
+  (unknown / single / repeated / update / reconstruction) and D045-corrected
+  lexical-rival cases. Deferred pins remain for interrogative preference
+  storage, teach/query classification, and evidence routing
+  (`test_deferred_*`). Conflict-detail rendering and diagnostic non-mutation
+  are backlog items, not yet executable pins.
+- `tests/cognitive/test_preference_reconstruction_fix.py` — D045 behavioral
+  matrix including true semantic conflict preservation.

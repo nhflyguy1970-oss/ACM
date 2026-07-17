@@ -388,3 +388,10 @@ Matrix, API, migration, rollback, and test plans must not authorize permanent du
 **Why:** After a single healthy teach (`My favorite color is blue.`), conversational turn encoding of the question manufactured false `competing_recollections` because the word `favorite` itself was admitted as a rival recollection.
 
 **Status:** Accepted (diagnosis + correction). Docs: `PREFERENCE_RECONSTRUCTION_FIX.md`, `PREFERENCE_PIPELINE_TRACE.md`, `PREFERENCE_CONFLICT_ANALYSIS.md`, `PREFERENCE_INTROSPECTION.md`. Version **v0.18.4**. Standalone only until promoted into Aria.
+
+**Deferred-work record:** Post-D045 planning consolidated intentionally
+postponed work into `FUTURE_ENHANCEMENTS_ROADMAP.md`,
+`ENGINEERING_BACKLOG.md`, and `FUTURE_RELEASE_CANDIDATES.md`. These documents
+are authoritative planning records only; they do not authorize or implement
+teach/query classification, evidence intent, introspection, diagnostic,
+editing, calibration, or other future behavior.
