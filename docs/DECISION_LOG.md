@@ -564,3 +564,17 @@ No new organ. Trust / provenance / Teaching Recognition unchanged.
 **Status:** Accepted (certification correction). Tests:
 `tests/cognitive/test_m0k_multi_domain_evidence.py`. Version **v0.23.0**.
 
+## Memory Explanation + Personal Summary (2026-07-17) — v0.24.0
+
+**Not a new architectural decision.** Corrects live M0K final certification
+failures: explanation-style queries (why active / why retired / what replaced)
+and personal summary failed despite certified lineage existing.
+
+**Correction:** ``memory_explanation_cue`` classification; Remembering
+reconstructs explanations and active-only personal summaries directly from
+attribute versions / identity. Read-only. No new organ. Trust / provenance /
+Teaching Recognition unchanged.
+
+**Status:** Accepted (certification correction). Tests:
+`tests/cognitive/test_m0l_explanation_summary.py`. Version **v0.24.0**.
+

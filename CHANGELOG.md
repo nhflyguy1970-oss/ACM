@@ -2,6 +2,27 @@
 
 All notable changes to ACM are documented here.
 
+## [0.24.0] — 2026-07-17
+
+### Fixed — Memory explanation + active-only personal summary (M0L)
+
+Live Aria certification showed core memory working, but explanation-style
+queries failed reconstruction:
+
+1. **Explanation cues** — ``Why isn't blue active?``, ``What replaced pizza?``,
+   ``Why is brown trout active?`` classified as non-memory / general knowledge
+   and returned ``no_reliable_reconstruction`` despite certified lineage.
+2. **Personal summary** — ``What do you know about me?`` did not reconstruct
+   from active identity + preference attributes.
+
+**Corrections (no redesign):**
+
+- Classification: ``memory_explanation_cue`` ahead of preference for why /
+  replaced / active lineage questions.
+- Remembering: evidence-backed explanation from attribute versions (active /
+  retired / successor); active-only personal summary from user identity +
+  ``favorite_*``; read-only (no reconsolidation).
+
 ## [0.23.0] — 2026-07-17
 
 ### Fixed — Multi-domain preference isolation + evidence lineage (M0K)
