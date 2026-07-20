@@ -34,10 +34,38 @@ def test_caught_trout_teaching_and_recall() -> None:
     r, spoken = _speak(eng, "What happened yesterday?")
     assert r["status"] == "known"
     assert "trout" in spoken.lower()
+    assert "from your evidence" not in spoken.lower()
+    assert "from what you've shared" not in spoken.lower()
+    assert spoken.lower().startswith("you caught")
 
     r, spoken = _speak(eng, "What fish did I catch?")
     assert r["status"] == "known"
     assert "trout" in spoken.lower()
+    assert "you caught three trout" in spoken.lower()
+    assert "•" not in spoken and not spoken.strip().startswith("-")
+
+
+def test_natural_multi_event_presentation() -> None:
+    eng = _engine()
+    for t in (
+        "Yesterday I caught three trout.",
+        "Yesterday I upgraded my RAM.",
+        "Yesterday I installed a second SSD.",
+    ):
+        assert "teaching_encoded" in (eng.cognitive_respond(t).get("reasoning_path") or [])
+
+    r, spoken = _speak(eng, "What happened yesterday?")
+    assert r["status"] == "known"
+    low = spoken.lower()
+    assert "trout" in low and "ram" in low and "ssd" in low
+    assert "from your evidence" not in low
+    assert "from what you've shared" not in low
+    assert "you told me" not in low
+    # Natural sentences, not evidence bullets
+    assert "you caught three trout yesterday" in low
+    assert "you upgraded your ram yesterday" in low
+    assert "you installed a second ssd yesterday" in low
+    assert not any(line.strip().startswith("-") for line in spoken.splitlines())
 
 
 def test_where_did_i_go_temporal_recall() -> None:
