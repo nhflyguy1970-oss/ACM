@@ -45,6 +45,31 @@ def test_caught_trout_teaching_and_recall() -> None:
     assert "•" not in spoken and not spoken.strip().startswith("-")
 
 
+def test_duplicate_episodic_experiences_deduped() -> None:
+    eng = _engine()
+    for t in (
+        "Yesterday I caught three trout.",
+        "Yesterday I upgraded my RAM.",
+        "Yesterday I upgraded my RAM.",
+        "Yesterday I upgraded my RAM.",
+        "Yesterday I upgraded my RAM.",
+        "Yesterday I installed a second SSD.",
+        "Yesterday I installed a second SSD.",
+    ):
+        eng.cognitive_respond(t)
+
+    r, spoken = _speak(eng, "What happened yesterday?")
+    assert r["status"] == "known"
+    low = spoken.lower()
+    assert low.count("you upgraded your ram yesterday") == 1
+    assert low.count("you installed a second ssd yesterday") == 1
+    assert low.count("you caught three trout yesterday") == 1
+
+    r, spoken = _speak(eng, "What RAM did I upgrade?")
+    assert r["status"] == "known"
+    assert spoken.lower().count("you upgraded your ram yesterday") == 1
+
+
 def test_natural_multi_event_presentation() -> None:
     eng = _engine()
     for t in (
