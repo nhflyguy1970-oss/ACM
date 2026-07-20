@@ -578,3 +578,21 @@ Teaching Recognition unchanged.
 **Status:** Accepted (certification correction). Tests:
 `tests/cognitive/test_m0l_explanation_summary.py`. Version **v0.24.0**.
 
+## Episodic Autobiographical Memory (2026-07-19) — v0.25.0 (M1)
+
+**Not a new architectural decision.** Closes the Memory Foundation gap where
+autobiographical events (``Yesterday I bought a kayak.``) failed Teaching
+Recognition (``no_declarative_facts``) and temporal reconstruction had no
+evidence-only path.
+
+**Correction:** Semantic Extraction mints ``FactKind.EXPERIENCE`` with relative
+temporal cues; encode stamps episodic metadata + ``t_start`` and nearest
+``PRECEDES``/``FOLLOWS`` links; Remembering reconstructs what-happened /
+before-after / evidence / event explanations only from stored episodic
+experiences (unknown when insufficient — never invent). Experience intent
+cues expanded. Trust / provenance / Teaching Recognition / D038–D047 unchanged.
+
+**Status:** Accepted (M1 certification). Docs:
+`docs/EPISODIC_MEMORY_CERTIFICATION.md`. Tests:
+`tests/cognitive/test_m1_episodic_memory.py`. Version **v0.25.0**.
+

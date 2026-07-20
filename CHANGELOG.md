@@ -2,6 +2,31 @@
 
 All notable changes to ACM are documented here.
 
+## [0.25.0] — 2026-07-19
+
+### Added — Episodic autobiographical memory (M1)
+
+Teaching Recognition rejected autobiographical events such as
+``Yesterday I bought a kayak.`` with ``no_declarative_facts``. Temporal
+reconstruction (``What happened yesterday?``, before/after anchors) had no
+certified evidence path.
+
+**Corrections (no redesign):**
+
+- Semantic Extraction: ``FactKind.EXPERIENCE`` patterns for first-person past
+  events with relative temporal cues (yesterday, last week, this morning,
+  last weekday, …).
+- Encode: resolve temporal cues to ``Experience.t_start``, stamp episodic
+  metadata (cue / action / object / evidence), link nearest neighbors with
+  ``PRECEDES`` / ``FOLLOWS``.
+- Classification: expand ``experience_cue`` for buy/clean/before/after /
+  explain / tell-me-about event queries.
+- Remembering: reconstruct only from stored episodic experiences; evidence
+  and event explanations ground in teaching provenance; unknown when
+  insufficient evidence (never invent events).
+- Certification: ``tests/cognitive/test_m1_episodic_memory.py`` plus full
+  M0K/M0L regression.
+
 ## [0.24.0] — 2026-07-17
 
 ### Fixed — Memory explanation + active-only personal summary (M0L)
