@@ -153,13 +153,15 @@ def test_contextual_preferences_do_not_supersede_general_preference() -> None:
     assert "python" in speech.lower()
     assert "rust" not in speech.lower()
 
-    result, speech = _speak(
-        engine, "What language do I prefer for systems programming?"
-    )
-    assert result["status"] == "known"
-    low = speech.lower()
-    assert "rust" in low and "systems programming" in low
-    assert "python" not in low
+    for question in (
+        "What language do I prefer for systems programming?",
+        "What programming language do I prefer for systems programming?",
+    ):
+        result, speech = _speak(engine, question)
+        assert result["status"] == "known", (question, speech)
+        low = speech.lower()
+        assert "rust" in low and "systems programming" in low, (question, speech)
+        assert "python" not in low, (question, speech)
 
 
 def test_bounded_recommendation_reasoning() -> None:
