@@ -71,11 +71,56 @@ def test_habit_prediction_from_remembered_patterns() -> None:
     assert rain["status"] == "known"
     assert "rain" in (rain["memory"] or "").lower()
 
+    tomorrow = engine.cognitive_respond("What is likely to happen tomorrow?")
+    assert tomorrow["status"] == "known"
+    assert "rain" in (tomorrow["memory"] or "").lower()
+
     breakfast = engine.cognitive_respond(
         "If I skip breakfast, what is likely to happen?"
     )
     assert breakfast["status"] == "known"
     assert "hungry" in (breakfast["memory"] or "").lower()
+
+
+def test_open_future_without_evidence_is_unknown() -> None:
+    engine = CognitiveEngine(agent_id="pred-accept-bday")
+    for text in TEACHINGS:
+        engine.cognitive_respond(text)
+    result = engine.cognitive_respond(
+        "What am I likely to do on my birthday next year?"
+    )
+    assert result["intent"] == "prediction"
+    assert result["status"] == "unknown"
+    assert result["memory"] is None
+
+
+def test_certainty_and_confidence_stay_in_prediction() -> None:
+    engine = CognitiveEngine(agent_id="pred-accept-cert")
+    for text in TEACHINGS:
+        engine.cognitive_respond(text)
+    definite = engine.cognitive_respond(
+        "Will I definitely go fishing next Saturday?"
+    )
+    assert definite["intent"] == "prediction"
+    assert "fishing" in (definite["memory"] or "").lower()
+    conf = engine.cognitive_respond(
+        "How confident are you that I'll go hiking this weekend?"
+    )
+    assert conf["intent"] == "prediction"
+    assert "confidence" in (conf["memory"] or "").lower()
+    assert "hiking" in (conf["memory"] or "").lower()
+
+
+def test_explain_prediction_cites_teachings() -> None:
+    engine = CognitiveEngine(agent_id="pred-accept-explain")
+    engine.cognitive_respond("Every Saturday I usually go fishing.")
+    engine.cognitive_respond("What am I likely to do next Saturday?")
+    why = engine.cognitive_respond("How did you make that prediction?")
+    assert why["intent"] == "prediction"
+    assert "fishing" in (why["memory"] or "").lower()
+    assert "taught" in (why["memory"] or "").lower() or "previously" in (
+        why["memory"] or ""
+    ).lower()
 
 
 def test_unknown_outside_autobiographical_memory() -> None:
