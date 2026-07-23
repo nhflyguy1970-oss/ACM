@@ -23,7 +23,7 @@ def test_organ_view_unknown_is_empty_contract() -> None:
     view = eng.organ_view("not_an_organ")
     assert view["schema"] == SCHEMA
     assert view["empty"] is True
-    assert view["redaction"] == "none"
+    assert view["redaction"] == "strict"
 
 
 def test_organ_views_batch_includes_identity() -> None:

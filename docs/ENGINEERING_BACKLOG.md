@@ -78,7 +78,12 @@ documents remain evidence, but new backlog decisions must update this file.
 
 ### B03 — Memory evidence presentation
 
-- **Status / order / complexity:** DEPENDENT · 3 · M
+- **Status / order / complexity:** COMPLETE · 3 · M
+- **Completed:** 2026-07-23 (M4 AML C5)
+- **Implementation references:**
+  - `acm/authority/evidence_present.py`
+  - `acm/authority/inspect_api.py` (`presentation` block)
+  - `tests/cognitive/test_m4_aml_capabilities.py`
 - **Purpose:** Present supporting Experiences, concepts, and corroboration in
   concise user-facing language.
 - **Problem:** Evidence already exists in `CognitiveMemoryResult`, but callers
@@ -391,7 +396,12 @@ documents remain evidence, but new backlog decisions must update this file.
 
 ### B18 — Reflection explanation improvements
 
-- **Status / order / complexity:** DEPENDENT · 10 · M
+- **Status / order / complexity:** COMPLETE · 10 · M
+- **Completed:** 2026-07-23 (M4 AML C6)
+- **Implementation references:**
+  - `acm/reflection/explain.py`
+  - `acm/authority/handlers.py` reflection path
+  - `tests/cognitive/test_m4_aml_capabilities.py`
 - **Purpose:** Render contradictions, consistencies, patterns, questions, and
   hypotheses already produced by Reflection.
 - **Problem:** Generic reflection summaries discard structured explanatory
@@ -590,7 +600,7 @@ documents remain evidence, but new backlog decisions must update this file.
   - `acm/validation/organ_views.py` — `organ_view` / `organ_views`
   - `CognitiveEngine.organ_view` / `organ_views`
   - `tests/cognitive/test_organ_views.py`
-  - Redaction deferred to B29 (`redaction: "none"` placeholder)
+  - Redaction applied via B29 (`redaction: "strict"` default on organ views)
 - **Sources:** `ACM_V1_READINESS_REVIEW.md`,
   `OBSERVABILITY.md`.
 
@@ -618,7 +628,15 @@ documents remain evidence, but new backlog decisions must update this file.
 
 ### B29 — Diagnostic privacy and redaction
 
-- **Status / order / complexity:** DEPENDENT · 5 · M
+- **Status / order / complexity:** COMPLETE · 5 · M
+- **Completed:** 2026-07-23 (M4 AML C1)
+- **Implementation references:**
+  - `acm/authority/redaction.py` — `RedactionPolicy`, inspect/organ view redactors
+  - `acm/authority/inspect_api.py` — B29 projection boundary
+  - `acm/validation/organ_views.py` — structural redaction
+  - `docs/DIAGNOSTIC_PRIVACY_REDACTION.md`
+  - `tests/cognitive/test_privacy_redaction.py`
+  - `tests/behavioral/test_privacy_redaction_conversation.py`
 - **Purpose:** Prevent evidence/trace surfaces from leaking unrelated identity,
   context, or sensitive content.
 - **Problem:** Explainability increases exposure risk even when cognitive answers
@@ -732,7 +750,15 @@ documents remain evidence, but new backlog decisions must update this file.
 
 ### B35 — Knowledge adoption and meta-memory surfaces
 
-- **Status / order / complexity:** DEFERRED · 21 · L
+- **Status / order / complexity:** COMPLETE · 21 · L (MVP)
+- **Completed:** 2026-07-23 (M4 AML C8 bounded MVP)
+- **Implementation references:**
+  - `CognitiveEngine.adopt_knowledge`
+  - `ProvenanceSource.ADOPTED_KNOWLEDGE`
+  - `docs/LEARNING_CERTIFICATION.md` L9
+  - `tests/cognitive/test_m4_aml_capabilities.py`
+- **Notes:** Host meta-memory UX surfaces remain optional polish; core MVP
+  enforces provenance, bulk rejection, and no auto-autobiography.
 - **Purpose:** Make the Knowledge ≠ Memory boundary and explicit adoption into
   memory visible to users and hosts.
 - **Problem:** Core governance distinguishes external knowledge from lived or

@@ -1,0 +1,39 @@
+#!/usr/bin/env python3
+"""Standalone M4 Learning Certification runner."""
+
+from __future__ import annotations
+
+import json
+import subprocess
+import sys
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[1]
+
+
+def main() -> int:
+    cmd = [
+        str(ROOT / ".venv/bin/pytest"),
+        "tests/cognitive/test_m4_learning_certification.py",
+        "tests/cognitive/test_m4_aml_capabilities.py",
+        "tests/behavioral/test_learning_assent_apply.py",
+        "tests/behavioral/test_goal_learning.py",
+        "tests/behavioral/test_lifecycle_learning.py",
+        "tests/cognitive/test_privacy_redaction.py",
+        "-q",
+    ]
+    print("Running:", " ".join(cmd), flush=True)
+    proc = subprocess.run(cmd, cwd=ROOT)
+    report = {
+        "suite": "m4_learning_certification",
+        "exit_code": proc.returncode,
+        "doc": "docs/LEARNING_CERTIFICATION.md",
+    }
+    out = Path("/tmp/m4_learning_cert.json")
+    out.write_text(json.dumps(report, indent=2) + "\n")
+    print(json.dumps(report), flush=True)
+    return proc.returncode
+
+
+if __name__ == "__main__":
+    sys.exit(main())

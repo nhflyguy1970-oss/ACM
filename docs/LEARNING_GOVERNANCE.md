@@ -1,7 +1,12 @@
 # Learning Governance — ACM
 
-**Status:** Canonical for L0 (design only)  
+**Status:** Implemented (M7 + M4 AML C2 assent apply)  
 **Companions:** [`LEARNING_ARCHITECTURE.md`](LEARNING_ARCHITECTURE.md) · [`LEARNING_RESEARCH_FOUNDATIONS.md`](LEARNING_RESEARCH_FOUNDATIONS.md) · [`CORE_BOUNDARIES.md`](CORE_BOUNDARIES.md) · Identity Policy Gate precedents (D009)
+
+**Invariant:** Learning may reorganize living structure (strengths, confidence,
+importance) but must never invent Experiences or rewrite Experience history.
+High-impact changes require assent; applied adaptations are reversible via
+rollback with provenance preserved on Adaptation Records.
 
 ---
 
