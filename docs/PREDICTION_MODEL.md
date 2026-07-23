@@ -24,9 +24,14 @@ Prediction estimates **probable future memory outcomes** from living cognitive s
 | Owns | Does not own |
 |------|----------------|
 | Likelihood / expectation / anticipation over memory | Planning, decision making, action selection |
-| Prediction confidence evolution | Creating Experiences |
-| Prediction accuracy observables | Reasoning chains |
+| Prediction confidence evolution + audit trail | Creating Experiences |
+| Competing hypotheses lifecycle (counterfactual claims) | Reasoning chains / CoT |
+| Prediction accuracy observables | Deleting provenance |
 
 ## Intentional omissions
 
 Neuron-level predictive coding, forward models of actuators, policy search, deterministic oracles.
+
+## Cap3 deepening
+
+Counterfactual hypotheses and append-only prediction audits: [`PREDICTION_AUDIT.md`](PREDICTION_AUDIT.md).

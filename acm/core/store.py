@@ -14,7 +14,7 @@ from acm.confidence.model import ConfidenceEvent, EvidenceInfluence
 from acm.experiences.model import Experience
 from acm.forgetting.model import AccessibilityEvent
 from acm.learning.model import Adaptation
-from acm.prediction.model import Prediction
+from acm.prediction.model import Hypothesis, Prediction, PredictionAudit
 from acm.provenance.model import ProvenanceRecord
 from acm.recombination.model import RecombinedMemory
 from acm.reconciliation.model import ReconciliationRecord
@@ -63,6 +63,8 @@ class CognitiveStore:
         self.priority_events: list[PriorityEvent] = []
         self.accessibility_events: list[AccessibilityEvent] = []
         self.predictions: dict[str, Prediction] = {}
+        self.hypotheses: dict[str, Hypothesis] = {}
+        self.prediction_audits: dict[str, PredictionAudit] = {}
         self.simulations: dict[str, Simulation] = {}
         self.recombinations: dict[str, RecombinedMemory] = {}
         self.analogies: dict[str, AnalogyMapping] = {}

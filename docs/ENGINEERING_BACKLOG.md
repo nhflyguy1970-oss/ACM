@@ -1178,6 +1178,31 @@ documents remain evidence, but new backlog decisions must update this file.
   - `docs/EVIDENCE_WEIGHTING.md`
 - **Sources:** M5 mission Cap2; `CONFIDENCE_MODEL.md`.
 
+### B55 — Counterfactual reasoning & prediction audit (M5 Cap3)
+
+- **Status / order / complexity:** COMPLETE · 55 · L
+- **Completed:** 2026-07-23 (ACM v0.30.0 — M5 Cap3)
+- **Purpose:** Competing hypotheses with lifecycle; append-only prediction audits
+  (comparison → calibration → confidence → learning); belief-change explanation.
+- **Problem:** Predictions could be evaluated but lacked durable hypothesis
+  competition, permanent audit history, and Cap2/Cap1-integrated learning hooks.
+- **Architectural impact:** Prediction organ owns Hypothesis + PredictionAudit;
+  Learning applies reversible Adaptations from audits; Confidence Cap2 used on
+  hits; Experiences/provenance untouched.
+- **Dependencies:** Prediction/Learning/Confidence substrate; Cap1–Cap2.
+- **Behavioral example:** Predict → audit observed outcome → confidence shifts;
+  disproved hypotheses remain queryable; rollback undoes Adaptations only.
+- **Validation:** `tests/behavioral/test_m5_prediction_audit.py`,
+  `tests/cognitive/test_m5_prediction_audit_learning_cert.py`.
+- **Promotion:** Standalone Cap3 certification before Cap4 / Aria vendor.
+- **Implementation references:**
+  - `acm/prediction/model.py` — `Hypothesis`, `PredictionAudit`
+  - `acm/prediction/organ.py` — audit pipeline + explain/competing APIs
+  - `acm/learning/organ.py` — `learn_from_prediction_audit`
+  - `acm/persistence/codec.py` — hypotheses + prediction_audits snapshot fields
+  - `docs/PREDICTION_AUDIT.md`
+- **Sources:** M5 mission Cap3; `PREDICTION_MODEL.md` · `PREDICTIVE_MEMORY.md`.
+
 ## Backlog governance
 
 1. Every implementation proposal names one or more backlog IDs.

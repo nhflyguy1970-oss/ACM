@@ -20,7 +20,14 @@ from acm.experiences.salience import SalienceVector
 from acm.forgetting.model import AccessibilityEvent
 from acm.learning.model import Adaptation, AdaptationKind, AdaptationTarget, GovernanceClass
 from acm.persistence.schema import CHECKSUM_ALGO, SCHEMA_VERSION, SNAPSHOT_FORMAT
-from acm.prediction.model import PredictedOutcome, Prediction
+from acm.prediction.model import (
+    ComparisonKind,
+    Hypothesis,
+    HypothesisStatus,
+    PredictedOutcome,
+    Prediction,
+    PredictionAudit,
+)
 from acm.provenance.model import ProvenanceRecord
 from acm.recombination.model import RecombinedFragment, RecombinedMemory
 from acm.reconciliation.model import ReconciliationRecord, ReconciliationStatus
@@ -62,6 +69,8 @@ def export_store(store: CognitiveStore) -> dict[str, Any]:
         "priority_events": [_jsonable(e) for e in store.priority_events],
         "accessibility_events": [_jsonable(e) for e in store.accessibility_events],
         "predictions": {k: _jsonable(v) for k, v in store.predictions.items()},
+        "hypotheses": {k: _jsonable(v) for k, v in store.hypotheses.items()},
+        "prediction_audits": {k: _jsonable(v) for k, v in store.prediction_audits.items()},
         "simulations": {k: _jsonable(v) for k, v in store.simulations.items()},
         "recombinations": {k: _jsonable(v) for k, v in store.recombinations.items()},
         "analogies": {k: _jsonable(v) for k, v in store.analogies.items()},
@@ -193,6 +202,8 @@ def import_store(payload: dict[str, Any], *, store: CognitiveStore | None = None
     target.priority_events.clear()
     target.accessibility_events.clear()
     target.predictions.clear()
+    target.hypotheses.clear()
+    target.prediction_audits.clear()
     target.simulations.clear()
     target.recombinations.clear()
     target.analogies.clear()
@@ -340,6 +351,53 @@ def import_store(payload: dict[str, Any], *, store: CognitiveStore | None = None
             source_concept_ids=list(d.get("source_concept_ids") or []),
             metadata=dict(d.get("metadata") or {}),
         )
+    for hid, d in (body.get("hypotheses") or {}).items():
+        try:
+            status = HypothesisStatus(d.get("status", "active"))
+        except ValueError:
+            status = HypothesisStatus.ACTIVE
+        target.hypotheses[str(hid)] = Hypothesis(
+            id=str(d.get("id") or hid),
+            claim=str(d.get("claim", "")),
+            confidence=float(d.get("confidence", 0.0)),
+            status=status,
+            supporting_ids=list(d.get("supporting_ids") or []),
+            conflicting_ids=list(d.get("conflicting_ids") or []),
+            prediction_id=str(d.get("prediction_id", "")),
+            simulation_id=str(d.get("simulation_id", "")),
+            reflective_experience_id=str(d.get("reflective_experience_id", "")),
+            concept_id=str(d.get("concept_id", "")),
+            superseded_by=str(d.get("superseded_by", "")),
+            withdrawn_reason=str(d.get("withdrawn_reason", "")),
+            created=float(d.get("created", 0.0)),
+            closed_at=float(d.get("closed_at", 0.0)),
+            metadata=dict(d.get("metadata") or {}),
+        )
+    for aid, d in (body.get("prediction_audits") or {}).items():
+        try:
+            comparison = ComparisonKind(d.get("comparison", "miss"))
+        except ValueError:
+            comparison = ComparisonKind.MISS
+        target.prediction_audits[str(aid)] = PredictionAudit(
+            id=str(d.get("id") or aid),
+            prediction_id=str(d.get("prediction_id", "")),
+            observed_concept_id=str(d.get("observed_concept_id", "")),
+            observed_experience_id=str(d.get("observed_experience_id", "")),
+            comparison=comparison,
+            hit_rank=None if d.get("hit_rank") is None else int(d["hit_rank"]),
+            expected_top_label=str(d.get("expected_top_label", "")),
+            realized_label=str(d.get("realized_label", "")),
+            accuracy=float(d.get("accuracy", 0.0)),
+            confidence_before=float(d.get("confidence_before", 0.0)),
+            confidence_after=float(d.get("confidence_after", 0.0)),
+            calibration_delta=float(d.get("calibration_delta", 0.0)),
+            confidence_event_ids=list(d.get("confidence_event_ids") or []),
+            adaptation_ids=list(d.get("adaptation_ids") or []),
+            hypothesis_updates=list(d.get("hypothesis_updates") or []),
+            explanation=str(d.get("explanation", "")),
+            created=float(d.get("created", 0.0)),
+            metadata=dict(d.get("metadata") or {}),
+        )
     for sid, d in (body.get("simulations") or {}).items():
         steps = [
             HypotheticalStep(
@@ -462,8 +520,12 @@ def migrate_body(body: dict[str, Any], *, from_version: int, to_version: int) ->
         out.setdefault("provenance", {})
         out.setdefault("hierarchy_edges", {})
         out.setdefault("evidence_influences", {})
+        out.setdefault("hypotheses", {})
+        out.setdefault("prediction_audits", {})
         version += 1
     out.setdefault("provenance", {})
     out.setdefault("hierarchy_edges", {})
     out.setdefault("evidence_influences", {})
+    out.setdefault("hypotheses", {})
+    out.setdefault("prediction_audits", {})
     return out

@@ -12,10 +12,13 @@ Predictive memory is the use of consolidated living structure to anticipate whic
 ```
 Experience → Remember / Reflect → Learn → Offline consolidate
   → Priority / Accessibility shape Activation
-  → Prediction estimates likely outcomes
-  → Later Experience / feedback updates prediction confidence
+  → Prediction estimates likely outcomes (+ competing Hypotheses)
+  → Observed outcome → PredictionAudit (comparison → calibration)
+  → Confidence / Learning update living structure (never Experiences)
 ```
+
+See [`PREDICTION_AUDIT.md`](PREDICTION_AUDIT.md) (M5 Cap3).
 
 ## Probabilistic rule
 
-Outcomes are scored as a soft distribution. ACM never claims certainty. Confidence evolves from reinforcement, contradiction, and neglect — observable in the harness.
+Outcomes are scored as a soft distribution. ACM never claims certainty. Confidence evolves from reinforcement, contradiction, neglect, and audited prediction accuracy — observable in the harness.

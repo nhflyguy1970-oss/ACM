@@ -185,6 +185,7 @@ class CognitiveEngine:
         )
         self.confidence = ConfidenceOrgan(store=self.store, validation=self.validation)
         self.offline.bind(confidence=self.confidence)
+        self.prediction.bind(confidence=self.confidence, learning=self.learning)
         self.reconciliation = ReconciliationOrgan(
             store=self.store,
             validation=self.validation,
@@ -1125,6 +1126,54 @@ class CognitiveEngine:
 
     def evaluate_prediction(self, prediction_id: str, realized_concept_id: str) -> dict[str, Any]:
         return self.prediction.evaluate(prediction_id, realized_concept_id)
+
+    def audit_prediction(
+        self,
+        prediction_id: str,
+        *,
+        observed_concept_id: str = "",
+        observed_experience_id: str = "",
+        apply_learning: bool = True,
+    ) -> dict[str, Any]:
+        """M5 Cap3 — full prediction audit pipeline."""
+        return self.prediction.audit_outcome(
+            prediction_id,
+            observed_concept_id=observed_concept_id,
+            observed_experience_id=observed_experience_id,
+            apply_learning=apply_learning,
+        )
+
+    def explain_belief_change(
+        self, *, audit_id: str = "", hypothesis_id: str = "", prediction_id: str = ""
+    ) -> dict[str, Any]:
+        """M5 Cap3 — explain why belief/confidence changed (history preserved)."""
+        return self.prediction.explain_belief_change(
+            audit_id=audit_id,
+            hypothesis_id=hypothesis_id,
+            prediction_id=prediction_id,
+        )
+
+    def competing_hypotheses(self, cue_or_prediction_id: str = "") -> dict[str, Any]:
+        """M5 Cap3 — active + historical competing hypotheses."""
+        return self.prediction.competing_hypotheses(cue_or_prediction_id)
+
+    def update_hypothesis(
+        self,
+        hypothesis_id: str,
+        *,
+        status: str,
+        evidence_ids: list[str] | tuple[str, ...] = (),
+        superseded_by: str = "",
+        withdrawn_reason: str = "",
+    ) -> dict[str, Any]:
+        """M5 Cap3 — hypothesis lifecycle (disproved/superseded/withdrawn)."""
+        return self.prediction.update_hypothesis(
+            hypothesis_id,
+            status=status,
+            evidence_ids=evidence_ids,
+            superseded_by=superseded_by,
+            withdrawn_reason=withdrawn_reason,
+        )
 
     def cool_memory(self, concept_id: str, *, steps: int = 1) -> dict[str, Any]:
         """Soft forget — accessibility down; never deletes Experiences."""

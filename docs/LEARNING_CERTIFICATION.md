@@ -22,12 +22,14 @@
 | L12 | Hierarchy explainability deterministic | `concept_hierarchy` stable across repeated calls |
 | L13 | Evidence aging never invents/deletes | `age_evidence_pass` keeps Experience + provenance counts |
 | L14 | Reinforce after stale restores estimate | Learning reinforce refreshes influence / confidence |
+| L15 | Hypotheses + audit never invent Experiences | Competing hypotheses + audit preserve history |
+| L16 | Audit learning rollback reproducible | Adaptations from audit are reversible; comparison stable |
 
 ## Commands
 
 ```bash
 .venv/bin/pytest tests/cognitive/test_m4_learning_certification.py -q
-.venv/bin/pytest tests/cognitive/test_m5_hierarchy_learning_cert.py tests/cognitive/test_m5_evidence_decay_learning_cert.py -q
+.venv/bin/pytest tests/cognitive/test_m5_hierarchy_learning_cert.py tests/cognitive/test_m5_evidence_decay_learning_cert.py tests/cognitive/test_m5_prediction_audit_learning_cert.py -q
 .venv/bin/pytest tests/ -q
 .venv/bin/python scripts/acm_learning_certification.py
 ```

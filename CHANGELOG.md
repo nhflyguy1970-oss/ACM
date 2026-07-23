@@ -2,6 +2,21 @@
 
 All notable changes to ACM are documented here.
 
+## [0.30.0] — 2026-07-23
+
+### Added — Counterfactual reasoning & prediction audit (M5 Cap3)
+
+- Competing ``Hypothesis`` records with lifecycle (active / disproved /
+  superseded / withdrawn); closed hypotheses remain accessible.
+- Append-only ``PredictionAudit`` pipeline: comparison → calibration →
+  confidence update → reversible Learning Adaptations.
+- Explanation APIs: ``explain_belief_change``, ``competing_hypotheses``,
+  ``audit_prediction``, ``update_hypothesis``.
+- Persistence of hypotheses + audits; docs ``PREDICTION_AUDIT.md``; backlog B55;
+  learning gates L15–L16.
+- Invariant preserved: no Experience rewrite, no provenance mutation, no invented
+  autobiographical memory.
+
 ## [0.25.0] — 2026-07-19
 
 ### Added — Episodic autobiographical memory (M1)

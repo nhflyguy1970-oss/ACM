@@ -358,6 +358,64 @@ class LearningOrgan:
             summary="Stabilized association.",
         )
 
+    def learn_from_prediction_audit(self, audit_id: str) -> list[Adaptation]:
+        """Reversible living-structure updates from a PredictionAudit (Cap3).
+
+        Never invents Experiences. Cites audit + observed evidence only.
+        """
+        if is_read_only():
+            return []
+        from acm.prediction.model import ComparisonKind
+
+        audit = self.store.prediction_audits.get(audit_id)
+        if audit is None:
+            return []
+        created: list[Adaptation] = []
+        reinforce = audit.comparison in (ComparisonKind.HIT, ComparisonKind.PARTIAL)
+        evidence = [e for e in (audit.observed_experience_id,) if e]
+        cid = audit.observed_concept_id
+        if cid and cid in self.store.concepts:
+            ad = self._adapt_concept(
+                cid,
+                strength_delta=CAP_CONCEPT_STRENGTH * (0.7 if reinforce else -0.6),
+                confidence_delta=CAP_CONCEPT_CONFIDENCE * (0.6 if reinforce else -0.7),
+                kind=AdaptationKind.REINFORCE if reinforce else AdaptationKind.WEAKEN,
+                reflective_ids=[],
+                evidence_ids=evidence,
+                sleep_batch_id="",
+                summary=(
+                    f"Prediction audit {audit.comparison.value}: "
+                    f"calibrated living confidence from observed outcome."
+                ),
+            )
+            if ad:
+                ad.metadata["prediction_audit_id"] = audit_id
+                created.append(ad)
+            # Soft association nudge among prediction source neighborhood
+            pred = self.store.predictions.get(audit.prediction_id)
+            if pred and reinforce:
+                for aid in self._assoc_among([cid, *pred.source_concept_ids[:3]])[:3]:
+                    a2 = self._adapt_association(
+                        aid,
+                        delta=CAP_ASSOC_STRENGTH * 0.5,
+                        kind=AdaptationKind.REINFORCE,
+                        reflective_ids=[],
+                        evidence_ids=evidence,
+                        sleep_batch_id="",
+                        summary="Reinforced association after prediction hit.",
+                    )
+                    if a2:
+                        a2.metadata["prediction_audit_id"] = audit_id
+                        created.append(a2)
+        self.validation.record_learning(
+            action="prediction_audit_learn",
+            audit_id=audit_id,
+            adaptation_count=len(created),
+            comparison=audit.comparison.value,
+            learn=1,
+        )
+        return created
+
     def observables(self) -> dict[str, Any]:
         return {
             "adaptation_count": len(self.store.adaptations),
