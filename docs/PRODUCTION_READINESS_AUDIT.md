@@ -117,14 +117,15 @@ into ACM.
 
 | Suite | Runs | Result |
 |-------|------|--------|
-| ACM functional (cognitive + audit) | ×2 | PASS |
-| ACM behavioral (incl. audit conversation) | ×2 | PASS |
-| ACM learning (script + L34) | ×2 | PASS |
-| ACM long-duration / framework smoke | ×2 | PASS |
-| Aria ACM promotion suite | ×2 | PASS |
-| Aria dual-import / teaching-debug defaults | ×2 | PASS |
+| ACM functional (`tests/cognitive`) | ×2 | PASS (419 each) |
+| ACM behavioral (`tests/behavioral`) | ×2 | PASS (136 each) |
+| ACM learning (`scripts/acm_learning_certification.py` + L34) | ×2 | PASS (107 each) |
+| ACM long-duration (`tests/performance` + framework) | ×2 | PASS (20 + 8/8 gates) |
+| Aria ACM promotion suite (`tests/test_aria_acm_*.py`) | ×2 | PASS (198 each) |
+| Aria dual-import / teaching-debug defaults | covered | PASS |
 
-*(Fill exact counts from the certification run recorded with this release.)*
+Framework `certified` flag remains false by design until an explicit 1.0
+certification ceremony; all readiness gates passed.
 
 ## Final assessment
 
