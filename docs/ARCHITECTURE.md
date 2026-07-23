@@ -207,6 +207,8 @@ Privileged concepts: User, Aria-self, Project identities, optional App personas.
 Conversational correction/assent UX (B20): preview → propose → assent/reject/cancel;
 commits via `encode(kind='identity')`; user/assistant name collision blocked.
 See `IDENTITY_CORRECTION.md`.
+Explicit relationship presentation (B21 / D044): only on explicit relationship cues;
+never on simple Who am I / Who are you. See `RELATIONSHIP_PRESENTATION.md`.
 
 ### Diagnostic residue
 Trace/telemetry lane. Never autobiography.

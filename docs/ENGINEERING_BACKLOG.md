@@ -479,20 +479,23 @@ documents remain evidence, but new backlog decisions must update this file.
 
 ### B21 — Explicit relationship-memory presentation
 
-- **Status / order / complexity:** DEFERRED · 15 · M
+- **Status / order / complexity:** COMPLETE · 15 · M
+- **Completed:** 2026-07-23 (ACM v0.41.0)
 - **Purpose:** Safely answer explicit “how do we know each other?” requests using
   relationship evidence.
-- **Problem:** D044 permits relationship context only for explicit requests, but
-  presentation depth is intentionally narrow.
-- **Why deferred:** Relationship reasoning was outside Identity isolation fixes.
 - **Architectural impact:** Existing relationship detection plus evidence
   renderer; must never leak into simple identity answers.
-- **Dependencies:** B19, B29; relationship behavioral contract.
+- **Dependencies:** B19, B29 (COMPLETE); relationship behavioral contract.
+- **Implementation references:**
+  - `acm/identity/relationship_presentation.py`
+  - `acm/authority/classification.py` — relationship_identity_presentation_cue
+  - `docs/RELATIONSHIP_PRESENTATION.md`
+  - Learning gate L31
 - **Behavioral example:** `Who are you?` remains assistant-only; `How do we know
   each other?` may cite shared project experiences.
 - **Validation:** strict simple-vs-relationship query matrix, foreign identity
-  filtering, provenance.
-- **Promotion:** Identity recertification and explicit host UX approval.
+  filtering, provenance, long-duration stability.
+- **Promotion:** Vendor after gates.
 - **Sources:** `IDENTITY_CONTEXT_FILTERING.md`, `identity/rendering.py`.
 
 ### B22 — Longitudinal confidence calibration

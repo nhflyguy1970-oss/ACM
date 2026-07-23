@@ -2,6 +2,14 @@
 
 All notable changes to ACM are documented here.
 
+## [0.41.0] — 2026-07-23
+
+### Added — Explicit relationship-memory presentation (B21)
+
+- ``present_relationship_memory`` and remembering-path presentation for explicit
+  relationship cues (D044); classification routes before Learning / not_memory.
+- Simple Who am I / Who are you remain isolated. Learning gate L31.
+
 ## [0.40.0] — 2026-07-23
 
 ### Added — Identity correction & assent UX (B20)

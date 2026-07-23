@@ -144,8 +144,9 @@ Foundations for self-modeling: counts of known / uncertain concepts, experiences
 | `apply_identity_change` | B20 — trusted-host commit (`assent=True`) or propose |
 | `preview_identity_correction` / `apply_identity_correction` | B20 — conversational correction UX |
 | `pending_identity_changes()` | B20 — read-only pending proposal list |
+| `present_relationship_memory(request)` | B21 — explicit relationship presentation (D044) |
 
-See [`IDENTITY_CORRECTION.md`](IDENTITY_CORRECTION.md).
+See [`IDENTITY_CORRECTION.md`](IDENTITY_CORRECTION.md) · [`RELATIONSHIP_PRESENTATION.md`](RELATIONSHIP_PRESENTATION.md).
 
 ### Extensions
 
