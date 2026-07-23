@@ -2,6 +2,14 @@
 
 All notable changes to ACM are documented here.
 
+## [0.36.0] — 2026-07-23
+
+### Added — Conversation-safe debugging (B10)
+
+- Opt-in ``debug_capture`` / ``debug_capture_replay`` under B07 read-only + B09
+  safety; side-channel capture ring never writes Experiences.
+- Docs ``CONVERSATION_SAFE_DEBUGGING.md``; learning gate L26; long-duration stress.
+
 ## [0.35.0] — 2026-07-23
 
 ### Added — Diagnostic safety policy (B09)

@@ -247,21 +247,25 @@ documents remain evidence, but new backlog decisions must update this file.
 
 ### B10 — Conversation-safe debugging
 
-- **Status / order / complexity:** DEPENDENT · 4 · L
+- **Status / order / complexity:** COMPLETE · 4 · L
+- **Completed:** 2026-07-23 (ACM v0.36.0)
 - **Purpose:** Trace live conversational cognition without contaminating the
   autobiographical store or influencing subsequent activation.
 - **Problem:** Logging a question as an Experience can alter cue strength and
   behavior, as the D045 investigation demonstrated.
-- **Why deferred:** Needs diagnostic isolation and an explicit conversation
-  capture policy.
 - **Architectural impact:** Host/engine boundary and observability; no alternate
-  memory path.
-- **Dependencies:** B07–B09, B27.
+  memory path. Side-channel capture ring only.
+- **Dependencies:** B07–B09 (COMPLETE), B27 (COMPLETE).
+- **Implementation references:**
+  - `acm/authority/debug_capture.py`
+  - `CognitiveEngine.debug_capture` / `debug_capture_replay`
+  - `docs/CONVERSATION_SAFE_DEBUGGING.md`
+  - Learning gate L26
 - **Behavioral example:** Capture classify→route→reconstruct trace while repeated
   debugging leaves answer and store unchanged.
 - **Validation:** Replay equivalence, no new Experience/Concept/Association,
-  concurrency, restart, and long-session tests.
-- **Promotion:** Shadow-only host rollout, then explicit operator enablement.
+  long-session capture stress.
+- **Promotion:** Vendor after gates; host enablement opt-in.
 - **Sources:** D045 trace documents, `SHADOW_MODE.md`,
   `COGNITIVE_EXECUTION_PIPELINE.md`.
 

@@ -11,7 +11,7 @@ preceding candidate is certified.
 ## RC-A — Diagnostic Safety Foundation
 
 - **Backlog:** B07, B08, B09, B27, B29; B10 after core gates pass
-- **Candidate status:** COMPLETE (B07–B09, B27, B29 implemented through v0.35.0)
+- **Candidate status:** COMPLETE (B07–B10, B27, B29 implemented through v0.36.0)
 - **Purpose:** Establish read-only, non-mutating, redacted inspection before
   user-facing introspection.
 - **Why first:** D045 showed that ordinary diagnostic questions can mutate the
