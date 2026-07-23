@@ -2,6 +2,22 @@
 
 All notable changes to ACM are documented here.
 
+## [0.45.0] — 2026-07-23
+
+### Fixed — Production readiness audit (governance · persistence · assent)
+
+- ``encode``, ``cool_memory``, and ``reactivate_memory`` honor ``read_only()``
+  (diagnostic mode can no longer mutate living memory).
+- ``assent_identity`` always births an Experience + provenance via ``encode``
+  (no silent attribute mutation). Learning gate L34.
+- SQLite durable snapshots prune to ``max_snapshots`` (default 32) to bound
+  disk growth under ``auto_persist``.
+- Permanent audit certs:
+  ``tests/cognitive/test_production_audit_cert.py``,
+  ``tests/behavioral/test_production_audit_conversation.py``,
+  ``tests/cognitive/test_production_audit_learning_cert.py``.
+- Report: ``docs/PRODUCTION_READINESS_AUDIT.md``.
+
 ## [0.44.0] — 2026-07-23
 
 ### Closed — Practical platform backlog closures (B46 · B51)

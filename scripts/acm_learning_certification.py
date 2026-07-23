@@ -32,6 +32,8 @@ def main() -> int:
         "tests/cognitive/test_relationship_presentation_learning_cert.py",
         "tests/cognitive/test_erase_governance_learning_cert.py",
         "tests/cognitive/test_possession_recall_learning_cert.py",
+        "tests/cognitive/test_production_audit_learning_cert.py",
+        "tests/behavioral/test_production_audit_conversation.py",
         "tests/behavioral/test_m5_concept_hierarchies.py",
         "tests/behavioral/test_m5_evidence_weighting.py",
         "tests/behavioral/test_m5_prediction_audit.py",
