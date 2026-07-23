@@ -184,6 +184,7 @@ class CognitiveEngine:
             forgetting=self.forgetting,
         )
         self.confidence = ConfidenceOrgan(store=self.store, validation=self.validation)
+        self.offline.bind(confidence=self.confidence)
         self.reconciliation = ReconciliationOrgan(
             store=self.store,
             validation=self.validation,

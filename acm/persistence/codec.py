@@ -12,7 +12,7 @@ from acm.analogy.model import AnalogyAlignment, AnalogyMapping
 from acm.associations.model import Association, AssociationStage, RelationKind
 from acm.attention.model import PriorityEvent
 from acm.concepts.model import Concept, ConceptStage, HierarchyEdge, HierarchyKind, Prototype
-from acm.confidence.model import ConfidenceEvent
+from acm.confidence.model import ConfidenceEvent, EvidenceInfluence, EvidenceStatus
 from acm.core.store import CognitiveStore, Goal
 from acm.experiences.kinds import CognitiveKind, ExternalKind
 from acm.experiences.model import Experience
@@ -53,6 +53,7 @@ def export_store(store: CognitiveStore) -> dict[str, Any]:
         "experiences": {k: _jsonable(v) for k, v in store.experiences.items()},
         "concepts": {k: _jsonable(v) for k, v in store.concepts.items()},
         "hierarchy_edges": {k: _jsonable(v) for k, v in store.hierarchy_edges.items()},
+        "evidence_influences": {k: _jsonable(v) for k, v in store.evidence_influences.items()},
         "associations": {k: _jsonable(v) for k, v in store.associations.items()},
         "goals": {k: _jsonable(v) for k, v in store.goals.items()},
         "envelopes": {k: _jsonable(v) for k, v in store.envelopes.items()},
@@ -183,6 +184,7 @@ def import_store(payload: dict[str, Any], *, store: CognitiveStore | None = None
     target.experiences.clear()
     target.concepts.clear()
     target.hierarchy_edges.clear()
+    target.evidence_influences.clear()
     target.associations.clear()
     target.goals.clear()
     target.envelopes.clear()
@@ -212,6 +214,21 @@ def import_store(payload: dict[str, Any], *, store: CognitiveStore | None = None
             evidence_ids=tuple(d.get("evidence_ids") or ()),
             created=float(d.get("created", 0.0)),
             last_reinforced=float(d.get("last_reinforced", 0.0)),
+        )
+    for iid, d in (body.get("evidence_influences") or {}).items():
+        status_raw = d.get("status", "active")
+        try:
+            status = EvidenceStatus(status_raw)
+        except ValueError:
+            status = EvidenceStatus.ACTIVE
+        target.evidence_influences[str(iid)] = EvidenceInfluence(
+            target_kind=str(d.get("target_kind", "concept")),
+            target_id=str(d.get("target_id", "")),
+            experience_id=str(d.get("experience_id", "")),
+            weight=float(d.get("weight", 1.0)),
+            last_reinforced=float(d.get("last_reinforced", 0.0)),
+            created=float(d.get("created", 0.0)),
+            status=status,
         )
     for aid, d in (body.get("associations") or {}).items():
         target.associations[str(aid)] = Association(
@@ -444,7 +461,9 @@ def migrate_body(body: dict[str, Any], *, from_version: int, to_version: int) ->
     while version < to_version:
         out.setdefault("provenance", {})
         out.setdefault("hierarchy_edges", {})
+        out.setdefault("evidence_influences", {})
         version += 1
     out.setdefault("provenance", {})
     out.setdefault("hierarchy_edges", {})
+    out.setdefault("evidence_influences", {})
     return out

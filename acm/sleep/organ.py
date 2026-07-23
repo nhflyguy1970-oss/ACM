@@ -10,6 +10,7 @@ from acm.types import new_id
 if TYPE_CHECKING:
     from acm.activation.engine import ActivationEngine
     from acm.attention.organ import AttentionOrgan
+    from acm.confidence.organ import ConfidenceOrgan
     from acm.core.store import CognitiveStore
     from acm.forgetting.organ import ForgettingOrgan
     from acm.learning.organ import LearningOrgan
@@ -32,6 +33,7 @@ class OfflineCognitionOrgan:
         activation: ActivationEngine | None = None,
         attention: AttentionOrgan | None = None,
         forgetting: ForgettingOrgan | None = None,
+        confidence: ConfidenceOrgan | None = None,
     ) -> None:
         self.store = store
         self.validation = validation
@@ -39,6 +41,7 @@ class OfflineCognitionOrgan:
         self.activation = activation
         self.attention = attention
         self.forgetting = forgetting
+        self.confidence = confidence
         self._batches = 0
         self._replays = 0
         self._stabilizations = 0
@@ -49,6 +52,7 @@ class OfflineCognitionOrgan:
         activation: ActivationEngine | None = None,
         attention: AttentionOrgan | None = None,
         forgetting: ForgettingOrgan | None = None,
+        confidence: ConfidenceOrgan | None = None,
     ) -> None:
         if activation is not None:
             self.activation = activation
@@ -56,6 +60,8 @@ class OfflineCognitionOrgan:
             self.attention = attention
         if forgetting is not None:
             self.forgetting = forgetting
+        if confidence is not None:
+            self.confidence = confidence
 
     def consolidate(self, *, apply_low_impact: bool = True) -> dict[str, Any]:
         """Cognitive question M8: What should become long-term memory?"""
@@ -212,6 +218,14 @@ class OfflineCognitionOrgan:
                         confidence_after=c.confidence,
                     )
 
+        # M5 Cap2 — evidence aging / stale detection (never deletes provenance).
+        aging: dict[str, Any] = {}
+        if self.confidence is not None:
+            aging = self.confidence.age_evidence_pass()
+            for c in list(self.store.concepts.values())[:40]:
+                if c.active and not c.identity and len(c.evidence_ids) >= 2:
+                    self.confidence.stabilize_confidence(c.id)
+
         payload = {
             "question": "What should become long-term memory?",
             "sleep_batch_id": batch_id,
@@ -220,6 +234,7 @@ class OfflineCognitionOrgan:
             "adaptations_applied": adaptations_applied,
             "cooled_associations": cooled,
             "stabilizations": stabilized,
+            "evidence_aging": aging,
             "proposals": proposals,
             "applied_low_impact": apply_low_impact,
             # backward compatible keys for older sleep tests

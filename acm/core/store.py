@@ -10,7 +10,7 @@ from acm.analogy.model import AnalogyMapping
 from acm.associations.model import Association, RelationKind
 from acm.attention.model import PriorityEvent
 from acm.concepts.model import Concept, ConceptStage, HierarchyEdge
-from acm.confidence.model import ConfidenceEvent
+from acm.confidence.model import ConfidenceEvent, EvidenceInfluence
 from acm.experiences.model import Experience
 from acm.forgetting.model import AccessibilityEvent
 from acm.learning.model import Adaptation
@@ -55,6 +55,7 @@ class CognitiveStore:
         self.concepts: dict[str, Concept] = {}
         self.associations: dict[str, Association] = {}
         self.hierarchy_edges: dict[str, HierarchyEdge] = {}
+        self.evidence_influences: dict[str, EvidenceInfluence] = {}
         self.goals: dict[str, Goal] = {}
         self.envelopes: dict[str, EnvelopeRef] = {}
         self.adaptations: dict[str, Adaptation] = {}

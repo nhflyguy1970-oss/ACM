@@ -1155,6 +1155,29 @@ documents remain evidence, but new backlog decisions must update this file.
   - `docs/CONCEPT_HIERARCHIES.md`
 - **Sources:** M5 mission Cap1; D015/D016; `COGNITIVE_ABSTRACTION.md`.
 
+### B54 — Evidence weighting & decay (M5 Cap2)
+
+- **Status / order / complexity:** COMPLETE · 54 · M
+- **Completed:** 2026-07-23 (ACM v0.29.0 — M5 Cap2)
+- **Purpose:** Evidence influence ages unless reinforced; stale/obsolete detection
+  lowers confidence factors without deleting provenance or Experiences.
+- **Problem:** Confidence used evidence *count* only; unreinformed old evidence
+  kept full influence; STALE meant weak grounding, not temporal neglect.
+- **Architectural impact:** Confidence organ owns influence weights; Sleep runs
+  `age_evidence_pass`; Learning/encode refresh weights; Forgetting unchanged.
+- **Dependencies:** Confidence/Sleep/Learning substrate; Cap1 optional.
+- **Behavioral example:** Idle evidence weight decays; reinforce restores;
+  Experience/provenance counts unchanged across sleep aging.
+- **Validation:** `tests/behavioral/test_m5_evidence_weighting.py`,
+  `tests/cognitive/test_m5_evidence_decay_learning_cert.py`.
+- **Promotion:** Standalone Cap2 certification before Aria vendor (M5 final).
+- **Implementation references:**
+  - `acm/confidence/model.py` — `EvidenceInfluence`, `UncertaintyKind.STALE/OBSOLETE`
+  - `acm/confidence/organ.py` — weight/age/stabilize APIs
+  - `acm/sleep/organ.py` — aging during consolidate
+  - `docs/EVIDENCE_WEIGHTING.md`
+- **Sources:** M5 mission Cap2; `CONFIDENCE_MODEL.md`.
+
 ## Backlog governance
 
 1. Every implementation proposal names one or more backlog IDs.
