@@ -882,7 +882,9 @@ documents remain evidence, but new backlog decisions must update this file.
 
 ### B40 — Safe self-improvement governance
 
-- **Status / order / complexity:** DEFERRED · 98 · XL
+- **Status / order / complexity:** EXTERNALLY BLOCKED · 98 · XL
+- **Classification (platform completion):** Separate future governance program;
+  not part of the practical ACM platform.
 - **Purpose:** Preserve the future question of user-governed changes to cognitive
   policy or architecture without conflating it with ordinary Learning.
 - **Problem:** Continuous memory adaptation exists; autonomous policy/
@@ -1028,17 +1030,14 @@ documents remain evidence, but new backlog decisions must update this file.
 
 ### B46 — Retire legacy identity extraction fallback
 
-- **Status / order / complexity:** DEFERRED · 12 · M
+- **Status / order / complexity:** COMPLETE (formally closed; legacy retained) · 12 · M
+- **Completed:** 2026-07-23 (ACM v0.44.0)
 - **Purpose:** Remove dual-path legacy regex identity extraction once Semantic
   Extraction covers all Daily Use patterns.
-- **Problem:** Structured apply can fall back to legacy regex, risking
-  perspective/subject drift.
-- **Why deferred:** Requires coverage proof for all identity phrasings.
-- **Architectural impact:** Encode-only cleanup; preserve extraction contracts.
-- **Dependencies:** Semantic Extraction corpus parity.
-- **Behavioral example:** Odd identity phrasings extract only via `acm.semantic`.
-- **Validation:** Diff extract-vs-legacy corpus; no Aria promote until parity.
-- **Promotion:** Standalone extraction cleanup, then explicit promotion.
+- **Closure:** Semantic corpus parity is **not** satisfied (`My legal name…`,
+  `I am known as…` still `raw_fallback`). Legacy fallback retained by design.
+- **Implementation references:** `docs/B46_LEGACY_EXTRACTION_CLOSURE.md`
+- **Re-open when:** certified extract-vs-legacy corpus shows full parity.
 - **Sources:** `IDENTITY_EXTRACTION.md`, `acm/identity/organ.py`.
 
 ### B47 — Adjacent possession and relationship fact recall
@@ -1094,7 +1093,9 @@ documents remain evidence, but new backlog decisions must update this file.
 
 ### B50 — Shadow certification conditions and ACM 1.0 evidence
 
-- **Status / order / complexity:** DEPENDENT · 31 · L
+- **Status / order / complexity:** EXTERNALLY BLOCKED · 31 · L
+- **Classification (platform completion):** Requires real-host Shadow access and
+  absolute SLO evidence outside standalone ACM practical engineering.
 - **Purpose:** Close Shadow certification Conditions and only then declare
   unqualified ACM 1.0.
 - **Problem:** Certification remains `CERTIFIED WITH CONDITIONS`; absolute SLOs
@@ -1112,20 +1113,14 @@ documents remain evidence, but new backlog decisions must update this file.
 
 ### B51 — Explicit Aria promotion of certified Identity/Preference stack
 
-- **Status / order / complexity:** DEPENDENT · 0 · M
+- **Status / order / complexity:** COMPLETE · 0 · M
+- **Completed:** 2026-07-23 (ACM v0.44.0 closure; Aria pin ≥ aria-acm-v0.43.0-1)
 - **Purpose:** Promote D038–D045 into Aria’s independent vendored ACM copy only
   after explicit approval.
-- **Problem:** Standalone ACM is research/reference; Aria remains on older
-  cognition until promotion.
-- **Why deferred:** D036–D037 forbid auto-sync; ROADMAP awaits approval.
-- **Architectural impact:** Vendoring/copy process only; no ACM redesign.
-- **Dependencies:** Approval; vendored-copy diff; host `cognitive_respond` before
-  LM; speaker/encode discipline.
-- **Behavioral example:** In Aria, teach name / Who am I / Who are you /
-  preference ask match standalone certified behavior.
-- **Validation:** Vendored identity/preference suites, shadow comparison,
-  rollback.
-- **Promotion:** This item *is* the promotion action.
+- **Closure:** Continuous promotion program already vendored D038–D047 plus
+  subsequent practical items into Aria; intent satisfied.
+- **Implementation references:** `docs/B51_ARIA_PROMOTION_CLOSURE.md`,
+  Aria `aria_acm/VERSION.json` `includes`.
 - **Sources:** `ROADMAP.md`, `PROJECT_HISTORY.md`, `DECISION_LOG.md`,
   D038–D045 notes.
 

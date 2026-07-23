@@ -2,6 +2,16 @@
 
 All notable changes to ACM are documented here.
 
+## [0.44.0] — 2026-07-23
+
+### Closed — Practical platform backlog closures (B46 · B51)
+
+- B51 marked COMPLETE: Aria vendored pin already includes D038–D047 Identity /
+  Preference stack (`docs/B51_ARIA_PROMOTION_CLOSURE.md`).
+- B46 formally closed without retiring legacy extract: semantic corpus parity
+  unmet (`docs/B46_LEGACY_EXTRACTION_CLOSURE.md`).
+- Final practical backlog status report: `docs/PRACTICAL_PLATFORM_COMPLETION.md`.
+
 ## [0.43.0] — 2026-07-23
 
 ### Added — Adjacent possession / relationship recall (B47)
