@@ -111,16 +111,47 @@ def test_certainty_and_confidence_stay_in_prediction() -> None:
     assert "hiking" in (conf["memory"] or "").lower()
 
 
-def test_explain_prediction_cites_teachings() -> None:
-    engine = CognitiveEngine(agent_id="pred-accept-explain")
-    engine.cognitive_respond("Every Saturday I usually go fishing.")
-    engine.cognitive_respond("What am I likely to do next Saturday?")
-    why = engine.cognitive_respond("How did you make that prediction?")
-    assert why["intent"] == "prediction"
-    assert "fishing" in (why["memory"] or "").lower()
-    assert "taught" in (why["memory"] or "").lower() or "previously" in (
-        why["memory"] or ""
-    ).lower()
+def test_irrelevant_evidence_excluded() -> None:
+    engine = CognitiveEngine(agent_id="pred-accept-filter")
+    for text in (
+        "It has rained every day this week.",
+        "Every time I drink coffee after 8 PM, I have trouble sleeping.",
+        "Coffee sometimes helps me sleep.",
+        "Whenever I skip breakfast, I get hungry before lunch.",
+    ):
+        engine.cognitive_respond(text)
+    coffee = engine.cognitive_respond(
+        "If I drink coffee after 8 PM, what is likely to happen?"
+    )
+    assert coffee["status"] == "conflicting"
+    assert "rain" not in (coffee["memory"] or "").lower()
+    breakfast = engine.cognitive_respond(
+        "If I skip breakfast, what is likely to happen?"
+    )
+    assert breakfast["status"] == "known"
+    assert "hungry" in (breakfast["memory"] or "").lower()
+    assert "rain" not in (breakfast["memory"] or "").lower()
+
+
+def test_recommendation_speech_differs_from_prediction() -> None:
+    engine = CognitiveEngine(agent_id="pred-accept-rec")
+    engine.cognitive_respond("I usually get more work done in the morning.")
+    pred = engine.cognitive_respond("When am I likely to be most productive?")
+    assert "likely from memory" in (pred["memory"] or "").lower()
+    rec = engine.cognitive_respond("When should I work?")
+    assert "recommend" in (rec["memory"] or "").lower()
+    assert "likely from memory" not in (rec["memory"] or "").lower()
+
+
+def test_conversation_language_is_not_memory() -> None:
+    from acm.authority.classification import classify_memory_request
+    from acm.authority.taxonomy import CognitiveIntent
+
+    cl = classify_memory_request(
+        "What language have we been speaking in during this conversation?"
+    )
+    assert cl.intent == CognitiveIntent.CONVERSATION_MANAGEMENT
+    assert cl.is_memory_request is False
 
 
 def test_unknown_outside_autobiographical_memory() -> None:
