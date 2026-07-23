@@ -36,12 +36,12 @@
 | L26 | Conversation-safe debug never invents | `debug_capture` leaves Experience/provenance counts unchanged |
 | L27 | Preference edit preserves provenance | Apply/propose/reject leave lineage; reject does not flip value |
 | L28 | Preference correction lineage | Actually… marks correction; prior value retired |
+| L29 | Conflict resolution preserves lineage | Confirm/reject/abstain; confirm retains versions |
 
 ## Commands
 
 ```bash
-.venv/bin/pytest tests/cognitive/test_m4_learning_certification.py -q
-.venv/bin/pytest tests/cognitive/test_*_learning_cert.py tests/cognitive/test_preference_editing_learning_cert.py tests/cognitive/test_preference_correction_learning_cert.py -q
+.venv/bin/pytest tests/cognitive/test_*_learning_cert.py -q
 .venv/bin/pytest tests/ -q
 .venv/bin/python scripts/acm_learning_certification.py
 ```

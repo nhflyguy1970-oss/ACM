@@ -310,22 +310,21 @@ documents remain evidence, but new backlog decisions must update this file.
 
 ### B13 — User-assisted conflict resolution
 
-- **Status / order / complexity:** DEPENDENT · 9 · L
+- **Status / order / complexity:** COMPLETE · 9 · L
+- **Completed:** 2026-07-23 (ACM v0.39.0)
 - **Purpose:** Ask the user to confirm which true semantic recollection should
   remain active without silently discarding evidence.
-- **Problem:** Reconciliation exposes conflict but lacks a complete interactive
-  confirmation workflow.
-- **Why deferred:** Requires UX, assent, and read-only conflict explanation;
-  outside reconstruction correction.
-- **Architectural impact:** Reconciliation + Policy Gate interaction; Experiences
-  remain immutable and old facts retain lineage.
-- **Dependencies:** B04, B08, B12, B20 patterns.
+- **Architectural impact:** Reconciliation + PreferencePolicyGate interaction;
+  Experiences remain immutable and old facts retain lineage.
+- **Dependencies:** B04, B08, B11, B12 (COMPLETE).
+- **Implementation references:**
+  - `acm/authority/conflict_resolution.py`
+  - `docs/CONFLICT_RESOLUTION.md`
+  - Learning gate L29
 - **Behavioral example:** “I have blue and red. Which is current?” → user confirms
-  red → blue retired with reconciliation record.
-- **Validation:** confirm/reject/abstain, malformed answers, persistence,
-  provenance, no last-write-wins loss.
-- **Promotion:** Standalone interactive contract, then host UX and rollback
-  certification.
+  red → blue retired with lineage retained.
+- **Validation:** confirm/reject/abstain, unknown options, provenance.
+- **Promotion:** Vendor after gates.
 - **Sources:** `MEMORY_RECONCILIATION.md`, `LEARNING_GOVERNANCE.md`.
 
 ### B14 — Memory provenance presentation

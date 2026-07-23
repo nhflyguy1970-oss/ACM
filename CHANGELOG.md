@@ -2,6 +2,15 @@
 
 All notable changes to ACM are documented here.
 
+## [0.39.0] — 2026-07-23
+
+### Added — User-assisted conflict resolution (B13)
+
+- ``open_conflict_resolution`` / ``confirm`` / ``reject`` / ``abstain`` sessions
+  over competing preference recollections; confirm applies via B11 without
+  discarding lineage.
+- Docs ``CONFLICT_RESOLUTION.md``; learning gate L29.
+
 ## [0.38.0] — 2026-07-23
 
 ### Added — Preference correction UX (B12)
