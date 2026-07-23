@@ -37,6 +37,7 @@
 | L27 | Preference edit preserves provenance | Apply/propose/reject leave lineage; reject does not flip value |
 | L28 | Preference correction lineage | Actually… marks correction; prior value retired |
 | L29 | Conflict resolution preserves lineage | Confirm/reject/abstain; confirm retains versions |
+| L30 | Identity correction preserves provenance | Apply/propose/reject; assistant isolation held |
 
 ## Commands
 

@@ -2,6 +2,15 @@
 
 All notable changes to ACM are documented here.
 
+## [0.40.0] — 2026-07-23
+
+### Added — Identity correction & assent UX (B20)
+
+- ``preview``/``propose``/``apply_identity_change``, conversational correction
+  APIs, ``cancel_identity``, pending list; collision guard for user→assistant
+  names; lineage side-channel.
+- Docs ``IDENTITY_CORRECTION.md``; learning gate L30; long-duration stress.
+
 ## [0.39.0] — 2026-07-23
 
 ### Added — User-assisted conflict resolution (B13)

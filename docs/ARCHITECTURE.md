@@ -204,6 +204,9 @@ Peer system for future-directed objects (projects, promises, plans, unfinished w
 
 ### Identity Schema
 Privileged concepts: User, Aria-self, Project identities, optional App personas. Strict Policy Gate.
+Conversational correction/assent UX (B20): preview → propose → assent/reject/cancel;
+commits via `encode(kind='identity')`; user/assistant name collision blocked.
+See `IDENTITY_CORRECTION.md`.
 
 ### Diagnostic residue
 Trace/telemetry lane. Never autobiography.

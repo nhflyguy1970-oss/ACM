@@ -139,6 +139,13 @@ Foundations for self-modeling: counts of known / uncertain concepts, experiences
 | `identity_snapshot()` | Full derived snapshot (schemas, lineage tail, evolution metrics) |
 | `assent_identity(proposal_id)` | Apply a pending high-impact identity change |
 | `reject_identity(proposal_id)` | Reject a pending change; prior attribute remains |
+| `cancel_identity(proposal_id)` | B20 — cancel pending proposal without applying |
+| `preview_identity_change` / `propose_identity_change` | B20 — preview / propose attribute change |
+| `apply_identity_change` | B20 — trusted-host commit (`assent=True`) or propose |
+| `preview_identity_correction` / `apply_identity_correction` | B20 — conversational correction UX |
+| `pending_identity_changes()` | B20 — read-only pending proposal list |
+
+See [`IDENTITY_CORRECTION.md`](IDENTITY_CORRECTION.md).
 
 ### Extensions
 

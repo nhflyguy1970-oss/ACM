@@ -457,22 +457,23 @@ documents remain evidence, but new backlog decisions must update this file.
 
 ### B20 — Identity correction and assent UX
 
-- **Status / order / complexity:** DEPENDENT · 11 · L
+- **Status / order / complexity:** COMPLETE · 11 · L
+- **Completed:** 2026-07-23 (ACM v0.40.0)
 - **Purpose:** Make identity changes explicit, reviewable, and reversible under
   the existing Policy Gate.
-- **Problem:** Schema update/assent mechanisms exist, but conversational
-  correction UX is incomplete.
-- **Why deferred:** D042–D044 corrected implementation fidelity, not identity
-  management UX.
 - **Architectural impact:** Identity + Policy Gate presentation; no weakening of
   user/assistant separation.
-- **Dependencies:** B01, B19; existing assent policy.
+- **Dependencies:** B01, B19 (COMPLETE); existing assent policy.
+- **Implementation references:**
+  - `acm/authority/identity_edit.py`
+  - `acm/identity/policy.py` — cancel
+  - `docs/IDENTITY_CORRECTION.md`
+  - Learning gate L30
 - **Behavioral example:** “My legal name changed…” → preview impact → explicit
   assent → lineage-preserving update.
 - **Validation:** approve/reject/cancel, collision prevention, user/assistant
-  isolation, restart and rollback.
-- **Promotion:** Separate standalone Identity release and recertification before
-  host promotion.
+  isolation, long-duration corrections.
+- **Promotion:** Vendor after gates.
 - **Sources:** `IDENTITY_MODEL.md`, `IDENTITY_SEPARATION.md`,
   `LEARNING_GOVERNANCE.md`.
 

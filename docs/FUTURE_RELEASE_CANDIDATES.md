@@ -77,8 +77,8 @@ preceding candidate is certified.
 
 ## RC-F — User-Governed Identity Management
 
-- **Backlog:** B20, optionally B21
-- **Candidate status:** DEPENDENT on RC-C and separate Identity review
+- **Backlog:** B20 (COMPLETE v0.40.0); B21 remaining for relationship presentation
+- **Candidate status:** PARTIAL — identity correction/assent shipped; B21 still open
 - **Purpose:** Add correction/assent and explicit relationship presentation
   while preserving D043/D044 isolation.
 - **Architectural review:** Re-run complete User/Assistant Identity separation,
