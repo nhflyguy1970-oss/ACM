@@ -28,12 +28,14 @@
 | L18 | Audit updates abstraction reproducibly | Hit/miss shifts abstraction confidence; comparison stable |
 | L19 | Temporal patterns evidence-based | Form/reinforce cite Experiences; unknown id rejected |
 | L20 | Inactive patterns weaken reproducibly | Aging lowers confidence; Experience counts unchanged |
+| L21 | Explain learning preserves provenance | No internals; Experience/provenance counts unchanged |
+| L22 | Explain tracks confidence change | Confidence history / evolution visible after reinforce |
 
 ## Commands
 
 ```bash
 .venv/bin/pytest tests/cognitive/test_m4_learning_certification.py -q
-.venv/bin/pytest tests/cognitive/test_m5_*_learning_cert.py -q
+.venv/bin/pytest tests/cognitive/test_m5_*_learning_cert.py tests/cognitive/test_m5_learning_explainability_cert.py -q
 .venv/bin/pytest tests/ -q
 .venv/bin/python scripts/acm_learning_certification.py
 ```

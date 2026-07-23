@@ -1252,6 +1252,26 @@ documents remain evidence, but new backlog decisions must update this file.
   - `docs/TEMPORAL_PATTERNS.md`
 - **Sources:** M5 mission Cap5.
 
+### B58 — Learning explainability (M5 Cap6)
+
+- **Status / order / complexity:** COMPLETE · 58 · M
+- **Completed:** 2026-07-23 (ACM v0.33.0 — M5 Cap6)
+- **Purpose:** Unified `explain_learning` / `why_was_this_learned` surfaces covering
+  evidence, confidence history, abstractions, predictions, hypotheses, temporal
+  patterns, adoption, reflection, and consolidation — public language only.
+- **Problem:** Cap1–Cap5 each had local explain APIs; hosts lacked one learning
+  explainability contract without internals leakage.
+- **Architectural impact:** Learning organ aggregates existing histories; no new
+  memory invention; provenance IDs retained.
+- **Dependencies:** Cap1–Cap5.
+- **Validation:** `tests/behavioral/test_m5_learning_explainability.py`,
+  `tests/cognitive/test_m5_learning_explainability_cert.py`.
+- **Promotion:** Vendor after Cap6 cert.
+- **Implementation references:**
+  - `acm/learning/organ.py` — `explain_learning`
+  - `docs/LEARNING_EXPLAINABILITY.md`
+- **Sources:** M5 mission Cap6.
+
 ## Backlog governance
 
 1. Every implementation proposal names one or more backlog IDs.

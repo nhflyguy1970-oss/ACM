@@ -2,6 +2,16 @@
 
 All notable changes to ACM are documented here.
 
+## [0.33.0] — 2026-07-23
+
+### Added — Learning explainability (M5 Cap6)
+
+- Unified ``explain_learning`` / ``why_was_this_learned`` aggregating evidence,
+  confidence history, abstractions, predictions/hypotheses, temporal patterns,
+  adoption, reflection, and consolidation influences.
+- Public language only (``exposes_internals=False``); provenance preserved;
+  docs ``LEARNING_EXPLAINABILITY.md``; backlog B58; gates L21–L22.
+
 ## [0.32.0] — 2026-07-23
 
 ### Added — Temporal pattern recognition (M5 Cap5)
