@@ -34,12 +34,13 @@
 | L24 | Enforce clamps + no recursive re-learn | Confidence bounded; second learn from same reflection is no-op |
 | L25 | Diagnostic safety never invents | Inspect/evidence under B09 preserve Experience/provenance counts |
 | L26 | Conversation-safe debug never invents | `debug_capture` leaves Experience/provenance counts unchanged |
+| L27 | Preference edit preserves provenance | Apply/propose/reject leave lineage; reject does not flip value |
 
 ## Commands
 
 ```bash
 .venv/bin/pytest tests/cognitive/test_m4_learning_certification.py -q
-.venv/bin/pytest tests/cognitive/test_m5_*_learning_cert.py tests/cognitive/test_m5_learning_explainability_cert.py tests/cognitive/test_m5_learning_stability_cert.py tests/cognitive/test_diagnostic_safety_learning_cert.py tests/cognitive/test_conversation_safe_debug_learning_cert.py -q
+.venv/bin/pytest tests/cognitive/test_m5_*_learning_cert.py tests/cognitive/test_m5_learning_explainability_cert.py tests/cognitive/test_m5_learning_stability_cert.py tests/cognitive/test_diagnostic_safety_learning_cert.py tests/cognitive/test_conversation_safe_debug_learning_cert.py tests/cognitive/test_preference_editing_learning_cert.py -q
 .venv/bin/pytest tests/ -q
 .venv/bin/python scripts/acm_learning_certification.py
 ```

@@ -271,19 +271,21 @@ documents remain evidence, but new backlog decisions must update this file.
 
 ### B11 — Preference editing UX
 
-- **Status / order / complexity:** DEPENDENT · 7 · M
+- **Status / order / complexity:** COMPLETE · 7 · M
+- **Completed:** 2026-07-23 (ACM v0.37.0)
 - **Purpose:** Let users view and intentionally edit active preferences.
-- **Problem:** Current encode semantics support updates, but there is no explicit,
-  explainable edit interaction.
-- **Why deferred:** Preference editing UX was excluded from D045.
-- **Architectural impact:** Existing semantic fact/update operations; no direct
-  store edits and no new organ.
-- **Dependencies:** B01, B03, B08.
+- **Architectural impact:** Existing semantic fact/update operations via encode;
+  PreferencePolicyGate for assent; no direct store edits and no new organ.
+- **Dependencies:** B01, B03, B08 (COMPLETE).
+- **Implementation references:**
+  - `acm/authority/preference_edit.py`
+  - `docs/PREFERENCE_EDITING.md`
+  - Learning gate L27
 - **Behavioral example:** “Change my favorite color to red” previews old/new
   values and records lineage.
 - **Validation:** Set/replace/remove/cancel, repeated edits, persistence,
   provenance, and unrelated-preference isolation.
-- **Promotion:** Standalone API certification, then host UX/manual validation.
+- **Promotion:** Vendor after gates.
 - **Sources:** `PREFERENCE_RECONSTRUCTION_FIX.md`,
   `COGNITIVE_FACT_MODEL.md`.
 

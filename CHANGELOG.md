@@ -2,6 +2,15 @@
 
 All notable changes to ACM are documented here.
 
+## [0.37.0] — 2026-07-23
+
+### Added — Preference editing UX (B11)
+
+- ``inspect_preferences`` / ``preview_preference_change`` /
+  ``propose``/``assent``/``reject``/``cancel``/``apply_preference_change``.
+- PreferencePolicyGate; commits via encode; remove deactivates living attributes.
+- Docs ``PREFERENCE_EDITING.md``; learning gate L27.
+
 ## [0.36.0] — 2026-07-23
 
 ### Added — Conversation-safe debugging (B10)
