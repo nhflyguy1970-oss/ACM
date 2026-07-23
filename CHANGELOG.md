@@ -2,6 +2,15 @@
 
 All notable changes to ACM are documented here.
 
+## [0.35.0] — 2026-07-23
+
+### Added — Diagnostic safety policy (B09)
+
+- ``DiagnosticSafetyPolicy`` composes B29 redaction; strips organ raw dumps,
+  sanitizes substrate labels, caps list exposure; applies to ``inspect()``,
+  B08 façades, and organ views. Production default enabled.
+- Docs ``DIAGNOSTIC_SAFETY_POLICY.md``; learning gate L25.
+
 ## [0.34.0] — 2026-07-23
 
 ### Added — Learning stability (M5 Cap7)

@@ -28,6 +28,7 @@ Each returns a versioned schema (`acm.inspect.*.v1`) plus `execution_mode` and a
 
 - Same classify → route → dispatch organs as ordinary cognition
 - Always under `ExecutionMode.READ_ONLY`
+- B29 redaction + B09 diagnostic safety at the projection boundary
 - Store / buffer / context fingerprints unchanged across calls
 - Normal `cognitive_respond` / `remember` still reconsolidate as designed
 

@@ -32,12 +32,13 @@
 | L22 | Explain tracks confidence change | Confidence history / evolution visible after reinforce |
 | L23 | Stability check never invents | `check_learning_stability` read-only; counts unchanged |
 | L24 | Enforce clamps + no recursive re-learn | Confidence bounded; second learn from same reflection is no-op |
+| L25 | Diagnostic safety never invents | Inspect/evidence under B09 preserve Experience/provenance counts |
 
 ## Commands
 
 ```bash
 .venv/bin/pytest tests/cognitive/test_m4_learning_certification.py -q
-.venv/bin/pytest tests/cognitive/test_m5_*_learning_cert.py tests/cognitive/test_m5_learning_explainability_cert.py tests/cognitive/test_m5_learning_stability_cert.py -q
+.venv/bin/pytest tests/cognitive/test_m5_*_learning_cert.py tests/cognitive/test_m5_learning_explainability_cert.py tests/cognitive/test_m5_learning_stability_cert.py tests/cognitive/test_diagnostic_safety_learning_cert.py -q
 .venv/bin/pytest tests/ -q
 .venv/bin/python scripts/acm_learning_certification.py
 ```

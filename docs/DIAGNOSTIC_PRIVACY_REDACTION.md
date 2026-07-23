@@ -33,6 +33,10 @@ Each payload includes `redaction` and `redaction_applied`.
 - Legal erase flows (B36)
 - Mutating memory or inventing evidence
 
+## Companion
+
+- B09 field allow/deny and forbidden surfaces: [`DIAGNOSTIC_SAFETY_POLICY.md`](DIAGNOSTIC_SAFETY_POLICY.md)
+
 ## Architectural constraints
 
 - Memory Authority absolute — redaction never replaces reconstruction

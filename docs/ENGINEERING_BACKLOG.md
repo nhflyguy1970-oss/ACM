@@ -219,7 +219,8 @@ documents remain evidence, but new backlog decisions must update this file.
 
 ### B09 — Diagnostic safety policy
 
-- **Status / order / complexity:** DEPENDENT · 3 · M
+- **Status / order / complexity:** COMPLETE · 3 · M
+- **Completed:** 2026-07-23 (ACM v0.35.0)
 - **Purpose:** Define what diagnostic output may expose and which operations are
   forbidden.
 - **Problem:** Raw provenance, identity values, context, and storage structures
@@ -227,13 +228,20 @@ documents remain evidence, but new backlog decisions must update this file.
 - **Why deferred:** Needs read-only APIs and privacy decisions first.
 - **Architectural impact:** Policy/sanitization layer over diagnostics; preserve
   host independence and Memory Authority.
-- **Dependencies:** B07 (COMPLETE), B08 (COMPLETE), B29.
-
+- **Dependencies:** B07 (COMPLETE), B08 (COMPLETE), B29 (COMPLETE).
+- **Implementation references:**
+  - `acm/authority/diagnostic_policy.py`
+  - `acm/authority/inspect_api.py` / `CognitiveEngine.inspect`
+  - `docs/DIAGNOSTIC_SAFETY_POLICY.md`
+  - `tests/cognitive/test_diagnostic_safety_policy.py`
+  - `tests/behavioral/test_diagnostic_safety_conversation.py`
+  - Learning gate L25
 - **Behavioral example:** Diagnostics show evidence classes and redacted values,
   never unrelated user/assistant identity or raw DB rows.
 - **Validation:** Adversarial leakage corpus, foreign-identity filtering,
-  deterministic redaction, disabled-by-default production policy.
-- **Promotion:** Security/privacy review before any host exposure.
+  deterministic redaction, disabled-by-default production policy (enabled=True;
+  opt-out for development only).
+- **Promotion:** Vendor after Cap gates.
 - **Sources:** `HALLUCINATION_PREVENTION.md`,
   `IDENTITY_CONTEXT_FILTERING.md`, `authority/handlers.py`.
 
