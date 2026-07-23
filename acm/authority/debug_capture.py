@@ -34,8 +34,15 @@ DEFAULT_CONVERSATION_DEBUG_POLICY = ConversationDebugPolicy()
 
 def policy_for_engine_debug(engine: CognitiveEngine) -> ConversationDebugPolicy:
     policy = getattr(engine, "conversation_debug_policy", None)
-    if isinstance(policy, ConversationDebugPolicy):
-        return policy
+    if policy is not None and hasattr(policy, "enabled") and hasattr(policy, "max_captures"):
+        # Accept duck-typed policies (Aria nested import class identity).
+        if isinstance(policy, ConversationDebugPolicy):
+            return policy
+        return ConversationDebugPolicy(
+            enabled=bool(getattr(policy, "enabled", False)),
+            max_captures=int(getattr(policy, "max_captures", 64)),
+            include_organ_view=str(getattr(policy, "include_organ_view", "") or ""),
+        )
     return DEFAULT_CONVERSATION_DEBUG_POLICY
 
 

@@ -50,3 +50,17 @@ def test_b10_force_override_without_policy() -> None:
     out = eng.debug_capture("What do I prefer?", force=True)
     assert out["status"] == "captured"
     assert out["store_unchanged"] is True
+
+
+def test_b10_duck_typed_policy_accepted() -> None:
+    """Aria-style dual import must not drop enabled=True via isinstance mismatch."""
+
+    class AlienPolicy:
+        enabled = True
+        max_captures = 10
+        include_organ_view = ""
+
+    eng = CognitiveEngine(agent_id="b10-duck", conversation_debug_policy=AlienPolicy())
+    eng.encode("I prefer coffee.", pin=True, provenance=TRUSTED_USER_STATEMENT)
+    out = eng.debug_capture("What do I prefer?")
+    assert out["status"] == "captured"

@@ -88,23 +88,29 @@ class CognitiveEngine:
 
         self.agent_id = agent_id
         self.auto_persist = auto_persist
-        self.redaction_policy: RedactionPolicy = (
+        # Duck-type policies: Aria nested `aria_acm.acm` vs shim `acm` can yield
+        # distinct class objects for the same source file under dual imports.
+        self.redaction_policy = (
             redaction_policy
-            if isinstance(redaction_policy, RedactionPolicy)
+            if redaction_policy is not None and hasattr(redaction_policy, "level")
             else DEFAULT_REDACTION_POLICY
         )
-        self.diagnostic_safety_policy: DiagnosticSafetyPolicy = (
+        self.diagnostic_safety_policy = (
             diagnostic_safety_policy
-            if isinstance(diagnostic_safety_policy, DiagnosticSafetyPolicy)
+            if diagnostic_safety_policy is not None
+            and hasattr(diagnostic_safety_policy, "enabled")
+            and hasattr(diagnostic_safety_policy, "redaction")
             else DEFAULT_DIAGNOSTIC_SAFETY_POLICY
         )
-        self.conversation_debug_policy: ConversationDebugPolicy = (
+        self.conversation_debug_policy = (
             conversation_debug_policy
-            if isinstance(conversation_debug_policy, ConversationDebugPolicy)
+            if conversation_debug_policy is not None
+            and hasattr(conversation_debug_policy, "enabled")
+            and hasattr(conversation_debug_policy, "max_captures")
             else DEFAULT_CONVERSATION_DEBUG_POLICY
         )
         self._debug_captures = DebugCaptureBuffer(
-            max_captures=self.conversation_debug_policy.max_captures
+            max_captures=int(getattr(self.conversation_debug_policy, "max_captures", 64))
         )
         self.durable = None
         if persist_path:
