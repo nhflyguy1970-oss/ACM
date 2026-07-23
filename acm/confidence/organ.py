@@ -464,6 +464,8 @@ class ConfidenceOrgan:
         *,
         now: float | None = None,
     ) -> EvidenceInfluence:
+        from acm.authority.mode import is_read_only
+
         now = now if now is not None else time()
         key = f"{target_kind}:{target_id}:{experience_id}"
         existing = self.store.evidence_influences.get(key)
@@ -480,7 +482,9 @@ class ConfidenceOrgan:
             created=created,
             status=EvidenceStatus.ACTIVE,
         )
-        self.store.evidence_influences[key] = inf
+        # Inspect / READ_ONLY must not invent store records (zero-write façades).
+        if not is_read_only():
+            self.store.evidence_influences[key] = inf
         return inf
 
     def _record_event(
