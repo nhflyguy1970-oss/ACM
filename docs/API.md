@@ -145,8 +145,11 @@ Foundations for self-modeling: counts of known / uncertain concepts, experiences
 | `preview_identity_correction` / `apply_identity_correction` | B20 — conversational correction UX |
 | `pending_identity_changes()` | B20 — read-only pending proposal list |
 | `present_relationship_memory(request)` | B21 — explicit relationship presentation (D044) |
+| `preview_erase_request` / `propose_erase_request` | B36 — preview / propose forget·prune·erase |
+| `assent_erase_request` / `reject_erase_request` / `cancel_erase_request` | B36 — gate resolution |
+| `apply_erase_request` / `pending_erase_requests` | B36 — trusted-host commit / pending list |
 
-See [`IDENTITY_CORRECTION.md`](IDENTITY_CORRECTION.md) · [`RELATIONSHIP_PRESENTATION.md`](RELATIONSHIP_PRESENTATION.md).
+See [`IDENTITY_CORRECTION.md`](IDENTITY_CORRECTION.md) · [`RELATIONSHIP_PRESENTATION.md`](RELATIONSHIP_PRESENTATION.md) · [`ERASE_GOVERNANCE.md`](ERASE_GOVERNANCE.md).
 
 ### Extensions
 

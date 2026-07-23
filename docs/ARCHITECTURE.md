@@ -153,6 +153,8 @@ Associative · changes on recall · contextual · confidence · history/lineage 
             ▼                               │
 ┌───────────────────────────────────────────┴──────────────────────────┐
 │ Trust / Policy Gate (Identity, Goals, high-impact Sleep, erase)      │
+│   B36: preview → propose → assent/reject/cancel for soft-forget /    │
+│   prune / legal-erase; Experiences never deleted (see ERASE_GOVERNANCE) │
 ├──────────────────────────────────────────────────────────────────────┤
 │ Aria Cognitive Memory (ACM)                                                │
 │ Attention Field · Context Frame · Goal Space                         │

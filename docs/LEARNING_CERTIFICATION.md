@@ -39,6 +39,7 @@
 | L29 | Conflict resolution preserves lineage | Confirm/reject/abstain; confirm retains versions |
 | L30 | Identity correction preserves provenance | Apply/propose/reject; assistant isolation held |
 | L31 | Relationship presentation is read-only | No store write; Who are you stays isolated |
+| L32 | Erase/forget never deletes Experiences | Soft-forget/legal-erase; reject invents nothing |
 
 ## Commands
 

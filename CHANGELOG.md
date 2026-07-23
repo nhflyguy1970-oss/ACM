@@ -2,6 +2,14 @@
 
 All notable changes to ACM are documented here.
 
+## [0.42.0] — 2026-07-23
+
+### Added — Prune / forget / erase assent UX (B36)
+
+- ``preview``/``propose``/``assent``/``reject``/``cancel``/``apply_erase_request``
+  with soft-forget vs prune vs legal-erase; Experiences never deleted; identity
+  name soft-forget blocked. Learning gate L32.
+
 ## [0.41.0] — 2026-07-23
 
 ### Added — Explicit relationship-memory presentation (B21)

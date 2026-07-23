@@ -798,21 +798,22 @@ documents remain evidence, but new backlog decisions must update this file.
 
 ### B36 — Prune, forget, and erase assent UX
 
-- **Status / order / complexity:** DEPENDENT · 22 · L
+- **Status / order / complexity:** COMPLETE · 22 · L
+- **Completed:** 2026-07-23 (ACM v0.42.0)
 - **Purpose:** Provide explicit user governance for high-impact pruning,
   forgetting, and erasure requests.
-- **Problem:** Forgetting is intentionally soft and high-impact changes are
-  governed, but complete review/assent UX is postponed.
-- **Why deferred:** Not part of Identity/Preference correctness and requires
-  policy/security review.
 - **Architectural impact:** Policy Gate + Forgetting/Identity governance; never
   delete immutable history silently.
-- **Dependencies:** B07–B09 diagnostics, B14 provenance, established erase policy.
+- **Dependencies:** B07–B09 diagnostics, B14 provenance (COMPLETE).
+- **Implementation references:**
+  - `acm/authority/erase_governance.py`
+  - `docs/ERASE_GOVERNANCE.md`
+  - Learning gate L32
 - **Behavioral example:** “Forget my old address” previews affected living
   attributes and evidence policy before assent.
 - **Validation:** approve/reject/cancel, soft forget vs legal erase distinction,
   identity protection, persistence and audit lineage.
-- **Promotion:** Security/privacy review and standalone governance certification.
+- **Promotion:** Vendor after gates.
 - **Sources:** `COGNITIVE_CAPABILITY_MAP.md`,
   `FORGETTING_MODEL.md`, `LEARNING_GOVERNANCE.md`.
 
