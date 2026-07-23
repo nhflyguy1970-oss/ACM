@@ -2,6 +2,17 @@
 
 All notable changes to ACM are documented here.
 
+## [0.32.0] — 2026-07-23
+
+### Added — Temporal pattern recognition (M5 Cap5)
+
+- ``TemporalPattern`` records for routines/schedules/habits/seasonal/recurring
+  patterns; evidence-based observe/reinforce; idle aging to weakening/dormant/
+  retired without deleting Experiences.
+- Sleep ages unobserved patterns; Prediction may boost from active patterns;
+  encode predictive hook observes patterns; docs ``TEMPORAL_PATTERNS.md``;
+  backlog B57; learning gates L19–L20; long-duration stress test.
+
 ## [0.31.0] — 2026-07-23
 
 ### Added — Multi-level abstraction & general principles (M5 Cap4)

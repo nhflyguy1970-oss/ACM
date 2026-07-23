@@ -236,6 +236,9 @@ class OfflineCognitionOrgan:
                 if c.active and not c.identity and len(c.evidence_ids) >= 2:
                     self.confidence.stabilize_confidence(c.id)
 
+        # M5 Cap5 — temporal patterns weaken when unobserved.
+        pattern_aging = self.learning.age_temporal_patterns()
+
         payload = {
             "question": "What should become long-term memory?",
             "sleep_batch_id": batch_id,
@@ -245,6 +248,7 @@ class OfflineCognitionOrgan:
             "cooled_associations": cooled,
             "stabilizations": stabilized,
             "evidence_aging": aging,
+            "temporal_pattern_aging": pattern_aging,
             "proposals": proposals,
             "applied_low_impact": apply_low_impact,
             # backward compatible keys for older sleep tests

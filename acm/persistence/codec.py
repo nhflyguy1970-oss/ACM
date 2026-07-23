@@ -30,6 +30,7 @@ from acm.experiences.model import Experience
 from acm.experiences.salience import SalienceVector
 from acm.forgetting.model import AccessibilityEvent
 from acm.learning.model import Adaptation, AdaptationKind, AdaptationTarget, GovernanceClass
+from acm.learning.temporal_pattern import PatternKind, PatternStatus, TemporalPattern
 from acm.persistence.schema import CHECKSUM_ALGO, SCHEMA_VERSION, SNAPSHOT_FORMAT
 from acm.prediction.model import (
     ComparisonKind,
@@ -78,6 +79,7 @@ def export_store(store: CognitiveStore) -> dict[str, Any]:
         "goals": {k: _jsonable(v) for k, v in store.goals.items()},
         "envelopes": {k: _jsonable(v) for k, v in store.envelopes.items()},
         "adaptations": {k: _jsonable(v) for k, v in store.adaptations.items()},
+        "temporal_patterns": {k: _jsonable(v) for k, v in store.temporal_patterns.items()},
         "accessibility": dict(store.accessibility),
         "priority_events": [_jsonable(e) for e in store.priority_events],
         "accessibility_events": [_jsonable(e) for e in store.accessibility_events],
@@ -213,6 +215,7 @@ def import_store(payload: dict[str, Any], *, store: CognitiveStore | None = None
     target.goals.clear()
     target.envelopes.clear()
     target.adaptations.clear()
+    target.temporal_patterns.clear()
     target.accessibility.clear()
     target.priority_events.clear()
     target.accessibility_events.clear()
@@ -358,6 +361,34 @@ def import_store(payload: dict[str, Any], *, store: CognitiveStore | None = None
             attribute_key=str(d.get("attribute_key", "")),
             created=float(d.get("created", 0.0)),
             applied=bool(d.get("applied", False)),
+            metadata=dict(d.get("metadata") or {}),
+        )
+    for tpid, d in (body.get("temporal_patterns") or {}).items():
+        try:
+            kind = PatternKind(d.get("kind", "habit"))
+        except ValueError:
+            kind = PatternKind.HABIT
+        try:
+            status = PatternStatus(d.get("status", "active"))
+        except ValueError:
+            status = PatternStatus.ACTIVE
+        target.temporal_patterns[str(tpid)] = TemporalPattern(
+            id=str(d.get("id") or tpid),
+            label=str(d.get("label", "")),
+            kind=kind,
+            status=status,
+            antecedent=str(d.get("antecedent", "")),
+            consequent=str(d.get("consequent", "")),
+            period_hint=str(d.get("period_hint", "")),
+            confidence=float(d.get("confidence", 0.0)),
+            strength=float(d.get("strength", 0.0)),
+            observation_count=int(d.get("observation_count", 0)),
+            supporting_experience_ids=list(d.get("supporting_experience_ids") or []),
+            supporting_concept_ids=list(d.get("supporting_concept_ids") or []),
+            first_observed=float(d.get("first_observed", 0.0)),
+            last_observed=float(d.get("last_observed", 0.0)),
+            last_weakened=float(d.get("last_weakened", 0.0)),
+            retired_at=float(d.get("retired_at", 0.0)),
             metadata=dict(d.get("metadata") or {}),
         )
     target.accessibility.update(
@@ -588,6 +619,7 @@ def migrate_body(body: dict[str, Any], *, from_version: int, to_version: int) ->
         out.setdefault("prediction_audits", {})
         out.setdefault("abstractions", {})
         out.setdefault("general_principles", {})
+        out.setdefault("temporal_patterns", {})
         version += 1
     out.setdefault("provenance", {})
     out.setdefault("hierarchy_edges", {})
@@ -596,4 +628,5 @@ def migrate_body(body: dict[str, Any], *, from_version: int, to_version: int) ->
     out.setdefault("prediction_audits", {})
     out.setdefault("abstractions", {})
     out.setdefault("general_principles", {})
+    out.setdefault("temporal_patterns", {})
     return out

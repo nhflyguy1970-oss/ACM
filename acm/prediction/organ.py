@@ -685,6 +685,30 @@ class PredictionOrgan:
             if len(entry["support"]) > 1:
                 entry["score"] = float(entry["score"]) + 0.15
 
+        # M5 Cap5 — active TemporalPatterns boost matching predictive outcomes.
+        for pat in self.store.temporal_patterns.values():
+            if pat.status.value not in {"active", "weakening"}:
+                continue
+            ante_l = pat.antecedent.casefold()
+            cons_l = pat.consequent.casefold()
+            if not any(tok in cue_l for tok in ante_l.split() if len(tok) > 2):
+                if pat.period_hint and pat.period_hint not in cue_l:
+                    continue
+            key = f"pattern:{cons_l}"
+            entry = grouped.setdefault(
+                key,
+                {
+                    "score": 0.0,
+                    "support": [],
+                    "why": ["temporal_pattern"],
+                    "label": pat.consequent,
+                    "polarities": set(),
+                },
+            )
+            entry["score"] = float(entry["score"]) + pat.confidence * pat.strength
+            entry["why"].append("temporal_pattern")
+            entry["support"].extend(pat.supporting_experience_ids[-3:])
+
         polarities = {
             pol
             for payload in grouped.values()

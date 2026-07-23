@@ -1229,6 +1229,29 @@ documents remain evidence, but new backlog decisions must update this file.
   - `docs/MULTI_LEVEL_ABSTRACTION.md`
 - **Sources:** M5 mission Cap4; `COGNITIVE_ABSTRACTION.md`.
 
+### B57 — Temporal pattern recognition (M5 Cap5)
+
+- **Status / order / complexity:** COMPLETE · 57 · L
+- **Completed:** 2026-07-23 (ACM v0.32.0 — M5 Cap5)
+- **Purpose:** Evidence-based routines/schedules/seasonal/recurring habits that
+  strengthen with observation and weaken when unobserved (Cap2-aligned aging).
+- **Problem:** Predictive Experiences existed but lacked durable TemporalPattern
+  records, explainability, and idle weakening.
+- **Architectural impact:** Learning organ owns TemporalPattern; Sleep ages;
+  Prediction may boost from active patterns; encode predictive hook observes.
+- **Dependencies:** Cap1–Cap4 substrate; predictive Experience metadata.
+- **Behavioral example:** Coffee-after-breakfast habit reinforces; long idle
+  weakens; Experiences unchanged.
+- **Validation:** `tests/behavioral/test_m5_temporal_patterns.py`,
+  `tests/cognitive/test_m5_temporal_pattern_learning_cert.py`,
+  `tests/performance/test_m5_temporal_long_duration.py`.
+- **Promotion:** Vendor after Cap5 cert per platform-complete mission.
+- **Implementation references:**
+  - `acm/learning/temporal_pattern.py`
+  - `acm/learning/organ.py` — observe/age/explain/list
+  - `docs/TEMPORAL_PATTERNS.md`
+- **Sources:** M5 mission Cap5.
+
 ## Backlog governance
 
 1. Every implementation proposal names one or more backlog IDs.

@@ -13,6 +13,7 @@ from acm.learning.model import (
     AdaptationTarget,
     GovernanceClass,
 )
+from acm.learning.temporal_pattern import PatternKind, PatternStatus, TemporalPattern
 from acm.types import ConceptRole, new_id
 from acm.validation.harness import ConfidenceDelta
 
@@ -55,6 +56,8 @@ class LearningOrgan:
         self._proposed = 0
         self._abstained = 0
         self._rollbacks = 0
+        self._temporal_patterns = 0
+        self._min_pattern_observations = 2
 
     def bind(
         self,
@@ -449,6 +452,280 @@ class LearningOrgan:
         )
         return created
 
+    # --- M5 Cap5: Temporal Pattern Recognition --------------------------------
+
+    def observe_temporal_pattern(
+        self,
+        *,
+        antecedent: str,
+        consequent: str,
+        experience_id: str = "",
+        concept_ids: list[str] | tuple[str, ...] = (),
+        period_hint: str = "",
+        kind: PatternKind | str = PatternKind.HABIT,
+        label: str = "",
+        now: float | None = None,
+    ) -> dict[str, Any]:
+        """Upsert an evidence-based temporal pattern. Never invents Experiences."""
+        if is_read_only():
+            return {"status": "read_only"}
+        ante = " ".join((antecedent or "").strip().split())
+        cons = " ".join((consequent or "").strip().split())
+        if not ante or not cons:
+            return {"status": "rejected", "reason": "missing_endpoints"}
+        if experience_id and experience_id not in self.store.experiences:
+            return {"status": "rejected", "reason": "unknown_experience"}
+        now = time() if now is None else float(now)
+        period = (period_hint or self._infer_period_hint(f"{ante} {cons}")).lower()
+        kind_v = kind if isinstance(kind, PatternKind) else PatternKind(str(kind))
+        key = f"{ante.casefold()}=>{cons.casefold()}|{period}"
+        existing = None
+        for p in self.store.temporal_patterns.values():
+            pk = f"{p.antecedent.casefold()}=>{p.consequent.casefold()}|{p.period_hint}"
+            if pk == key:
+                existing = p
+                break
+        if existing is None:
+            pat = TemporalPattern(
+                id=new_id("tpat"),
+                label=label or f"{ante} → {cons}",
+                kind=kind_v,
+                status=PatternStatus.ACTIVE,
+                antecedent=ante,
+                consequent=cons,
+                period_hint=period,
+                confidence=0.35,
+                strength=0.35,
+                observation_count=1,
+                supporting_experience_ids=[experience_id] if experience_id else [],
+                supporting_concept_ids=[c for c in concept_ids if c in self.store.concepts][:8],
+                first_observed=now,
+                last_observed=now,
+                metadata={"key": key},
+            )
+            self.store.temporal_patterns[pat.id] = pat
+            self._temporal_patterns += 1
+            self.validation.record_learning(
+                action="temporal_pattern_observe",
+                pattern_id=pat.id,
+                observation_count=1,
+                learn=1,
+            )
+            return {"status": "formed", "pattern": pat.to_public()}
+        # Reinforce existing
+        before = existing.confidence
+        if experience_id and experience_id not in existing.supporting_experience_ids:
+            existing.supporting_experience_ids.append(experience_id)
+        for cid in concept_ids:
+            if cid in self.store.concepts and cid not in existing.supporting_concept_ids:
+                existing.supporting_concept_ids.append(cid)
+        existing.observation_count += 1
+        existing.last_observed = now
+        existing.strength = min(0.95, existing.strength + 0.08)
+        existing.confidence = min(0.92, existing.confidence + 0.06)
+        if existing.status in {PatternStatus.WEAKENING, PatternStatus.DORMANT}:
+            existing.status = PatternStatus.ACTIVE
+        if (
+            existing.observation_count >= self._min_pattern_observations
+            and len(existing.supporting_experience_ids) >= 1
+        ):
+            existing.kind = kind_v if existing.kind == PatternKind.HABIT else existing.kind
+        self.validation.record_learning(
+            action="temporal_pattern_reinforce",
+            pattern_id=existing.id,
+            confidence_before=before,
+            confidence_after=existing.confidence,
+            learn=1,
+        )
+        return {
+            "status": "reinforced",
+            "pattern": existing.to_public(),
+            "confidence_before": before,
+            "confidence_after": existing.confidence,
+        }
+
+    def age_temporal_patterns(
+        self,
+        *,
+        now: float | None = None,
+        weaken_idle_s: float = 14 * 86400,
+        dormant_idle_s: float = 45 * 86400,
+        retire_idle_s: float = 120 * 86400,
+    ) -> dict[str, Any]:
+        """Weaken patterns no longer observed. Never deletes Experiences/provenance."""
+        if is_read_only():
+            return {"status": "read_only", "weakened": 0}
+        now = time() if now is None else float(now)
+        exp_before = len(self.store.experiences)
+        prov_before = len(self.store.provenance)
+        weakened = dormant = retired = 0
+        for pat in self.store.temporal_patterns.values():
+            if pat.status == PatternStatus.RETIRED:
+                continue
+            idle = now - float(pat.last_observed or pat.first_observed or now)
+            if idle < weaken_idle_s:
+                continue
+            before = pat.confidence
+            # Soft exponential-ish decay of strength/confidence
+            steps = max(1, int(idle / max(weaken_idle_s, 1.0)))
+            decay = min(0.5, 0.08 * steps)
+            pat.strength = max(0.05, pat.strength - decay)
+            pat.confidence = max(0.05, pat.confidence - decay * 0.9)
+            pat.last_weakened = now
+            if idle >= retire_idle_s and pat.confidence <= 0.15:
+                pat.status = PatternStatus.RETIRED
+                pat.retired_at = now
+                retired += 1
+            elif idle >= dormant_idle_s:
+                pat.status = PatternStatus.DORMANT
+                dormant += 1
+            else:
+                pat.status = PatternStatus.WEAKENING
+                weakened += 1
+            self.validation.record_learning(
+                action="temporal_pattern_age",
+                pattern_id=pat.id,
+                confidence_before=before,
+                confidence_after=pat.confidence,
+                status=pat.status.value,
+                learn=1,
+            )
+        assert len(self.store.experiences) == exp_before
+        assert len(self.store.provenance) == prov_before
+        return {
+            "status": "aged",
+            "weakened": weakened,
+            "dormant": dormant,
+            "retired": retired,
+            "experiences_unchanged": True,
+            "provenance_unchanged": True,
+        }
+
+    def explain_temporal_pattern(self, cue_or_id: str = "") -> dict[str, Any]:
+        """Why does this routine/habit exist? Evidence and confidence trajectory."""
+        pat = self.store.temporal_patterns.get(cue_or_id)
+        if pat is None:
+            q = (cue_or_id or "").casefold()
+            matches = [
+                p
+                for p in self.store.temporal_patterns.values()
+                if not q
+                or q in p.label.casefold()
+                or q in p.antecedent.casefold()
+                or q in p.consequent.casefold()
+                or q in p.period_hint
+            ]
+            matches.sort(key=lambda p: p.confidence, reverse=True)
+            pat = matches[0] if matches else None
+        if pat is None:
+            return {
+                "question": "What temporal pattern is this?",
+                "known": False,
+                "answer": "I don't have an evidence-based temporal pattern for that yet.",
+                "invents_experiences": False,
+            }
+        return {
+            "question": "What temporal pattern is this?",
+            "known": True,
+            "answer": (
+                f"Pattern '{pat.label}' ({pat.kind.value}/{pat.status.value}): "
+                f"when '{pat.antecedent}' then '{pat.consequent}'"
+                + (f" ({pat.period_hint})" if pat.period_hint else "")
+                + f" — confidence {pat.confidence:.0%} from "
+                f"{pat.observation_count} observation(s)."
+            ),
+            "supporting_experiences": list(pat.supporting_experience_ids),
+            "confidence": pat.confidence,
+            "last_observed": pat.last_observed,
+            "last_weakened": pat.last_weakened,
+            "status": pat.status.value,
+            "weakens_when_unobserved": True,
+            "pattern": pat.to_public(),
+            "invents_experiences": False,
+        }
+
+    def list_temporal_patterns(
+        self, *, include_dormant: bool = False, cue: str = ""
+    ) -> dict[str, Any]:
+        items = list(self.store.temporal_patterns.values())
+        if not include_dormant:
+            items = [
+                p
+                for p in items
+                if p.status in {PatternStatus.ACTIVE, PatternStatus.WEAKENING}
+            ]
+        if cue:
+            q = cue.casefold()
+            items = [
+                p
+                for p in items
+                if q in p.label.casefold()
+                or q in p.antecedent.casefold()
+                or q in p.consequent.casefold()
+                or q in p.period_hint
+            ]
+        items.sort(key=lambda p: (p.confidence, p.observation_count), reverse=True)
+        return {
+            "question": "What routines or temporal patterns do I have?",
+            "patterns": [p.to_public() for p in items[:24]],
+            "count": len(items),
+            "answer": (
+                "; ".join(p.label for p in items[:5])
+                if items
+                else "No active temporal patterns learned yet."
+            ),
+            "invents_experiences": False,
+        }
+
+    def discover_patterns_from_predictive_experiences(self) -> list[dict[str, Any]]:
+        """Materialize TemporalPatterns from existing predictive Experiences (no invention)."""
+        created: list[dict[str, Any]] = []
+        for exp in self.store.experiences.values():
+            meta = exp.meta_dict() if hasattr(exp, "meta_dict") else {}
+            if not isinstance(meta, dict) or meta.get("predictive") != "1":
+                continue
+            ante = str(meta.get("pattern_antecedent") or "").strip()
+            cons = str(meta.get("pattern_consequent") or "").strip()
+            if not ante or not cons:
+                continue
+            out = self.observe_temporal_pattern(
+                antecedent=ante,
+                consequent=cons,
+                experience_id=exp.id,
+                period_hint=self._infer_period_hint(f"{ante} {cons} {exp.summary or ''}"),
+                kind=PatternKind.RECURRING,
+                now=float(exp.t_start or exp.created or time()),
+            )
+            if out.get("status") in {"formed", "reinforced"}:
+                created.append(out["pattern"])
+        return created
+
+    def _infer_period_hint(self, text: str) -> str:
+        t = (text or "").casefold()
+        for token, hint in (
+            ("saturday", "saturday"),
+            ("sunday", "sunday"),
+            ("weekend", "weekend"),
+            ("weekday", "weekday"),
+            ("morning", "morning"),
+            ("afternoon", "afternoon"),
+            ("evening", "evening"),
+            ("night", "night"),
+            ("winter", "seasonal"),
+            ("summer", "seasonal"),
+            ("spring", "seasonal"),
+            ("autumn", "seasonal"),
+            ("fall", "seasonal"),
+            ("every week", "weekly"),
+            ("weekly", "weekly"),
+            ("daily", "daily"),
+            ("every day", "daily"),
+            ("monthly", "monthly"),
+        ):
+            if token in t:
+                return hint
+        return "recurring"
+
     def observables(self) -> dict[str, Any]:
         return {
             "adaptation_count": len(self.store.adaptations),
@@ -456,6 +733,8 @@ class LearningOrgan:
             "proposed": self._proposed,
             "abstained": self._abstained,
             "rollbacks": self._rollbacks,
+            "temporal_patterns": len(self.store.temporal_patterns),
+            "temporal_pattern_ops": self._temporal_patterns,
         }
 
     def daily_learning_summary(self, since_ts: float = 0.0) -> dict[str, Any]:

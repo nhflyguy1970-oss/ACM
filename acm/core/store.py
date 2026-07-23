@@ -20,6 +20,7 @@ from acm.confidence.model import ConfidenceEvent, EvidenceInfluence
 from acm.experiences.model import Experience
 from acm.forgetting.model import AccessibilityEvent
 from acm.learning.model import Adaptation
+from acm.learning.temporal_pattern import TemporalPattern
 from acm.prediction.model import Hypothesis, Prediction, PredictionAudit
 from acm.provenance.model import ProvenanceRecord
 from acm.recombination.model import RecombinedMemory
@@ -67,6 +68,7 @@ class CognitiveStore:
         self.goals: dict[str, Goal] = {}
         self.envelopes: dict[str, EnvelopeRef] = {}
         self.adaptations: dict[str, Adaptation] = {}
+        self.temporal_patterns: dict[str, TemporalPattern] = {}
         self.accessibility: dict[str, str] = {}
         self.priority_events: list[PriorityEvent] = []
         self.accessibility_events: list[AccessibilityEvent] = []

@@ -53,7 +53,8 @@ Prediction Audit (Cap3): hits strengthen supporting abstractions; misses weaken 
 - No invented category labels from clustering alone
 - No Experience rewrite
 - No absolute truths
-- Cap5 not started
+- Cap5: [`TEMPORAL_PATTERNS.md`](TEMPORAL_PATTERNS.md)
++ Cap5: [`TEMPORAL_PATTERNS.md`](TEMPORAL_PATTERNS.md)
 
 ## Certification
 

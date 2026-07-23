@@ -841,6 +841,22 @@ class CognitiveEngine:
         """Cognitive question M7: What have I learned?"""
         return self.learning.what_have_i_learned(cue)
 
+    def list_temporal_patterns(
+        self, *, include_dormant: bool = False, cue: str = ""
+    ) -> dict[str, Any]:
+        """M5 Cap5 — routines / schedules / habits learned from Experiences."""
+        return self.learning.list_temporal_patterns(
+            include_dormant=include_dormant, cue=cue
+        )
+
+    def explain_temporal_pattern(self, cue: str = "") -> dict[str, Any]:
+        """M5 Cap5 — explain an evidence-based temporal pattern."""
+        return self.learning.explain_temporal_pattern(cue)
+
+    def age_temporal_patterns(self, **kwargs: Any) -> dict[str, Any]:
+        """M5 Cap5 — weaken patterns no longer observed."""
+        return self.learning.age_temporal_patterns(**kwargs)
+
     def daily_learning_summary(self, since_ts: float = 0.0) -> dict[str, Any]:
         """Host-callable learning rollup (no internal timer). Read-only aggregation."""
         return self.learning.daily_learning_summary(since_ts=since_ts)
@@ -1801,6 +1817,17 @@ class CognitiveEngine:
                 assoc.metadata["autobiographical"] = True
                 assoc.metadata["learned_relation"] = "predicts"
                 assoc.metadata["predictive_pattern"] = "1"
+            # M5 Cap5 — durable temporal pattern (evidence-based habit/routine).
+            self.learning.observe_temporal_pattern(
+                antecedent=antecedent,
+                consequent=consequent,
+                experience_id=experience_id,
+                concept_ids=(source.id, target.id),
+                period_hint=self.learning._infer_period_hint(
+                    f"{antecedent} {consequent}"
+                ),
+                kind="habit",
+            )
 
     def _ensure_relational_concept(self, label: str, *, evidence_id: str) -> Any:
         """Resolve or create one Concept endpoint for an explicit learned entity."""
