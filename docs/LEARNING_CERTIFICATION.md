@@ -40,6 +40,7 @@
 | L30 | Identity correction preserves provenance | Apply/propose/reject; assistant isolation held |
 | L31 | Relationship presentation is read-only | No store write; Who are you stays isolated |
 | L32 | Erase/forget never deletes Experiences | Soft-forget/legal-erase; reject invents nothing |
+| L33 | Possession recall is read-only | Dog name ≠ Who am I; no store write |
 
 ## Commands
 

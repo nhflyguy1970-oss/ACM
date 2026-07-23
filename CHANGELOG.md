@@ -2,6 +2,13 @@
 
 All notable changes to ACM are documented here.
 
+## [0.43.0] — 2026-07-23
+
+### Added — Adjacent possession / relationship recall (B47)
+
+- ``present_possession_recall`` and remembering-path answers for cues like
+  “What's my dog's name?” without polluting Who am I. Learning gate L33.
+
 ## [0.42.0] — 2026-07-23
 
 ### Added — Prune / forget / erase assent UX (B36)

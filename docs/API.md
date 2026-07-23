@@ -148,8 +148,9 @@ Foundations for self-modeling: counts of known / uncertain concepts, experiences
 | `preview_erase_request` / `propose_erase_request` | B36 — preview / propose forget·prune·erase |
 | `assent_erase_request` / `reject_erase_request` / `cancel_erase_request` | B36 — gate resolution |
 | `apply_erase_request` / `pending_erase_requests` | B36 — trusted-host commit / pending list |
+| `present_possession_recall(request)` | B47 — adjacent possession/relationship name recall |
 
-See [`IDENTITY_CORRECTION.md`](IDENTITY_CORRECTION.md) · [`RELATIONSHIP_PRESENTATION.md`](RELATIONSHIP_PRESENTATION.md) · [`ERASE_GOVERNANCE.md`](ERASE_GOVERNANCE.md).
+See [`IDENTITY_CORRECTION.md`](IDENTITY_CORRECTION.md) · [`RELATIONSHIP_PRESENTATION.md`](RELATIONSHIP_PRESENTATION.md) · [`ERASE_GOVERNANCE.md`](ERASE_GOVERNANCE.md) · [`POSSESSION_RECALL.md`](POSSESSION_RECALL.md).
 
 ### Extensions
 

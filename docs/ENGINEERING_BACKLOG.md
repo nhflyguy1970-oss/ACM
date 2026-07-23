@@ -1043,20 +1043,21 @@ documents remain evidence, but new backlog decisions must update this file.
 
 ### B47 — Adjacent possession and relationship fact recall
 
-- **Status / order / complexity:** DEFERRED · 14 · M
+- **Status / order / complexity:** COMPLETE · 14 · M
+- **Completed:** 2026-07-23 (ACM v0.43.0)
 - **Purpose:** Query and render adjacent relationship/possession facts without
   polluting user identity name speech.
-- **Problem:** Facts like “My dog’s name is Zeus” may be stored as adjacent links
-  but are not surfaced by identity renderers.
-- **Why deferred:** Outside D043/D044 isolation scope.
 - **Architectural impact:** Identity/Remembering ownership for possession
   queries; keep simple identity answers schema-only.
-- **Dependencies:** B21 relationship presentation helpful; classification for
-  possession cues.
+- **Dependencies:** B21 (COMPLETE); classification for possession cues.
+- **Implementation references:**
+  - `acm/remembering/possession_recall.py`
+  - `docs/POSSESSION_RECALL.md`
+  - Learning gate L33
 - **Behavioral example:** `What's my dog's name?` → Zeus without changing
   `Who am I?`.
 - **Validation:** Extract + recall suite; name-collision guards remain.
-- **Promotion:** Standalone Identity enhancement and isolation recertification.
+- **Promotion:** Vendor after gates.
 - **Sources:** `FACT_EXTRACTION_RULES.md`, `COGNITIVE_FACT_MODEL.md`,
   `acm/identity/organ.py`.
 
