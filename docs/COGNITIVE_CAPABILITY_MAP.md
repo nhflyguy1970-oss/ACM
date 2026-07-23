@@ -121,15 +121,15 @@
 | Question | What have I learned? |
 | Exclusive responsibility | Governed durable adaptation of living structures |
 | Inputs | Reflective Experiences, encode/remember outcomes, Offline batches |
-| Outputs | `what_have_i_learned`, `learn`, assent/reject/rollback |
-| Artifacts | Adaptation Records; never Experience rewrites |
+| Outputs | `what_have_i_learned`, `learn`, assent/reject/rollback, `explain_learning`, `check_learning_stability` / `enforce_learning_stability` |
+| Artifacts | Adaptation Records; Temporal Patterns; never Experience rewrites |
 | Dependencies | Identity, Experiences, Concepts, Associations, Remembering, Reflection |
 | Future dependents | Offline Cognition, Prediction, Planning, Creativity, Forgetting |
 | Activation | Reuses shared Activation Architecture (via neighborhood lessons) |
 | Observability | `learning` harness aggregate |
-| Validation | Adaptation lineage; history immutability; governance caps |
+| Validation | Adaptation lineage; history immutability; governance caps; Cap7 stability bounds |
 
-**Implementation status:** Implemented (v0.8.0). Docs: [`LEARNING_MODEL.md`](LEARNING_MODEL.md) · [`LEARNING_ARCHITECTURE.md`](LEARNING_ARCHITECTURE.md) · [`GENERALIZATION.md`](GENERALIZATION.md).
+**Implementation status:** Implemented (v0.8.0+; M5 Caps through Cap7 / v0.34.0). Docs: [`LEARNING_MODEL.md`](LEARNING_MODEL.md) · [`LEARNING_ARCHITECTURE.md`](LEARNING_ARCHITECTURE.md) · [`LEARNING_EXPLAINABILITY.md`](LEARNING_EXPLAINABILITY.md) · [`LEARNING_STABILITY.md`](LEARNING_STABILITY.md) · [`GENERALIZATION.md`](GENERALIZATION.md).
 
 **Why Learning depends on Reflection:** only Reflective Experiences carry auditable evaluation outcomes (`sufficient`, `contradiction`, …) suitable for explainable adaptation. Encoding/remembering alone must not silently rewrite meaning.
 

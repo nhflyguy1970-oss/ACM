@@ -1272,6 +1272,28 @@ documents remain evidence, but new backlog decisions must update this file.
   - `docs/LEARNING_EXPLAINABILITY.md`
 - **Sources:** M5 mission Cap6.
 
+### B59 — Learning stability (M5 Cap7)
+
+- **Status / order / complexity:** COMPLETE · 59 · M
+- **Completed:** 2026-07-23 (ACM v0.34.0 — M5 Cap7)
+- **Purpose:** Long-duration learning stability — bounded confidence, no recursive
+  re-learn, no structure explosion, enforceable clamps, reproducible consolidation.
+- **Problem:** Repeated sleep/learn could re-apply the same reflections and allow
+  unbounded confidence / pattern growth over simulated months–years.
+- **Architectural impact:** `LearningStabilityLimits`, `check_learning_stability` /
+  `enforce_learning_stability`; sleep consolidates with enforce; never invents
+  Experiences.
+- **Dependencies:** Cap1–Cap6.
+- **Validation:** `tests/behavioral/test_m5_learning_stability.py`,
+  `tests/cognitive/test_m5_learning_stability_cert.py`,
+  `tests/performance/test_m5_stability_long_duration.py`.
+- **Promotion:** Vendor after Cap7 cert (final M5).
+- **Implementation references:**
+  - `acm/learning/stability.py`
+  - `acm/learning/organ.py` — check/enforce + anti-recursion
+  - `docs/LEARNING_STABILITY.md`
+- **Sources:** M5 mission Cap7.
+
 ## Backlog governance
 
 1. Every implementation proposal names one or more backlog IDs.

@@ -19,7 +19,7 @@
 ## Non-goals
 
 - No CoT dumps, file paths, class names, or organ internals in answers
-- Cap7 stability guards are separate
+- Cap7 stability: [`LEARNING_STABILITY.md`](LEARNING_STABILITY.md)
 
 ## Certification
 

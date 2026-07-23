@@ -33,7 +33,7 @@ Observe Experience → TemporalPattern (formed/reinforced)
 
 - No invented Experiences
 - No absolute schedules
-- Cap6+ not started here
+- Cap6+ explainability / stability: [`LEARNING_EXPLAINABILITY.md`](LEARNING_EXPLAINABILITY.md), [`LEARNING_STABILITY.md`](LEARNING_STABILITY.md)
 
 ## Certification
 

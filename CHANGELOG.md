@@ -2,6 +2,16 @@
 
 All notable changes to ACM are documented here.
 
+## [0.34.0] — 2026-07-23
+
+### Added — Learning stability (M5 Cap7)
+
+- ``LearningStabilityLimits``, ``check_learning_stability`` /
+  ``enforce_learning_stability``; sleep consolidates with enforce.
+- Blocks recursive re-learning from the same Reflective Experience; caps
+  temporal-pattern formation; clamps confidence on adaptations.
+- Docs ``LEARNING_STABILITY.md``; backlog B59; gates L23–L24; long-duration stress.
+
 ## [0.33.0] — 2026-07-23
 
 ### Added — Learning explainability (M5 Cap6)
