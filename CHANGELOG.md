@@ -2,6 +2,14 @@
 
 All notable changes to ACM are documented here.
 
+## [0.38.0] — 2026-07-23
+
+### Added — Preference correction UX (B12)
+
+- ``preview_preference_correction`` / ``apply_preference_correction`` for
+  “Actually…” phrases; correction lineage side-channel (immutable Experiences).
+- Docs ``PREFERENCE_CORRECTION.md``; learning gate L28.
+
 ## [0.37.0] — 2026-07-23
 
 ### Added — Preference editing UX (B11)

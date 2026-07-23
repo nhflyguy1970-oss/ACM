@@ -291,20 +291,21 @@ documents remain evidence, but new backlog decisions must update this file.
 
 ### B12 — Preference correction UX
 
-- **Status / order / complexity:** DEPENDENT · 8 · M
+- **Status / order / complexity:** COMPLETE · 8 · M
+- **Completed:** 2026-07-23 (ACM v0.38.0)
 - **Purpose:** Distinguish a correction from a new preference observation and
   preserve correction lineage.
-- **Problem:** “Actually…” works through SET semantics, but correction intent and
-  explanation are implicit.
-- **Why deferred:** D045 preserved storage and preference-editing behavior.
-- **Architectural impact:** Semantic update metadata and presentation; preserve
-  immutable Experiences.
-- **Dependencies:** B01, B11, B14.
+- **Architectural impact:** Semantic update via B11 encode; correction lineage
+  side-channel (Experiences remain immutable).
+- **Dependencies:** B01, B11, B14 (COMPLETE).
+- **Implementation references:**
+  - `acm/authority/preference_correction.py`
+  - `docs/PREFERENCE_CORRECTION.md`
+  - Learning gate L28
 - **Behavioral example:** “Actually, red” retires blue, activates red, and
   explains that the user corrected the prior value.
-- **Validation:** Correction phrases, ambiguous referents, rollback/cancel,
-  confidence and provenance lineage.
-- **Promotion:** Standalone behavioral release before vendored promotion.
+- **Validation:** Correction phrases, short referents, provenance lineage.
+- **Promotion:** Vendor after gates.
 - **Sources:** `SEMANTIC_EXTRACTION.md`, `PREFERENCE_RECONSTRUCTION_FIX.md`.
 
 ### B13 — User-assisted conflict resolution
