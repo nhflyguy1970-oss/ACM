@@ -32,6 +32,7 @@ Prediction estimates **probable future memory outcomes** from living cognitive s
 
 Neuron-level predictive coding, forward models of actuators, policy search, deterministic oracles.
 
-## Cap3 deepening
+## Cap deepening
 
-Counterfactual hypotheses and append-only prediction audits: [`PREDICTION_AUDIT.md`](PREDICTION_AUDIT.md).
+- Cap3: hypotheses + prediction audits — [`PREDICTION_AUDIT.md`](PREDICTION_AUDIT.md)
+- Cap4: multi-level abstractions — [`MULTI_LEVEL_ABSTRACTION.md`](MULTI_LEVEL_ABSTRACTION.md)

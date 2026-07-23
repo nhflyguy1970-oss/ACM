@@ -1203,6 +1203,32 @@ documents remain evidence, but new backlog decisions must update this file.
   - `docs/PREDICTION_AUDIT.md`
 - **Sources:** M5 mission Cap3; `PREDICTION_MODEL.md` · `PREDICTIVE_MEMORY.md`.
 
+### B56 — Multi-level abstraction & general principles (M5 Cap4)
+
+- **Status / order / complexity:** COMPLETE · 56 · L
+- **Completed:** 2026-07-23 (ACM v0.31.0 — M5 Cap4)
+- **Purpose:** Evidence-gated multi-level abstractions (L1–L5) and probabilistic
+  general principles; Cap3 audits strengthen/weaken abstractions; Cap1 hierarchy
+  participates without inventing Experiences.
+- **Problem:** Hierarchies existed but higher-order abstractions, principle
+  statements, and lifecycle (refine/split/merge/retire) lacked durable,
+  explainable records tied to prediction outcomes.
+- **Architectural impact:** Concept organ owns `AbstractionRecord` +
+  `GeneralPrinciple`; Learning extends prediction-audit path; Sleep may derive
+  evidenced abstractions; Persistence codec stores both collections.
+- **Dependencies:** Cap1–Cap3; Concept/Learning/Prediction/Sleep substrate.
+- **Behavioral example:** Reject thin evidence; promote abstraction; form
+  "usually" principle; audit hit raises abstraction confidence.
+- **Validation:** `tests/behavioral/test_m5_multi_level_abstraction.py`,
+  `tests/cognitive/test_m5_abstraction_learning_cert.py`.
+- **Promotion:** Standalone Cap4 certification before Cap5 / Aria vendor.
+- **Implementation references:**
+  - `acm/concepts/model.py` — AbstractionRecord, GeneralPrinciple
+  - `acm/concepts/organ.py` — lifecycle + explain + derive APIs
+  - `acm/learning/organ.py` — audit → abstraction reinforce/weaken
+  - `docs/MULTI_LEVEL_ABSTRACTION.md`
+- **Sources:** M5 mission Cap4; `COGNITIVE_ABSTRACTION.md`.
+
 ## Backlog governance
 
 1. Every implementation proposal names one or more backlog IDs.

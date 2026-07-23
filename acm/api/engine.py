@@ -753,6 +753,45 @@ class CognitiveEngine:
         """M5 Cap1 — explain taxonomic placement (parents/children/siblings/evidence)."""
         return self.concepts.explain_hierarchy(cue)
 
+    def abstraction_levels(self, cue: str) -> dict[str, Any]:
+        """M5 Cap4 — multi-level abstraction view for a concept cue."""
+        return self.concepts.abstraction_levels(cue)
+
+    def explain_abstraction(self, cue: str) -> dict[str, Any]:
+        """M5 Cap4 — why an abstraction exists; evidence and revisability."""
+        return self.concepts.explain_abstraction(cue)
+
+    def propose_abstraction(
+        self,
+        concept_ids: list[str] | tuple[str, ...],
+        *,
+        label: str = "",
+        evidence_ids: list[str] | tuple[str, ...] = (),
+        level: str = "l3_generalized",
+    ) -> dict[str, Any]:
+        """M5 Cap4 — evidence-gated abstraction candidate."""
+        return self.concepts.propose_abstraction(
+            concept_ids, label=label, evidence_ids=evidence_ids, level=level
+        )
+
+    def form_general_principle(
+        self,
+        abstraction_id: str = "",
+        *,
+        concept_ids: list[str] | tuple[str, ...] = (),
+        modality: str = "usually",
+        statement: str = "",
+        evidence_ids: list[str] | tuple[str, ...] = (),
+    ) -> dict[str, Any]:
+        """M5 Cap4 — probabilistic general principle (never absolute)."""
+        return self.concepts.form_general_principle(
+            abstraction_id,
+            concept_ids=concept_ids,
+            modality=modality,
+            statement=statement,
+            evidence_ids=evidence_ids,
+        )
+
     def how_related(self, left: str, right: str) -> dict[str, Any]:
         """Cognitive question M4: How is this related?"""
         return self.associations.how_related(left, right)

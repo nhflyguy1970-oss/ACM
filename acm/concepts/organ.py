@@ -8,11 +8,16 @@ from uuid import uuid4
 
 from acm.concepts.extract import ConceptCue, extract_cues
 from acm.concepts.model import (
+    AbstractionLevel,
+    AbstractionRecord,
+    AbstractionStatus,
     Concept,
     ConceptProposal,
     ConceptStage,
+    GeneralPrinciple,
     HierarchyEdge,
     HierarchyKind,
+    PrincipleModality,
 )
 from acm.types import Attribute, ConceptRole, new_id
 from acm.validation.harness import ConfidenceDelta
@@ -46,6 +51,9 @@ class ConceptOrgan:
         self._abstractions = 0
         self._stage_changes = 0
         self._inheritances = 0
+        self._abstraction_records = 0
+        self._principles = 0
+        self._min_abstraction_evidence = 2
 
     @property
     def hierarchy(self) -> dict[str, HierarchyEdge]:
@@ -686,19 +694,624 @@ class ConceptOrgan:
             if p.status == "pending"
         ]
 
+    def ancestors(self, concept_id: str, *, max_depth: int = 8) -> list[dict[str, Any]]:
+        """Walk parent chain child→root. Cycle-safe; never invents Concepts."""
+        concept = self.store.concepts.get(concept_id)
+        if concept is None:
+            return []
+        out: list[dict[str, Any]] = []
+        seen: set[str] = {concept_id}
+        frontier = list(concept.parent_ids)
+        depth = 0
+        while frontier and depth < max_depth:
+            next_frontier: list[str] = []
+            for pid in frontier:
+                if pid in seen:
+                    continue
+                seen.add(pid)
+                parent = self.store.concepts.get(pid)
+                if parent is None:
+                    continue
+                edge = self._edge_between(concept_id if depth == 0 else "", pid)
+                # Prefer edge from immediate prior hop
+                hop_edge = None
+                for e in self.hierarchy.values():
+                    if e.parent_id == pid and e.child_id in seen:
+                        hop_edge = e
+                        break
+                out.append(
+                    {
+                        "concept_id": parent.id,
+                        "label": parent.labels[0] if parent.labels else parent.id,
+                        "depth": depth + 1,
+                        "edge_id": hop_edge.id if hop_edge else (edge.id if edge else ""),
+                        "evidence_ids": list(hop_edge.evidence_ids) if hop_edge else [],
+                        "weight": hop_edge.weight if hop_edge else 0.0,
+                    }
+                )
+                next_frontier.extend(
+                    p for p in parent.parent_ids if p not in seen
+                )
+            frontier = next_frontier
+            depth += 1
+        return out
+
+    def descendants(self, concept_id: str, *, max_depth: int = 8) -> list[dict[str, Any]]:
+        """Walk children downward. Cycle-safe."""
+        concept = self.store.concepts.get(concept_id)
+        if concept is None:
+            return []
+        out: list[dict[str, Any]] = []
+        seen: set[str] = {concept_id}
+        frontier = list(concept.child_ids)
+        depth = 0
+        while frontier and depth < max_depth:
+            next_frontier: list[str] = []
+            for cid in frontier:
+                if cid in seen:
+                    continue
+                seen.add(cid)
+                child = self.store.concepts.get(cid)
+                if child is None:
+                    continue
+                hop_edge = self._edge_between(cid, concept_id if depth == 0 else "")
+                for e in self.hierarchy.values():
+                    if e.child_id == cid and e.parent_id in seen:
+                        hop_edge = e
+                        break
+                out.append(
+                    {
+                        "concept_id": child.id,
+                        "label": child.labels[0] if child.labels else child.id,
+                        "depth": depth + 1,
+                        "edge_id": hop_edge.id if hop_edge else "",
+                        "evidence_ids": list(hop_edge.evidence_ids) if hop_edge else [],
+                    }
+                )
+                next_frontier.extend(c for c in child.child_ids if c not in seen)
+            frontier = next_frontier
+            depth += 1
+        return out
+
+    def abstraction_levels(self, cue_or_id: str) -> dict[str, Any]:
+        """Ordered multi-level view: observation → concept → generalized → …"""
+        concept = self._resolve_concept(cue_or_id)
+        if concept is None:
+            return {
+                "question": "What levels of abstraction apply?",
+                "known": False,
+                "levels": [],
+                "answer": "No concept found to abstract over.",
+            }
+        chain = [
+            {
+                "level": AbstractionLevel.L2_CONCEPT.value,
+                "concept_id": concept.id,
+                "label": concept.labels[0] if concept.labels else concept.id,
+                "confidence": concept.confidence,
+                "evidence_ids": list(concept.evidence_ids[-8:]),
+            }
+        ]
+        for anc in self.ancestors(concept.id):
+            chain.append(
+                {
+                    "level": AbstractionLevel.L3_GENERALIZED.value,
+                    "concept_id": anc["concept_id"],
+                    "label": anc["label"],
+                    "confidence": min(0.95, 0.4 + anc.get("weight", 0.0) * 0.4),
+                    "evidence_ids": list(anc.get("evidence_ids") or []),
+                    "depth": anc["depth"],
+                }
+            )
+        abs_recs = [
+            a.to_public()
+            for a in self.store.abstractions.values()
+            if concept.id in a.supporting_concept_ids
+            and a.status
+            not in {
+                AbstractionStatus.RETIRED,
+                AbstractionStatus.MERGED,
+                AbstractionStatus.SPLIT,
+            }
+        ]
+        principles = [
+            p.to_public()
+            for p in self.store.general_principles.values()
+            if p.active and concept.id in p.supporting_concept_ids
+        ]
+        return {
+            "question": "What levels of abstraction apply?",
+            "known": True,
+            "concept_id": concept.id,
+            "levels": chain,
+            "abstractions": abs_recs,
+            "principles": principles,
+            "answer": (
+                " → ".join(c["label"] for c in chain)
+                if chain
+                else "Only a concrete concept is known so far."
+            ),
+            "invents_experiences": False,
+        }
+
+    def propose_abstraction(
+        self,
+        concept_ids: list[str] | tuple[str, ...],
+        *,
+        label: str = "",
+        evidence_ids: list[str] | tuple[str, ...] = (),
+        level: AbstractionLevel | str = AbstractionLevel.L3_GENERALIZED,
+    ) -> dict[str, Any]:
+        """Form an abstraction *candidate* only when evidence threshold is met."""
+        ids = [c for c in concept_ids if c in self.store.concepts]
+        if len(ids) < 1:
+            return {"status": "rejected", "reason": "no_concepts"}
+        provided = list(evidence_ids)
+        evidence = list(dict.fromkeys([e for e in provided if e in self.store.experiences]))
+        # Auto-inherit concept evidence only when caller omitted evidence entirely.
+        if not provided and len(evidence) < self._min_abstraction_evidence:
+            for cid in ids:
+                evidence.extend(self.store.concepts[cid].evidence_ids)
+            evidence = list(dict.fromkeys([e for e in evidence if e in self.store.experiences]))
+        if len(evidence) < self._min_abstraction_evidence:
+            return {
+                "status": "rejected",
+                "reason": "insufficient_evidence",
+                "required": self._min_abstraction_evidence,
+                "found": len(evidence),
+            }
+        lvl = (
+            level
+            if isinstance(level, AbstractionLevel)
+            else AbstractionLevel(str(level))
+        )
+        if not label:
+            labels = [
+                self.store.concepts[c].labels[0]
+                for c in ids
+                if self.store.concepts[c].labels
+            ]
+            label = labels[0] if len(labels) == 1 else f"generalization:{'|'.join(labels[:3])}"
+        edge_ids = [
+            e.id
+            for e in self.hierarchy.values()
+            if e.child_id in ids or e.parent_id in ids
+        ]
+        now = time()
+        conf = min(
+            0.85,
+            0.3 + 0.08 * len(evidence) + 0.05 * len(ids) + 0.04 * len(edge_ids),
+        )
+        rec = AbstractionRecord(
+            id=new_id("abs"),
+            label=label[:120],
+            level=lvl,
+            status=AbstractionStatus.CANDIDATE,
+            confidence=conf,
+            supporting_concept_ids=list(ids),
+            supporting_experience_ids=evidence[:24],
+            hierarchy_edge_ids=edge_ids[:12],
+            created=now,
+            last_reinforced=now,
+        )
+        self.store.abstractions[rec.id] = rec
+        self._abstraction_records += 1
+        self.validation.record_concept(
+            action="abstraction_candidate",
+            abstraction_id=rec.id,
+            evidence_count=len(evidence),
+            abstraction=1,
+        )
+        return {"status": "candidate", "abstraction": rec.to_public()}
+
+    def promote_abstraction(self, abstraction_id: str) -> dict[str, Any]:
+        """Candidate → active when evidence still sufficient."""
+        rec = self.store.abstractions.get(abstraction_id)
+        if rec is None:
+            return {"status": "missing"}
+        if len(rec.supporting_experience_ids) < self._min_abstraction_evidence:
+            return {"status": "rejected", "reason": "insufficient_evidence"}
+        if rec.status == AbstractionStatus.RETIRED:
+            return {"status": "retired"}
+        rec.status = AbstractionStatus.ACTIVE
+        rec.last_reinforced = time()
+        return {"status": "active", "abstraction": rec.to_public()}
+
+    def refine_abstraction(
+        self,
+        abstraction_id: str,
+        *,
+        add_concept_ids: list[str] | tuple[str, ...] = (),
+        add_evidence_ids: list[str] | tuple[str, ...] = (),
+        label: str = "",
+    ) -> dict[str, Any]:
+        rec = self.store.abstractions.get(abstraction_id)
+        if rec is None or rec.status in {
+            AbstractionStatus.RETIRED,
+            AbstractionStatus.MERGED,
+            AbstractionStatus.SPLIT,
+        }:
+            return {"status": "unavailable"}
+        for cid in add_concept_ids:
+            if cid in self.store.concepts and cid not in rec.supporting_concept_ids:
+                rec.supporting_concept_ids.append(cid)
+        for eid in add_evidence_ids:
+            if eid in self.store.experiences and eid not in rec.supporting_experience_ids:
+                rec.supporting_experience_ids.append(eid)
+        if label:
+            rec.label = label[:120]
+        rec.status = AbstractionStatus.REFINED
+        rec.confidence = min(0.95, rec.confidence + 0.04)
+        rec.last_reinforced = time()
+        return {"status": "refined", "abstraction": rec.to_public()}
+
+    def split_abstraction(
+        self,
+        abstraction_id: str,
+        *,
+        left_concept_ids: list[str] | tuple[str, ...],
+        right_concept_ids: list[str] | tuple[str, ...],
+    ) -> dict[str, Any]:
+        """Split into two candidates sharing provenance; original marked split."""
+        rec = self.store.abstractions.get(abstraction_id)
+        if rec is None or rec.status in {
+            AbstractionStatus.RETIRED,
+            AbstractionStatus.MERGED,
+            AbstractionStatus.SPLIT,
+        }:
+            return {"status": "unavailable"}
+        left = [c for c in left_concept_ids if c in rec.supporting_concept_ids]
+        right = [c for c in right_concept_ids if c in rec.supporting_concept_ids]
+        if not left or not right:
+            return {"status": "rejected", "reason": "empty_partition"}
+        evid = list(rec.supporting_experience_ids)
+        half = max(1, len(evid) // 2)
+        a = self.propose_abstraction(
+            left, label=f"{rec.label}:a", evidence_ids=evid[: half + 1], level=rec.level
+        )
+        b = self.propose_abstraction(
+            right, label=f"{rec.label}:b", evidence_ids=evid[half:], level=rec.level
+        )
+        if a.get("status") != "candidate" or b.get("status") != "candidate":
+            return {"status": "rejected", "reason": "insufficient_evidence_for_split", "left": a, "right": b}
+        left_id = a["abstraction"]["id"]
+        right_id = b["abstraction"]["id"]
+        self.store.abstractions[left_id].split_from = rec.id
+        self.store.abstractions[right_id].split_from = rec.id
+        rec.status = AbstractionStatus.SPLIT
+        rec.child_abstraction_ids = [left_id, right_id]
+        return {
+            "status": "split",
+            "original": rec.to_public(),
+            "parts": [a["abstraction"], b["abstraction"]],
+        }
+
+    def merge_abstractions(
+        self, left_id: str, right_id: str, *, label: str = ""
+    ) -> dict[str, Any]:
+        left = self.store.abstractions.get(left_id)
+        right = self.store.abstractions.get(right_id)
+        if left is None or right is None:
+            return {"status": "missing"}
+        if left.status in {AbstractionStatus.RETIRED, AbstractionStatus.MERGED, AbstractionStatus.SPLIT}:
+            return {"status": "unavailable", "which": "left"}
+        if right.status in {AbstractionStatus.RETIRED, AbstractionStatus.MERGED, AbstractionStatus.SPLIT}:
+            return {"status": "unavailable", "which": "right"}
+        concepts = list(
+            dict.fromkeys([*left.supporting_concept_ids, *right.supporting_concept_ids])
+        )
+        evidence = list(
+            dict.fromkeys(
+                [*left.supporting_experience_ids, *right.supporting_experience_ids]
+            )
+        )
+        merged_label = label or f"{left.label}+{right.label}"
+        order = list(AbstractionLevel)
+        merge_level = order[
+            max(order.index(left.level), order.index(right.level))
+        ]
+        out = self.propose_abstraction(
+            concepts,
+            label=merged_label[:120],
+            evidence_ids=evidence,
+            level=merge_level,
+        )
+        if out.get("status") != "candidate":
+            return out
+        mid = out["abstraction"]["id"]
+        self.store.abstractions[mid].status = AbstractionStatus.ACTIVE
+        self.store.abstractions[mid].confidence = min(
+            0.95, (left.confidence + right.confidence) / 2 + 0.05
+        )
+        left.status = AbstractionStatus.MERGED
+        right.status = AbstractionStatus.MERGED
+        left.merged_into = mid
+        right.merged_into = mid
+        return {
+            "status": "merged",
+            "abstraction": self.store.abstractions[mid].to_public(),
+            "sources": [left_id, right_id],
+        }
+
+    def retire_abstraction(
+        self, abstraction_id: str, *, reason: str = "retired"
+    ) -> dict[str, Any]:
+        rec = self.store.abstractions.get(abstraction_id)
+        if rec is None:
+            return {"status": "missing"}
+        rec.status = AbstractionStatus.RETIRED
+        rec.retired_at = time()
+        rec.retirement_reason = reason[:160]
+        return {"status": "retired", "abstraction": rec.to_public()}
+
+    def form_general_principle(
+        self,
+        abstraction_id: str = "",
+        *,
+        concept_ids: list[str] | tuple[str, ...] = (),
+        modality: PrincipleModality | str = PrincipleModality.USUALLY,
+        statement: str = "",
+        evidence_ids: list[str] | tuple[str, ...] = (),
+    ) -> dict[str, Any]:
+        """Probabilistic principle grounded in abstraction/concepts + Experiences."""
+        abs_rec = self.store.abstractions.get(abstraction_id) if abstraction_id else None
+        concepts = list(concept_ids)
+        evidence = list(evidence_ids)
+        if abs_rec is not None:
+            if abs_rec.status in {
+                AbstractionStatus.RETIRED,
+                AbstractionStatus.MERGED,
+                AbstractionStatus.SPLIT,
+            }:
+                return {"status": "unavailable"}
+            concepts = list(dict.fromkeys([*concepts, *abs_rec.supporting_concept_ids]))
+            evidence = list(
+                dict.fromkeys([*evidence, *abs_rec.supporting_experience_ids])
+            )
+        evidence = [e for e in evidence if e in self.store.experiences]
+        if len(evidence) < self._min_abstraction_evidence:
+            return {
+                "status": "rejected",
+                "reason": "insufficient_evidence",
+                "required": self._min_abstraction_evidence,
+                "found": len(evidence),
+            }
+        mod = (
+            modality
+            if isinstance(modality, PrincipleModality)
+            else PrincipleModality(str(modality))
+        )
+        labels = [
+            self.store.concepts[c].labels[0]
+            for c in concepts
+            if c in self.store.concepts and self.store.concepts[c].labels
+        ]
+        subject = labels[0] if labels else (abs_rec.label if abs_rec else "this")
+        if not statement:
+            templates = {
+                PrincipleModality.USUALLY: f"This usually happens around {subject}.",
+                PrincipleModality.TENDS: f"This tends to occur with {subject}.",
+                PrincipleModality.COMMONLY: f"This is commonly associated with {subject}.",
+                PrincipleModality.RARELY: f"This rarely occurs with {subject}.",
+            }
+            statement = templates[mod]
+        conf_base = abs_rec.confidence if abs_rec else 0.4
+        if mod == PrincipleModality.RARELY:
+            conf_base = max(0.15, conf_base - 0.1)
+        now = time()
+        principle = GeneralPrinciple(
+            id=new_id("gpr"),
+            statement=statement[:200],
+            modality=mod,
+            confidence=min(0.9, conf_base + 0.05 * min(5, len(evidence))),
+            abstraction_id=abstraction_id or "",
+            supporting_concept_ids=concepts[:12],
+            supporting_experience_ids=evidence[:24],
+            created=now,
+            last_reinforced=now,
+        )
+        self.store.general_principles[principle.id] = principle
+        self._principles += 1
+        if abs_rec is not None and abs_rec.level != AbstractionLevel.L4_PRINCIPLE:
+            # Promote linked abstraction toward principle level without inventing memory.
+            abs_rec.level = AbstractionLevel.L4_PRINCIPLE
+            abs_rec.last_reinforced = now
+        self.validation.record_concept(
+            action="general_principle",
+            principle_id=principle.id,
+            modality=mod.value,
+            evidence_count=len(evidence),
+            abstraction=1,
+        )
+        return {"status": "formed", "principle": principle.to_public(), "absolute": False}
+
+    def reinforce_abstraction(
+        self,
+        abstraction_id: str,
+        *,
+        evidence_ids: list[str] | tuple[str, ...] = (),
+        audit_id: str = "",
+        strengthen: bool = True,
+    ) -> dict[str, Any]:
+        """Cap3/Cap4: prediction outcomes strengthen or weaken abstractions."""
+        rec = self.store.abstractions.get(abstraction_id)
+        if rec is None or rec.status in {
+            AbstractionStatus.RETIRED,
+            AbstractionStatus.MERGED,
+            AbstractionStatus.SPLIT,
+        }:
+            return {"status": "unavailable"}
+        before = rec.confidence
+        for eid in evidence_ids:
+            if eid and eid in self.store.experiences:
+                if strengthen:
+                    if eid not in rec.supporting_experience_ids:
+                        rec.supporting_experience_ids.append(eid)
+                else:
+                    if eid not in rec.conflicting_experience_ids:
+                        rec.conflicting_experience_ids.append(eid)
+        if audit_id and audit_id not in rec.prediction_audit_ids:
+            rec.prediction_audit_ids.append(audit_id)
+        delta = 0.05 if strengthen else -0.07
+        rec.confidence = max(0.05, min(0.95, rec.confidence + delta))
+        rec.last_reinforced = time()
+        # Mirror to linked principle
+        for p in self.store.general_principles.values():
+            if p.abstraction_id == abstraction_id and p.active:
+                p.confidence = max(0.05, min(0.9, p.confidence + delta * 0.8))
+                p.last_reinforced = rec.last_reinforced
+                if not strengthen and evidence_ids:
+                    for eid in evidence_ids:
+                        if eid and eid not in p.conflicting_experience_ids:
+                            p.conflicting_experience_ids.append(eid)
+        return {
+            "status": "updated",
+            "confidence_before": before,
+            "confidence_after": rec.confidence,
+            "abstraction": rec.to_public(),
+        }
+
+    def derive_abstractions_from_hierarchy(
+        self, concept_id: str = ""
+    ) -> list[dict[str, Any]]:
+        """Promote evidenced hierarchy parents into L3 abstraction candidates."""
+        created: list[dict[str, Any]] = []
+        concepts = (
+            [self.store.concepts[concept_id]]
+            if concept_id and concept_id in self.store.concepts
+            else [c for c in self.store.concepts.values() if c.active and c.parent_ids]
+        )
+        for concept in concepts[:40]:
+            for pid in concept.parent_ids:
+                edge = self._edge_between(concept.id, pid)
+                if edge is None or len(edge.evidence_ids) < self._min_abstraction_evidence:
+                    continue
+                parent = self.store.concepts.get(pid)
+                if parent is None or not parent.labels:
+                    continue
+                # Skip duplicate active abstractions for same parent+child pair
+                exists = any(
+                    a.label == parent.labels[0]
+                    and concept.id in a.supporting_concept_ids
+                    and a.status
+                    not in {
+                        AbstractionStatus.RETIRED,
+                        AbstractionStatus.MERGED,
+                        AbstractionStatus.SPLIT,
+                    }
+                    for a in self.store.abstractions.values()
+                )
+                if exists:
+                    continue
+                out = self.propose_abstraction(
+                    [concept.id, pid],
+                    label=parent.labels[0],
+                    evidence_ids=list(edge.evidence_ids),
+                    level=AbstractionLevel.L3_GENERALIZED,
+                )
+                if out.get("status") == "candidate":
+                    self.promote_abstraction(out["abstraction"]["id"])
+                    created.append(self.store.abstractions[out["abstraction"]["id"]].to_public())
+        return created
+
+    def explain_abstraction(self, cue_or_id: str) -> dict[str, Any]:
+        """Why does this abstraction exist? Evidence, confidence, revisability."""
+        # Prefer direct abstraction id
+        rec = self.store.abstractions.get(cue_or_id)
+        if rec is None:
+            levels = self.abstraction_levels(cue_or_id)
+            abs_list = levels.get("abstractions") or []
+            if abs_list:
+                rec = self.store.abstractions.get(abs_list[0]["id"])
+            elif levels.get("known"):
+                # Derive on the fly for explanation without inventing Experiences
+                cid = levels.get("concept_id") or ""
+                derived = self.derive_abstractions_from_hierarchy(cid)
+                if derived:
+                    rec = self.store.abstractions.get(derived[0]["id"])
+        if rec is None:
+            return {
+                "question": "Why does this abstraction exist?",
+                "known": False,
+                "answer": "No evidence-based abstraction is available for that yet.",
+                "invents_experiences": False,
+            }
+        concept_labels = [
+            self.store.concepts[c].labels[0]
+            for c in rec.supporting_concept_ids
+            if c in self.store.concepts and self.store.concepts[c].labels
+        ]
+        principles = [
+            p.to_public()
+            for p in self.store.general_principles.values()
+            if p.abstraction_id == rec.id and p.active
+        ]
+        return {
+            "question": "Why does this abstraction exist?",
+            "known": True,
+            "answer": (
+                f"Abstraction '{rec.label}' ({rec.level.value}) exists because "
+                f"{len(rec.supporting_experience_ids)} Experience(s) and "
+                f"{len(rec.supporting_concept_ids)} concept(s) support it "
+                f"(confidence {rec.confidence:.0%})."
+            ),
+            "why_exists": (
+                f"Grounded in concepts {', '.join(concept_labels[:5]) or rec.label} "
+                f"with stamped Experiences; status={rec.status.value}."
+            ),
+            "supporting_concepts": concept_labels,
+            "supporting_experiences": list(rec.supporting_experience_ids),
+            "conflicting_evidence": list(rec.conflicting_experience_ids),
+            "confidence": rec.confidence,
+            "confidence_changed": bool(rec.prediction_audit_ids)
+            or rec.last_reinforced > rec.created,
+            "when_confidence_changed": rec.last_reinforced,
+            "revisable": rec.status
+            not in {
+                AbstractionStatus.RETIRED,
+                AbstractionStatus.MERGED,
+                AbstractionStatus.SPLIT,
+            },
+            "why_revisable": (
+                "Refine, split, merge, or retire via Concept organ; "
+                "prediction audits strengthen/weaken confidence."
+            ),
+            "principles": principles,
+            "abstraction": rec.to_public(),
+            "invents_experiences": False,
+            "plans": False,
+        }
+
+    def _resolve_concept(self, cue_or_id: str) -> Concept | None:
+        concept = self.store.concepts.get(cue_or_id)
+        if concept is not None:
+            return concept
+        matches = self.recognize(cue_or_id, limit=1)
+        if not matches:
+            return None
+        return self.store.concepts.get(matches[0]["concept_id"])
+
     def observables(self) -> dict[str, Any]:
         by_stage: dict[str, int] = {}
         for c in self.store.concepts.values():
             by_stage[c.stage.value] = by_stage.get(c.stage.value, 0) + 1
+        by_abs_status: dict[str, int] = {}
+        for a in self.store.abstractions.values():
+            by_abs_status[a.status.value] = by_abs_status.get(a.status.value, 0) + 1
         return {
             "concept_count": len(self.store.concepts),
             "hierarchy_edges": len(self.hierarchy),
+            "abstraction_records": len(self.store.abstractions),
+            "general_principles": len(self.store.general_principles),
+            "abstractions_by_status": by_abs_status,
             "nuclei": by_stage.get(ConceptStage.NUCLEUS.value, 0),
             "mature": by_stage.get(ConceptStage.MATURE.value, 0),
             "births": self._births,
             "strengthenings": self._strengthenings,
             "weakenings": self._weakenings,
             "abstractions": self._abstractions,
+            "abstraction_record_ops": self._abstraction_records,
+            "principles_formed": self._principles,
             "stage_changes": self._stage_changes,
             "inheritances": self._inheritances,
             "by_stage": by_stage,

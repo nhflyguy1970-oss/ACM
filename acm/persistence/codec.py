@@ -11,7 +11,18 @@ from typing import Any
 from acm.analogy.model import AnalogyAlignment, AnalogyMapping
 from acm.associations.model import Association, AssociationStage, RelationKind
 from acm.attention.model import PriorityEvent
-from acm.concepts.model import Concept, ConceptStage, HierarchyEdge, HierarchyKind, Prototype
+from acm.concepts.model import (
+    AbstractionLevel,
+    AbstractionRecord,
+    AbstractionStatus,
+    Concept,
+    ConceptStage,
+    GeneralPrinciple,
+    HierarchyEdge,
+    HierarchyKind,
+    PrincipleModality,
+    Prototype,
+)
 from acm.confidence.model import ConfidenceEvent, EvidenceInfluence, EvidenceStatus
 from acm.core.store import CognitiveStore, Goal
 from acm.experiences.kinds import CognitiveKind, ExternalKind
@@ -60,6 +71,8 @@ def export_store(store: CognitiveStore) -> dict[str, Any]:
         "experiences": {k: _jsonable(v) for k, v in store.experiences.items()},
         "concepts": {k: _jsonable(v) for k, v in store.concepts.items()},
         "hierarchy_edges": {k: _jsonable(v) for k, v in store.hierarchy_edges.items()},
+        "abstractions": {k: _jsonable(v) for k, v in store.abstractions.items()},
+        "general_principles": {k: _jsonable(v) for k, v in store.general_principles.items()},
         "evidence_influences": {k: _jsonable(v) for k, v in store.evidence_influences.items()},
         "associations": {k: _jsonable(v) for k, v in store.associations.items()},
         "goals": {k: _jsonable(v) for k, v in store.goals.items()},
@@ -193,6 +206,8 @@ def import_store(payload: dict[str, Any], *, store: CognitiveStore | None = None
     target.experiences.clear()
     target.concepts.clear()
     target.hierarchy_edges.clear()
+    target.abstractions.clear()
+    target.general_principles.clear()
     target.evidence_influences.clear()
     target.associations.clear()
     target.goals.clear()
@@ -225,6 +240,55 @@ def import_store(payload: dict[str, Any], *, store: CognitiveStore | None = None
             evidence_ids=tuple(d.get("evidence_ids") or ()),
             created=float(d.get("created", 0.0)),
             last_reinforced=float(d.get("last_reinforced", 0.0)),
+        )
+    for aid, d in (body.get("abstractions") or {}).items():
+        try:
+            level = AbstractionLevel(d.get("level", "l3_generalized"))
+        except ValueError:
+            level = AbstractionLevel.L3_GENERALIZED
+        try:
+            status = AbstractionStatus(d.get("status", "candidate"))
+        except ValueError:
+            status = AbstractionStatus.CANDIDATE
+        target.abstractions[str(aid)] = AbstractionRecord(
+            id=str(d.get("id") or aid),
+            label=str(d.get("label", "")),
+            level=level,
+            status=status,
+            confidence=float(d.get("confidence", 0.0)),
+            supporting_concept_ids=list(d.get("supporting_concept_ids") or []),
+            supporting_experience_ids=list(d.get("supporting_experience_ids") or []),
+            conflicting_experience_ids=list(d.get("conflicting_experience_ids") or []),
+            hierarchy_edge_ids=list(d.get("hierarchy_edge_ids") or []),
+            parent_abstraction_id=str(d.get("parent_abstraction_id", "")),
+            child_abstraction_ids=list(d.get("child_abstraction_ids") or []),
+            merged_into=str(d.get("merged_into", "")),
+            split_from=str(d.get("split_from", "")),
+            prediction_audit_ids=list(d.get("prediction_audit_ids") or []),
+            created=float(d.get("created", 0.0)),
+            last_reinforced=float(d.get("last_reinforced", 0.0)),
+            retired_at=float(d.get("retired_at", 0.0)),
+            retirement_reason=str(d.get("retirement_reason", "")),
+            metadata=dict(d.get("metadata") or {}),
+        )
+    for gid, d in (body.get("general_principles") or {}).items():
+        try:
+            modality = PrincipleModality(d.get("modality", "usually"))
+        except ValueError:
+            modality = PrincipleModality.USUALLY
+        target.general_principles[str(gid)] = GeneralPrinciple(
+            id=str(d.get("id") or gid),
+            statement=str(d.get("statement", "")),
+            modality=modality,
+            confidence=float(d.get("confidence", 0.0)),
+            abstraction_id=str(d.get("abstraction_id", "")),
+            supporting_concept_ids=list(d.get("supporting_concept_ids") or []),
+            supporting_experience_ids=list(d.get("supporting_experience_ids") or []),
+            conflicting_experience_ids=list(d.get("conflicting_experience_ids") or []),
+            active=bool(d.get("active", True)),
+            created=float(d.get("created", 0.0)),
+            last_reinforced=float(d.get("last_reinforced", 0.0)),
+            metadata=dict(d.get("metadata") or {}),
         )
     for iid, d in (body.get("evidence_influences") or {}).items():
         status_raw = d.get("status", "active")
@@ -522,10 +586,14 @@ def migrate_body(body: dict[str, Any], *, from_version: int, to_version: int) ->
         out.setdefault("evidence_influences", {})
         out.setdefault("hypotheses", {})
         out.setdefault("prediction_audits", {})
+        out.setdefault("abstractions", {})
+        out.setdefault("general_principles", {})
         version += 1
     out.setdefault("provenance", {})
     out.setdefault("hierarchy_edges", {})
     out.setdefault("evidence_influences", {})
     out.setdefault("hypotheses", {})
     out.setdefault("prediction_audits", {})
+    out.setdefault("abstractions", {})
+    out.setdefault("general_principles", {})
     return out

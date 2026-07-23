@@ -407,6 +407,39 @@ class LearningOrgan:
                     if a2:
                         a2.metadata["prediction_audit_id"] = audit_id
                         created.append(a2)
+            # Cap4: prediction outcomes strengthen/weaken supporting abstractions
+            if self.concepts is not None:
+                for abs_rec in list(self.store.abstractions.values()):
+                    if cid not in abs_rec.supporting_concept_ids:
+                        continue
+                    if abs_rec.status.value in {"retired", "merged", "split"}:
+                        continue
+                    before_conf = abs_rec.confidence
+                    self.concepts.reinforce_abstraction(
+                        abs_rec.id,
+                        evidence_ids=evidence,
+                        audit_id=audit_id,
+                        strengthen=reinforce,
+                    )
+                    ad_abs = self._adapt_concept(
+                        cid,
+                        strength_delta=CAP_CONCEPT_STRENGTH * (0.3 if reinforce else -0.25),
+                        confidence_delta=0.0,
+                        kind=AdaptationKind.GENERALIZE if reinforce else AdaptationKind.WEAKEN,
+                        reflective_ids=[],
+                        evidence_ids=evidence,
+                        sleep_batch_id="",
+                        summary=(
+                            f"Abstraction '{abs_rec.label}' "
+                            f"{'reinforced' if reinforce else 'weakened'} "
+                            f"by prediction audit ({before_conf:.2f}→"
+                            f"{self.store.abstractions[abs_rec.id].confidence:.2f})."
+                        ),
+                    )
+                    if ad_abs:
+                        ad_abs.metadata["prediction_audit_id"] = audit_id
+                        ad_abs.metadata["abstraction_id"] = abs_rec.id
+                        created.append(ad_abs)
         self.validation.record_learning(
             action="prediction_audit_learn",
             audit_id=audit_id,

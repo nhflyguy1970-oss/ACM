@@ -37,7 +37,9 @@ Prediction
 - No Experience invention or rewrite
 - No provenance mutation
 - No planning / decision making
-- Cap4+ not started
+
+Cap4 multi-level abstractions consume audit outcomes:
+[`MULTI_LEVEL_ABSTRACTION.md`](MULTI_LEVEL_ABSTRACTION.md).
 
 ## Certification
 

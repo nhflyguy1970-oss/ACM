@@ -2,6 +2,19 @@
 
 All notable changes to ACM are documented here.
 
+## [0.31.0] — 2026-07-23
+
+### Added — Multi-level abstraction & general principles (M5 Cap4)
+
+- ``AbstractionRecord`` lifecycle: candidate → active → refined / split /
+  merged / retired; evidence threshold enforced.
+- ``GeneralPrinciple`` modalities (usually / tends / commonly / rarely) —
+  probabilistic, never absolute.
+- Cap3 prediction audits strengthen/weaken supporting abstractions.
+- Sleep may derive evidenced hierarchy abstractions; explainability APIs;
+  persistence; docs ``MULTI_LEVEL_ABSTRACTION.md``; backlog B56; L17–L18.
+- Invariant preserved: no Experience invention/rewrite; hierarchy integrity.
+
 ## [0.30.0] — 2026-07-23
 
 ### Added — Counterfactual reasoning & prediction audit (M5 Cap3)

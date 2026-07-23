@@ -35,7 +35,8 @@ Zeus (instance)  ──is_a──▶ Golden Retriever
 | Difference | Distinct attributes / conflicting values remain on children |
 | Persistence | `hierarchy_edges` on CognitiveStore snapshots |
 
-See [`CONCEPT_HIERARCHIES.md`](CONCEPT_HIERARCHIES.md) (M5 Cap1).
+See [`CONCEPT_HIERARCHIES.md`](CONCEPT_HIERARCHIES.md) (M5 Cap1).  
+See [`MULTI_LEVEL_ABSTRACTION.md`](MULTI_LEVEL_ABSTRACTION.md) (M5 Cap4).
 
 ## Prototype formation
 

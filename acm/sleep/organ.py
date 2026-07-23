@@ -196,6 +196,16 @@ class OfflineCognitionOrgan:
                     sleep_batch_id=batch_id,
                     proposal_id=prop.id,
                 )
+            # Cap4: derive evidenced multi-level abstractions (no invented Experiences).
+            derived = concepts.derive_abstractions_from_hierarchy()
+            if derived:
+                proposals.append(f"abstraction_derived:{len(derived)}")
+                self.validation.record_offline(
+                    action="abstraction_derive",
+                    proposal=1,
+                    sleep_batch_id=batch_id,
+                    derived_count=len(derived),
+                )
 
         # Identity stabilization: slight confidence toward mean of evidence mass
         for c in self.store.concepts.values():
