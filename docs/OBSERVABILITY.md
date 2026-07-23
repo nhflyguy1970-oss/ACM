@@ -39,8 +39,17 @@ Recorded streams (trimmed FIFO):
 | `reflection_events` | Evaluation outcomes + Reflective Experience ids |
 | `reflection` (aggregate) | reflections · contradictions · patterns · questions · hypotheses · insufficient_evidence · activation_reused · reflective_experiences · evolution |
 
-## Trace log
+## Organ-scoped views (B27)
 
-`CognitiveEngine.trace` holds `CognitiveTraceEvent` records suitable for export/dashboard adapters **outside** ACM.
+```python
+view = engine.organ_view("remembering")
+assert view["schema"] == "acm.organ_view.v1"
+
+report = engine.organ_views(["identity", "preference"])  # preference → empty ok
+```
+
+Views project harness aggregates + organ `observables()` without splitting the
+singular ValidationHarness. Privacy redaction is deferred to **B29**.
+
 
 Public fields include: verb, attention_class, context_tags, goal_ids, activated_concept_ids, association_edge_types, explanation_class, reconsolidation, latency_ms, metadata.

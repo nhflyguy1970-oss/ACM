@@ -15,8 +15,11 @@ project schemas — never as raw utterances.
 | `I'm Jeff.` | User (conversational) | name | Jeff |
 | `Call me Jeff.` | User | preferred_name | Jeff |
 | `You are ARIA.` | Assistant | name | ARIA |
-| `I am a research assistant.` + `kind=identity` | Assistant | role | research assistant |
-| `User's name is Jeff` + `kind=identity` | User | name | Jeff |
+| `I am a research assistant.` + `speaker="assistant"` | Assistant | role | research assistant |
+| `User's name is Jeff` | User | name | Jeff |
+
+`kind=identity` alone does **not** select the assistant subject (D043).
+Assistant self-encode requires `speaker="assistant"`.
 
 ## Instructional language
 

@@ -27,7 +27,7 @@ CognitiveMemoryResult
 | Request | Intent | Primary | Supports |
 |---------|--------|---------|----------|
 | Who are you? | `assistant_identity` | Identity | — |
-| Who am I? | `user_identity` | Identity | Remembering, Experiences |
+| Who am I? | `user_identity` | Identity | — |
 | What projects are we working on? | `project` | Remembering | Experiences, Concepts, Identity, Goals |
 | What is our long-term goal? | `goal` | Goals | Remembering, Identity, Experiences |
 | How has your understanding changed? | `learning` | Learning | Remembering |
@@ -50,3 +50,7 @@ engine.cognitive_respond("Who am I?")
 Primary organ produces the candidate reconstruction. Supporting organs may
 contribute evidence (project schema, active goals, relational edges). Final
 authority remains `CognitiveMemoryResult` under Memory Authority gates.
+
+**Identity exception (D043):** `user_identity` and `assistant_identity` have
+**no** supporting organs. Identity is the sole speech authority for
+`Who am I?` / `Who are you?`. Remembering must never gap-fill those answers.

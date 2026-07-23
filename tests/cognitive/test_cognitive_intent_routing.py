@@ -118,10 +118,26 @@ def test_routing_identity_organs(eng):
     a = router.decide("Who are you?")
     assert a.ownership.primary_organ == "identity"
     assert a.classification.intent == CognitiveIntent.ASSISTANT_IDENTITY
+    assert a.ownership.supporting_organs == ()
 
     u = router.decide("Who am I?")
     assert u.ownership.primary_organ == "identity"
     assert u.classification.intent == CognitiveIntent.USER_IDENTITY
+    assert u.ownership.supporting_organs == ()
+    assert "remembering" not in u.ownership.supporting_organs
+    assert "supplements biography" not in (u.ownership.rationale or "").lower()
+    assert "sole speech" in (u.ownership.rationale or "").lower()
+
+
+def test_ownership_identity_intents_have_no_supports():
+    for intent in (
+        CognitiveIntent.USER_IDENTITY,
+        CognitiveIntent.ASSISTANT_IDENTITY,
+        CognitiveIntent.IDENTITY,
+    ):
+        own = ownership_for_intent(intent)
+        assert own.primary_organ == "identity"
+        assert own.supporting_organs == ()
 
 
 def test_routing_project_and_goal(eng):

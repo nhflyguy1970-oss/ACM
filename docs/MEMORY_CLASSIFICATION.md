@@ -26,8 +26,8 @@ plus classified non-cognitive surfaces.
 
 ## Critical examples
 
-- “Who are you?” → `assistant_identity` → Identity Organ  
-- “Who am I?” → `user_identity` → Identity Organ (user path)  
+- “Who are you?” → `assistant_identity` → Identity Organ (sole speech authority)
+- “Who am I?” → `user_identity` → Identity Organ (sole speech authority; no remembering fill) 
 - “What projects are we working on?” → `project` → Remembering (+ supports)  
 - “What is our long-term goal?” → `goal` → Goals  
 - “How has your understanding changed?” → `learning` → Learning  

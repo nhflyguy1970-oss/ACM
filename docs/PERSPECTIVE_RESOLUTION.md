@@ -1,6 +1,6 @@
 # Perspective Resolution
 
-**Status:** Accepted (D041)
+**Status:** Accepted (D041) · Aligned with D043
 
 ## Problem
 
@@ -19,14 +19,17 @@ Confusing user identity with assistant identity is a cognitive defect.
 | `speaker="assistant"` | Assistant | User |
 | Explicit user referent (`user's name`, `the user is`) | User | Assistant |
 | Remember / teaching instruction (`please remember`) | User | Assistant |
-| `kind="identity"` without teaching cues | Assistant | User |
 | Conversational default | User | Assistant |
+
+**`kind="identity"` does not flip first person to assistant.** Assistant
+self-encode requires an explicit `speaker="assistant"` (D043). Bare
+`kind=identity` is treated as conversational user autobiography.
 
 ## Never confuse
 
-- User teaching “My name is Jeff” → **user** schema  
-- Assistant self-encode “I am a research assistant” (`kind=identity`) → **agent** schema  
-- “You are ARIA” → **assistant** schema  
+- User teaching “My name is Jeff” → **user** schema
+- Assistant self-encode “I am a research assistant” (`speaker="assistant"`) → **agent** schema
+- “You are ARIA” → **assistant** schema
 
 ## API
 

@@ -23,7 +23,8 @@ documents remain evidence, but new backlog decisions must update this file.
 
 ### B01 — Declarative teach vs query recognition
 
-- **Status / order / complexity:** READY · 1 · M
+- **Status / order / complexity:** COMPLETE · 1 · M
+- **Completed:** 2026-07-22 (Teaching Recognition already landed; contract + matrix certified)
 - **Purpose:** Distinguish statements that teach memory from questions that
   request reconstruction.
 - **Problem:** `My favorite color is blue.` currently classifies as preference
@@ -39,12 +40,19 @@ documents remain evidence, but new backlog decisions must update this file.
   Preference, Goals, Projects, and non-cognitive text; no silent host bypass.
 - **Promotion:** Standalone release, certify behavioral corpus, then explicit
   vendored promotion.
+- **Implementation references:**
+  - `acm/authority/teaching.py` — `detect_teaching`
+  - `acm/authority/pipeline.py` — `_teach_if_declarative`
+  - `docs/TEACH_QUERY_CONTRACT.md`
+  - `tests/cognitive/test_teach_query_matrix.py`
+  - `tests/cognitive/test_preference_certification.py`
 - **Sources:** `PREFERENCE_INTROSPECTION.md`,
   `PREFERENCE_RECONSTRUCTION_FIX.md`, D045 diagnostic tests.
 
 ### B02 — Evidence introspection intent
 
-- **Status / order / complexity:** READY · 2 · M
+- **Status / order / complexity:** COMPLETE · 2 · M
+- **Completed:** 2026-07-22 (evidence_cue precedes preference_cue; certified)
 - **Purpose:** Recognize requests to inspect evidence without confusing them
   with the remembered subject.
 - **Problem:** `Show the evidence for my favorite color` is classified as a
@@ -60,6 +68,11 @@ documents remain evidence, but new backlog decisions must update this file.
   conflicting evidence, and no raw-storage dumps.
 - **Promotion:** Standalone classification/dispatch certification, then host
   integration tests before promotion.
+- **Implementation references:**
+  - `acm/authority/classification.py` — `evidence_cue` (confidence 0.95) before
+    `preference_cue`
+  - Remembering evidence / lineage reconstruction paths
+  - Preference certification + pipeline debug suites
 - **Sources:** `PREFERENCE_INTROSPECTION.md`,
   `COGNITIVE_INTENT_CLASSIFICATION.md`, `COGNITIVE_HANDLER_MODEL.md`.
 
@@ -85,7 +98,9 @@ documents remain evidence, but new backlog decisions must update this file.
 
 ### B04 — Conflict explanation
 
-- **Status / order / complexity:** READY · 4 · M
+- **Status / order / complexity:** COMPLETE · 4 · M
+- **Completed:** 2026-07-22
+- **Implementation references:** `acm/authority/handlers.py` competing speech; `tests/cognitive/test_conflict_explanation.py`
 - **Purpose:** Name the actual semantic recollections that conflict and why they
   were admitted.
 - **Problem:** Reflection records `contradictions[]`, but terminal speech says
@@ -106,7 +121,9 @@ documents remain evidence, but new backlog decisions must update this file.
 
 ### B05 — Explainable confidence
 
-- **Status / order / complexity:** READY · 5 · M
+- **Status / order / complexity:** COMPLETE · 5 · M
+- **Completed:** 2026-07-22
+- **Implementation references:** `acm/confidence/organ.py` factor narrative; `tests/cognitive/test_explainability_ready_items.py`
 - **Purpose:** Explain which evidence and events raised or lowered confidence.
 - **Problem:** Confidence is dynamic and auditable internally, but users see a
   scalar or generic low-confidence refusal.
@@ -124,7 +141,9 @@ documents remain evidence, but new backlog decisions must update this file.
 
 ### B06 — Explainable uncertainty
 
-- **Status / order / complexity:** READY · 6 · M
+- **Status / order / complexity:** COMPLETE · 6 · M
+- **Completed:** 2026-07-22
+- **Implementation references:** `acm/authority/speak.py` `_UNCERTAINTY_SPEECH`; explainability tests
 - **Purpose:** Distinguish no evidence, low accessibility, conflict, stale
   evidence, prediction uncertainty, and learning uncertainty.
 - **Problem:** Status labels exist, but user-facing explanations often collapse
@@ -143,7 +162,8 @@ documents remain evidence, but new backlog decisions must update this file.
 
 ### B07 — Read-only diagnostic mode
 
-- **Status / order / complexity:** READY · 1 · L
+- **Status / order / complexity:** COMPLETE · 1 · L
+- **Completed:** 2026-07-22
 - **Purpose:** Inspect cognition without reconsolidation, reflection birth,
   confidence deltas, working-buffer writes, or learning adaptations.
 - **Problem:** Diagnostic questions can alter the memory being inspected.
@@ -157,12 +177,20 @@ documents remain evidence, but new backlog decisions must update this file.
   restart checks; normal mode still mutates as designed.
 - **Promotion:** Standalone-only certification first; hosts consume only after
   safe API contract is frozen.
+- **Implementation references:**
+  - `acm/authority/mode.py` — `ExecutionMode`, `read_only()`, `is_read_only()`
+  - `CognitiveEngine.inspect` / `store_fingerprint` / diagnostics.execution_mode
+  - Mutation gates in remembering, reflection, learning, prediction,
+    reconciliation, simulation, attention, forgetting, associations, pipeline
+  - `docs/READ_ONLY_DIAGNOSTIC_MODE.md`
+  - `tests/cognitive/test_read_only_diagnostic_mode.py`
 - **Sources:** `PREFERENCE_INTROSPECTION.md`,
   `MEMORY_DESIGN_PRINCIPLES.md`, D045 diagnostic evidence.
 
 ### B08 — Non-mutating inspection APIs
 
-- **Status / order / complexity:** DEPENDENT · 2 · M
+- **Status / order / complexity:** COMPLETE · 2 · M
+- **Completed:** 2026-07-22
 - **Purpose:** Provide stable APIs for reconstruction, evidence, confidence,
   identity, and conflict inspection.
 - **Problem:** Today callers must use cognitive APIs whose side effects are
@@ -170,13 +198,18 @@ documents remain evidence, but new backlog decisions must update this file.
 - **Why deferred:** Requires B07’s execution semantics.
 - **Architectural impact:** Read-model façades over organs; no duplicate
   cognition and no direct store authority.
-- **Dependencies:** B07.
+- **Dependencies:** B07 (COMPLETE).
 - **Behavioral example:** `inspect_reconstruction(cue)` returns the same ranked
   semantic candidates without reconsolidating.
 - **Validation:** Equality with normal pre-mutation reconstruction, zero-write
   assertions, concurrency and persistence checks.
 - **Promotion:** Standalone API stabilization; adapter/host contract tests before
   promotion.
+- **Implementation references:**
+  - `acm/authority/inspect_api.py`
+  - `CognitiveEngine.inspect_reconstruction|evidence|confidence|identity|conflict`
+  - `docs/INSPECT_APIS.md`
+  - `tests/cognitive/test_inspect_apis.py`
 - **Sources:** `PREFERENCE_INTROSPECTION.md`, `PLUGIN_ARCHITECTURE.md`.
 
 ### B09 — Diagnostic safety policy
@@ -189,7 +222,8 @@ documents remain evidence, but new backlog decisions must update this file.
 - **Why deferred:** Needs read-only APIs and privacy decisions first.
 - **Architectural impact:** Policy/sanitization layer over diagnostics; preserve
   host independence and Memory Authority.
-- **Dependencies:** B07, B08, B29.
+- **Dependencies:** B07 (COMPLETE), B08 (COMPLETE), B29.
+
 - **Behavioral example:** Diagnostics show evidence classes and redacted values,
   never unrelated user/assistant identity or raw DB rows.
 - **Validation:** Adversarial leakage corpus, foreign-identity filtering,
@@ -276,7 +310,9 @@ documents remain evidence, but new backlog decisions must update this file.
 
 ### B14 — Memory provenance presentation
 
-- **Status / order / complexity:** READY · 2 · M
+- **Status / order / complexity:** COMPLETE · 2 · M
+- **Completed:** 2026-07-22
+- **Implementation references:** `acm/remembering/relations.py` answer provenance; explainability tests
 - **Purpose:** Convert provenance graphs into bounded, comprehensible source
   explanations.
 - **Problem:** Provenance is present and certified but mostly machine-oriented.
@@ -315,7 +351,9 @@ documents remain evidence, but new backlog decisions must update this file.
 
 ### B16 — Memory age explanation
 
-- **Status / order / complexity:** READY · 6 · S
+- **Status / order / complexity:** COMPLETE · 6 · S
+- **Completed:** 2026-07-22
+- **Implementation references:** `RememberingOrgan._reconstruct_age`; `memory_age_cue`
 - **Purpose:** Explain when supporting evidence was formed and how recency affects
   the answer.
 - **Problem:** Timestamps exist, but users cannot ask how old a memory is.
@@ -332,7 +370,9 @@ documents remain evidence, but new backlog decisions must update this file.
 
 ### B17 — Memory strength and accessibility explanation
 
-- **Status / order / complexity:** READY · 7 · M
+- **Status / order / complexity:** COMPLETE · 7 · M
+- **Completed:** 2026-07-22
+- **Implementation references:** `RememberingOrgan._reconstruct_accessibility`; `accessibility_cue`
 - **Purpose:** Explain strength, accessibility, attention, and forgetting without
   conflating them with truth/confidence.
 - **Problem:** Users cannot tell whether recall is weak because evidence is
@@ -370,7 +410,9 @@ documents remain evidence, but new backlog decisions must update this file.
 
 ### B19 — Identity evidence and provenance presentation
 
-- **Status / order / complexity:** READY · 8 · M
+- **Status / order / complexity:** COMPLETE · 8 · M
+- **Completed:** 2026-07-22
+- **Implementation references:** provenance speech for identity facts; D043/D044 isolation preserved
 - **Purpose:** Explain which user or assistant schema attribute supports an
   identity answer while preserving D043/D044 isolation.
 - **Problem:** Identity answers are correctly isolated but offer no safe evidence
@@ -528,7 +570,8 @@ documents remain evidence, but new backlog decisions must update this file.
 
 ### B27 — Organ-scoped observability views
 
-- **Status / order / complexity:** READY · 3 · M
+- **Status / order / complexity:** COMPLETE · 3 · M
+- **Completed:** 2026-07-22
 - **Purpose:** Provide stable per-organ report views without splitting the
   ValidationHarness.
 - **Problem:** Rich observability exists, but consumers must interpret a broad
@@ -536,19 +579,26 @@ documents remain evidence, but new backlog decisions must update this file.
 - **Why deferred:** Readiness review classified this as maintainability polish.
 - **Architectural impact:** Views only; singular harness and organ ownership stay
   intact.
-- **Dependencies:** Schema versioning and B29.
+- **Dependencies:** Schema versioning; privacy redaction remains B29.
 - **Behavioral example:** Preference trace shows classify, owner, semantic
   candidates, admissibility, gate, and provenance without unrelated organ data.
 - **Validation:** schema contracts, backward compatibility, redaction, empty
   organs.
 - **Promotion:** Standalone observability release; host consumers migrate behind
   versioned contracts.
+- **Implementation references:**
+  - `acm/validation/organ_views.py` — `organ_view` / `organ_views`
+  - `CognitiveEngine.organ_view` / `organ_views`
+  - `tests/cognitive/test_organ_views.py`
+  - Redaction deferred to B29 (`redaction: "none"` placeholder)
 - **Sources:** `ACM_V1_READINESS_REVIEW.md`,
   `OBSERVABILITY.md`.
 
 ### B28 — Long-duration, scaling, and memory profiling
 
-- **Status / order / complexity:** READY · 16 · L
+- **Status / order / complexity:** COMPLETE · 16 · L
+- **Completed:** 2026-07-22
+- **Implementation references:** `tests/cognitive/test_memory_profiling.py` soak harness (`acm.memory_profile.v1`)
 - **Purpose:** Establish performance and resource behavior beyond toy concept
   counts.
 - **Problem:** Long-run smoke passes, but memory leaks and large-scale retrieval
@@ -808,7 +858,8 @@ documents remain evidence, but new backlog decisions must update this file.
 
 ### B41 — Interrogative preference storage cleanup
 
-- **Status / order / complexity:** READY · 5 · M
+- **Status / order / complexity:** COMPLETE · 5 · M
+- **Completed:** 2026-07-22 (closed in D045 follow-on; certified)
 - **Purpose:** Stop storing question text as preference attributes during cue
   extraction.
 - **Problem:** `extract_cues` stores unmatched favorite-containing questions as
@@ -816,6 +867,11 @@ documents remain evidence, but new backlog decisions must update this file.
   pollution remains.
 - **Why deferred:** Explicit D045 non-goal; reconstruction admissibility was
   corrected without changing extraction.
+- **Implementation references:**
+  - `acm/concepts/extract.py` — interrogatives skipped for preference minting
+  - `tests/cognitive/test_preference_pipeline_debug.py` —
+    `test_interrogative_no_longer_stored_as_preference_fact`
+- **Sources:** `PREFERENCE_PIPELINE_TRACE.md`, `acm/concepts/extract.py`.
 - **Architectural impact:** Cue/extraction only; preserve genuine
   `I prefer …` fallback semantics.
 - **Dependencies:** B01 helpful; cleanup/migration policy for existing stores.
@@ -827,7 +883,8 @@ documents remain evidence, but new backlog decisions must update this file.
 - **Promotion:** Standalone cleanup release before Aria promotion of extraction
   changes.
 - **Sources:** `PREFERENCE_RECONSTRUCTION_FIX.md`,
-  `PREFERENCE_CONFLICT_ANALYSIS.md`, `acm/concepts/extract.py`.
+  `PREFERENCE_CONFLICT_ANALYSIS.md`, `acm/concepts/extract.py`,
+  `PREFERENCE_PIPELINE_TRACE.md`.
 
 ### B42 — Preference contradiction versus correction semantics
 
@@ -851,7 +908,8 @@ documents remain evidence, but new backlog decisions must update this file.
 
 ### B43 — Identity ownership and documentation alignment
 
-- **Status / order / complexity:** READY · 1 · S
+- **Status / order / complexity:** COMPLETE · 1 · S
+- **Completed:** 2026-07-22
 - **Purpose:** Align routing ownership metadata, perspective docs, and the
   capability map with D043/D044 reality.
 - **Problem:** Some docs still imply `kind=identity` flips first-person to
@@ -866,13 +924,23 @@ documents remain evidence, but new backlog decisions must update this file.
   `speaker="assistant"`.
 - **Validation:** Doc review, routing unit asserts, capability-map consistency.
 - **Promotion:** Docs-only; no runtime promotion required.
+- **Implementation references:**
+  - `acm/authority/routing.py` — `USER_IDENTITY` / `IDENTITY` / `ASSISTANT_IDENTITY`
+    supporting organs empty; sole-speech rationales
+  - `docs/PERSPECTIVE_RESOLUTION.md`, `docs/IDENTITY_EXTRACTION.md`,
+    `docs/COGNITIVE_ROUTING.md`, `docs/COGNITIVE_CAPABILITY_MAP.md`,
+    `docs/ARCHITECTURE.md`, `docs/REMEMBERING_MODEL.md`,
+    `docs/ORGAN_OWNERSHIP_VALIDATION.md`, `docs/MEMORY_CLASSIFICATION.md`
+  - `tests/cognitive/test_cognitive_intent_routing.py` —
+    `test_ownership_identity_intents_have_no_supports`
 - **Sources:** `PERSPECTIVE_RESOLUTION.md`, `IDENTITY_EXTRACTION.md`,
   `IDENTITY_SEPARATION.md`, `COGNITIVE_CAPABILITY_MAP.md`,
   `acm/authority/routing.py`.
 
 ### B44 — Assistant Identity pipeline diagnostics
 
-- **Status / order / complexity:** READY · 2 · M
+- **Status / order / complexity:** COMPLETE · 2 · M
+- **Completed:** 2026-07-22
 - **Purpose:** Provide a mirrored diagnostic trace for Who are you? paths.
 - **Problem:** `trace_identity_pipeline` is user-teach oriented; assistant
   diagnostics are checklist-only.
@@ -884,12 +952,16 @@ documents remain evidence, but new backlog decisions must update this file.
   operational name and no user bleed.
 - **Validation:** Extend identity pipeline tests; isolation regression green.
 - **Promotion:** Standalone tooling release; optional with Identity promotion.
+- **Implementation references:**
+  - `acm/identity/pipeline_trace.py` — `trace_assistant_identity_pipeline`
+  - `tests/cognitive/test_assistant_identity_diagnostics.py`
 - **Sources:** `IDENTITY_PIPELINE_TRACE.md`,
   `ASSISTANT_IDENTITY_PIPELINE.md`, `acm/identity/pipeline_trace.py`.
 
 ### B45 — Isolation over-filter hardening
 
-- **Status / order / complexity:** READY · 3 · M
+- **Status / order / complexity:** COMPLETE · 3 · M
+- **Completed:** 2026-07-22
 - **Purpose:** Prevent isolation filters from wiping operational assistant
   attributes and requiring silent re-seed.
 - **Problem:** Current code acknowledges over-filtering of operational speech and
@@ -902,6 +974,10 @@ documents remain evidence, but new backlog decisions must update this file.
   name/role without silent drop.
 - **Validation:** Adversarial isolation corpus; no blend regressions.
 - **Promotion:** Standalone Identity polish release and recertification.
+- **Implementation references:**
+  - `acm/identity/rendering.py` — protected operational name/role claims
+  - `acm/identity/organ.py` — `reseeded_operational_name`
+  - `tests/cognitive/test_assistant_identity_diagnostics.py`
 - **Sources:** `acm/identity/organ.py`, `acm/authority/pipeline.py`,
   D044 isolation tests.
 

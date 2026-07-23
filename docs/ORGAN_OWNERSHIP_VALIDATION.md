@@ -7,8 +7,8 @@
 
 | Request | Intent | Terminates at |
 |---------|--------|---------------|
-| Who are you? | `assistant_identity` | Identity |
-| Who am I? | `user_identity` | Identity (user path) |
+| Who are you? | `assistant_identity` | Identity (sole; no supports) |
+| Who am I? | `user_identity` | Identity (sole; no supports) |
 | What projects are we working on? | `project` | Remembering (+ Experiences, Concepts, Identity, Goals) |
 | What is our long-term goal? | `goal` | Goals (+ Remembering, Identity, Experiences) |
 | How has your understanding changed? | `reflection` | Reflection (+ Learning, Experiences, Remembering) |

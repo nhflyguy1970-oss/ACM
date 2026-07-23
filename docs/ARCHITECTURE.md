@@ -131,7 +131,8 @@ Associative · changes on recall · contextual · confidence · history/lineage 
 
 | Question | Cognitive resolve |
 |----------|-------------------|
-| Who am I? | Identity Schema (user) + autobiographical highlights |
+| Who am I? | Identity Schema (user) — Identity Organ sole speech authority |
+| Who are you? | Identity Schema (agent / operational) — Identity Organ sole speech authority |
 | What do you know about Zeus? | Concept activation → multimodal neighborhood |
 | What happened yesterday? | Episodes under temporal + context gates |
 | What project were we working on? | Goal Space (active) ∩ recent episodes |

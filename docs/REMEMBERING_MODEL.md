@@ -60,7 +60,10 @@ Emerges from Concept/Attribute confidence, Association confidence, evidence mass
 
 ## Context & Identity
 
-Context retags emphasis; Identity biases self-relevant reconstructions and owns `Who am I?` reconstruction (Identity organ) while still participating in activation observables.
+Context retags emphasis; Identity biases self-relevant reconstructions. The
+Identity organ owns `Who am I?` / `Who are you?` speech exclusively (D043) —
+Remembering must not gap-fill those answers — while still participating in
+activation observables on other routes.
 
 ## Temporal influence
 

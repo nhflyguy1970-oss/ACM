@@ -27,16 +27,17 @@
 
 | Field | Content |
 |-------|---------|
-| Question | Who am I? |
+| Questions | `Who am I?` (user) · `Who are you?` (assistant) |
 | Exclusive responsibility | Emergent agent/user/project schemas + Policy Gate assent |
-| Inputs | Experiences (content), Goals |
-| Outputs | `who_am_i`, identity snapshot, proposals |
+| Speech authority | Identity Organ alone for `user_identity` / `assistant_identity` (D043/D044); no remembering gap-fill |
+| Inputs | Experiences (content for formation), Goals, operational config (`assistant_identity`) |
+| Outputs | `who_am_i`, assistant operational render, identity snapshot, proposals |
 | Artifacts | Identity Concepts / attributes + lineage |
-| Dependencies | Experiences |
+| Dependencies | Experiences (formation substrate); not reconstruct supports for Who am I / Who are you |
 | Future dependents | All organs |
 | Activation | Seeds / biases for self-cues |
 | Observability | `identity` harness aggregate |
-| Validation | Identity behavioral + cognitive suites |
+| Validation | Identity behavioral + cognitive suites; separation + rendering isolation |
 
 ### Experience — M2
 
