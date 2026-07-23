@@ -16,6 +16,8 @@ def main() -> int:
         str(ROOT / ".venv/bin/pytest"),
         "tests/cognitive/test_m4_learning_certification.py",
         "tests/cognitive/test_m4_aml_capabilities.py",
+        "tests/cognitive/test_m5_hierarchy_learning_cert.py",
+        "tests/behavioral/test_m5_concept_hierarchies.py",
         "tests/behavioral/test_learning_assent_apply.py",
         "tests/behavioral/test_goal_learning.py",
         "tests/behavioral/test_lifecycle_learning.py",
@@ -25,11 +27,11 @@ def main() -> int:
     print("Running:", " ".join(cmd), flush=True)
     proc = subprocess.run(cmd, cwd=ROOT)
     report = {
-        "suite": "m4_learning_certification",
+        "suite": "learning_certification",
         "exit_code": proc.returncode,
         "doc": "docs/LEARNING_CERTIFICATION.md",
     }
-    out = Path("/tmp/m4_learning_cert.json")
+    out = Path("/tmp/acm_learning_cert.json")
     out.write_text(json.dumps(report, indent=2) + "\n")
     print(json.dumps(report), flush=True)
     return proc.returncode

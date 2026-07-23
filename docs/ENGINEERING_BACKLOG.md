@@ -1126,6 +1126,35 @@ documents remain evidence, but new backlog decisions must update this file.
 - **Sources:** `SEMANTIC_EXTRACTION.md`,
   `ASSISTANT_IDENTITY_PIPELINE.md`, `HALLUCINATION_PREVENTION.md`.
 
+### B53 — Concept hierarchy deepening (M5 Cap1)
+
+- **Status / order / complexity:** COMPLETE · 53 · M
+- **Completed:** 2026-07-23 (ACM v0.28.0 — M5 Cap1)
+- **Purpose:** Evidence-stamped taxonomic hierarchies with parent/child/sibling
+  queries, inheritance, specialization/generalization, and Learning/Sleep
+  proposals — without inventing Experiences or relocating taxonomy ownership.
+- **Problem:** Hierarchy edges lacked Experience evidence, were not persisted,
+  Learning `GENERALIZE` did not deepen `is_a`, and inheritance was absent.
+- **Architectural impact:** Concept organ remains sole taxonomy writer (D016);
+  Associations mirror traffic; Learning coordinates Adaptations only; codec
+  persists `hierarchy_edges` on the store.
+- **Dependencies:** Existing Concept/Association/Learning substrate (M3/M4/M7).
+- **Behavioral example:** `A labrador is a dog.` → evidenced parent link;
+  siblings under dog; `concept_hierarchy("labrador")` explains evidence;
+  cycle creation blocked; inherit copies parent attributes only.
+- **Validation:** `tests/behavioral/test_m5_concept_hierarchies.py`,
+  `tests/cognitive/test_m5_hierarchy_learning_cert.py`, full pytest + learning
+  cert suite.
+- **Promotion:** Standalone Cap1 certification before Aria vendor (M5 final).
+- **Implementation references:**
+  - `acm/concepts/model.py` — `HierarchyEdge.evidence_ids`
+  - `acm/concepts/organ.py` — link/query/inherit/specialize/generalize/propose
+  - `acm/learning/organ.py` — `_adapt_hierarchy_from_reflection`
+  - `acm/sleep/organ.py` — `hierarchy_candidate` proposals
+  - `acm/persistence/codec.py` — `hierarchy_edges` snapshot field
+  - `docs/CONCEPT_HIERARCHIES.md`
+- **Sources:** M5 mission Cap1; D015/D016; `COGNITIVE_ABSTRACTION.md`.
+
 ## Backlog governance
 
 1. Every implementation proposal names one or more backlog IDs.

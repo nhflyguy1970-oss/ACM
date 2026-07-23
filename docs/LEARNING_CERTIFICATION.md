@@ -18,11 +18,14 @@
 | L8 | Goal importance nudge | GOAL Adaptation when cue overlaps active goal |
 | L9 | Adopted knowledge boundary | External ref adopted; not autobiographical; bulk rejected |
 | L10 | Full regression | `pytest tests/` green |
+| L11 | Hierarchy evidence + no invented Experiences | Edges carry evidence; learn does not add Experiences |
+| L12 | Hierarchy explainability deterministic | `concept_hierarchy` stable across repeated calls |
 
 ## Commands
 
 ```bash
 .venv/bin/pytest tests/cognitive/test_m4_learning_certification.py -q
+.venv/bin/pytest tests/cognitive/test_m5_hierarchy_learning_cert.py -q
 .venv/bin/pytest tests/ -q
 .venv/bin/python scripts/acm_learning_certification.py
 ```

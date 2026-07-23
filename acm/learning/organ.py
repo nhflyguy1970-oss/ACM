@@ -203,6 +203,14 @@ class LearningOrgan:
                     )
                     if ad:
                         created.append(ad)
+                # Evidence-based hierarchy deepening (Concept organ owns taxonomy).
+                for ad in self._adapt_hierarchy_from_reflection(
+                    concept_ids,
+                    reflective_ids=[exp.id],
+                    evidence_ids=evidence,
+                    sleep_batch_id=sleep_batch_id,
+                ):
+                    created.append(ad)
             # Goal importance nudge when reflective cue overlaps an active goal
             for ad in self._adapt_goals_from_reflection(
                 exp,
@@ -694,6 +702,145 @@ class LearningOrgan:
             sleep_batch_id=sleep_batch_id or "",
         )
         return ad
+
+    def _adapt_hierarchy_from_reflection(
+        self,
+        concept_ids: list[str],
+        *,
+        reflective_ids: list[str],
+        evidence_ids: list[str],
+        sleep_batch_id: str,
+    ) -> list[Adaptation]:
+        """Deepen taxonomy via ConceptOrgan when siblings share an evidenced parent.
+
+        Learning coordinates only — never invents Concepts or Experiences.
+        """
+        if self.concepts is None:
+            return []
+        created: list[Adaptation] = []
+        # Group by existing parents among the reflective neighborhood.
+        by_parent: dict[str, list[str]] = {}
+        orphans: list[str] = []
+        for cid in concept_ids:
+            concept = self.store.concepts.get(cid)
+            if concept is None or not concept.active:
+                continue
+            if concept.parent_ids:
+                for pid in concept.parent_ids[:2]:
+                    by_parent.setdefault(pid, []).append(cid)
+            else:
+                orphans.append(cid)
+        # Reinforce existing parent links with reflective evidence.
+        for pid, kids in by_parent.items():
+            if pid not in self.store.concepts:
+                continue
+            for kid in kids[:4]:
+                before_edge = None
+                for e in self.concepts.hierarchy.values():
+                    if e.child_id == kid and e.parent_id == pid:
+                        before_edge = e
+                        break
+                before_w = before_edge.weight if before_edge else 0.0
+                edge = self.concepts.link_is_a(
+                    kid,
+                    pid,
+                    weight=0.5,
+                    evidence_ids=tuple(evidence_ids[-4:]),
+                )
+                if edge is None:
+                    continue
+                ad = Adaptation(
+                    id=new_id("adp"),
+                    kind=AdaptationKind.GENERALIZE,
+                    target_kind=AdaptationTarget.CONCEPT,
+                    target_id=kid,
+                    governance=GovernanceClass.AUTOMATIC,
+                    before={"hierarchy_weight": before_w},
+                    after={"hierarchy_weight": edge.weight},
+                    reflective_experience_ids=list(reflective_ids),
+                    evidence_experience_ids=list(evidence_ids),
+                    sleep_batch_id=sleep_batch_id,
+                    summary=f"Reinforced is_a link under parent from reflective evidence.",
+                    applied=True,
+                    created=time(),
+                    metadata={
+                        "hierarchy_edge_id": edge.id,
+                        "parent_id": pid,
+                        "child_id": kid,
+                    },
+                )
+                self.store.adaptations[ad.id] = ad
+                self._applied += 1
+                created.append(ad)
+                self.validation.record_learning(
+                    action="hierarchy_reinforce",
+                    adaptation_id=ad.id,
+                    target_id=kid,
+                    parent_id=pid,
+                    generalize=1,
+                    apply=1,
+                    sleep_batch_id=sleep_batch_id,
+                )
+            # Soft attribute inheritance for specialized children (evidence-gated).
+            for kid in kids[:2]:
+                inherited = self.concepts.inherit_attributes(
+                    kid, pid, evidence_ids=tuple(evidence_ids[-3:])
+                )
+                if inherited:
+                    ad = Adaptation(
+                        id=new_id("adp"),
+                        kind=AdaptationKind.GENERALIZE,
+                        target_kind=AdaptationTarget.CONCEPT,
+                        target_id=kid,
+                        governance=GovernanceClass.AUTOMATIC,
+                        before={"inherited_attrs": 0},
+                        after={"inherited_attrs": float(len(inherited))},
+                        reflective_experience_ids=list(reflective_ids),
+                        evidence_experience_ids=list(evidence_ids),
+                        sleep_batch_id=sleep_batch_id,
+                        summary="Inherited parent attributes onto specialized child (evidence-gated).",
+                        applied=True,
+                        created=time(),
+                        metadata={"inherited": inherited, "parent_id": pid},
+                    )
+                    self.store.adaptations[ad.id] = ad
+                    self._applied += 1
+                    created.append(ad)
+        # Orphans that share a common parent already used by siblings — specialize under it.
+        if orphans and by_parent:
+            dominant_parent = max(by_parent, key=lambda p: len(by_parent[p]))
+            for kid in orphans[:2]:
+                edge = self.concepts.specialize(
+                    kid,
+                    dominant_parent,
+                    evidence_ids=tuple(evidence_ids[-4:]),
+                )
+                if edge is None:
+                    continue
+                ad = Adaptation(
+                    id=new_id("adp"),
+                    kind=AdaptationKind.GENERALIZE,
+                    target_kind=AdaptationTarget.CONCEPT,
+                    target_id=kid,
+                    governance=GovernanceClass.AUTOMATIC,
+                    before={"hierarchy_weight": 0.0},
+                    after={"hierarchy_weight": edge.weight},
+                    reflective_experience_ids=list(reflective_ids),
+                    evidence_experience_ids=list(evidence_ids),
+                    sleep_batch_id=sleep_batch_id,
+                    summary="Specialized orphan concept under evidenced shared parent.",
+                    applied=True,
+                    created=time(),
+                    metadata={
+                        "hierarchy_edge_id": edge.id,
+                        "parent_id": dominant_parent,
+                        "child_id": kid,
+                    },
+                )
+                self.store.adaptations[ad.id] = ad
+                self._applied += 1
+                created.append(ad)
+        return created
 
     def _adapt_concept(
         self,

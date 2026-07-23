@@ -96,17 +96,37 @@ class Concept:
 
 @dataclass(frozen=True)
 class HierarchyEdge:
+    """Taxonomic link owned by the Concept organ (D016). Evidence-stamped; never invents Experiences."""
+
     id: str
     child_id: str
     parent_id: str
     kind: HierarchyKind = HierarchyKind.IS_A
     weight: float = 0.5
+    evidence_ids: tuple[str, ...] = ()
+    created: float = 0.0
+    last_reinforced: float = 0.0
+
+    def to_public(self) -> dict[str, Any]:
+        return {
+            "id": self.id,
+            "child_id": self.child_id,
+            "parent_id": self.parent_id,
+            "kind": self.kind.value,
+            "weight": self.weight,
+            "evidence_ids": list(self.evidence_ids),
+            "evidence_count": len(self.evidence_ids),
+            "created": self.created,
+            "last_reinforced": self.last_reinforced,
+        }
 
 
 @dataclass
 class ConceptProposal:
     id: str
-    kind: str  # merge | split
+    kind: str  # merge | split | hierarchy_link | specialize | generalize | inherit
     concept_ids: tuple[str, ...]
     reason: str
     status: str = "pending"  # pending | accepted | rejected
+    evidence_ids: tuple[str, ...] = ()
+    metadata: dict[str, Any] = field(default_factory=dict)

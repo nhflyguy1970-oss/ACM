@@ -247,9 +247,11 @@ class CognitiveEngine:
 
             payload = json.loads(Path(src).read_text(encoding="utf-8"))
             import_store(payload, store=self.store)
+            self.concepts.rebuild_hierarchy_index()
             self.validation.record_storage(action="import", ok=1)
             return {"ok": True, "experiences": len(self.store.experiences)}
         result = self.durable.import_snapshot(src)
+        self.concepts.rebuild_hierarchy_index()
         self.validation.record_storage(action="import", ok=1)
         return result
 
@@ -744,6 +746,10 @@ class CognitiveEngine:
     def what_is_this(self, cue: str) -> dict[str, Any]:
         """Cognitive question M3: What is this?"""
         return self.concepts.what_is_this(cue)
+
+    def concept_hierarchy(self, cue: str) -> dict[str, Any]:
+        """M5 Cap1 — explain taxonomic placement (parents/children/siblings/evidence)."""
+        return self.concepts.explain_hierarchy(cue)
 
     def how_related(self, left: str, right: str) -> dict[str, Any]:
         """Cognitive question M4: How is this related?"""

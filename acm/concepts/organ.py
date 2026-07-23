@@ -38,7 +38,6 @@ class ConceptOrgan:
     def __init__(self, store: CognitiveStore, validation: ValidationHarness) -> None:
         self.store = store
         self.validation = validation
-        self.hierarchy: dict[str, HierarchyEdge] = {}
         self.proposals: dict[str, ConceptProposal] = {}
         self.associations: AssociationOrgan | None = None
         self._births = 0
@@ -46,6 +45,12 @@ class ConceptOrgan:
         self._weakenings = 0
         self._abstractions = 0
         self._stage_changes = 0
+        self._inheritances = 0
+
+    @property
+    def hierarchy(self) -> dict[str, HierarchyEdge]:
+        """Taxonomic edges live on the store so persistence can capture them (D016)."""
+        return self.store.hierarchy_edges
 
     def bind_associations(self, associations: AssociationOrgan) -> None:
         self.associations = associations
@@ -79,7 +84,11 @@ class ConceptOrgan:
                 child = self._find_by_label(cue.label)
                 parent = self._find_by_label(cue.parent_label)
                 if child and parent:
-                    self.link_is_a(child.id, parent.id, weight=min(1.0, 0.4 + weight * 0.4))
+                    self.link_is_a(
+                        child.id,
+                        parent.id,
+                        weight=min(1.0, 0.4 + weight * 0.4),
+                    )
         self._maybe_propose_merges(touched)
         # unique ids preserve order
         ids: list[str] = []
@@ -101,6 +110,8 @@ class ConceptOrgan:
             self._update_prototype(concept, experience.summary)
             self._add_exemplar(concept, experience.id)
             self._recompute_stage(concept)
+            # Stamp Experience onto existing hierarchy edges involving this concept.
+            self._stamp_hierarchy_evidence(cid, experience.id)
 
     def what_is_this(self, cue: str) -> dict[str, Any]:
         """Cognitive question M3: What is this?"""
@@ -117,6 +128,7 @@ class ConceptOrgan:
         concept = self.store.concepts[top["concept_id"]]
         parents = [self._label_of(p) for p in concept.parent_ids if p in self.store.concepts]
         children = [self._label_of(c) for c in concept.child_ids if c in self.store.concepts]
+        siblings = [s["label"] for s in self.siblings(concept.id)]
         kind_phrase = concept.labels[0]
         if parents:
             answer = f"This appears to be {kind_phrase}, a kind of {parents[0]}."
@@ -130,7 +142,11 @@ class ConceptOrgan:
             "seen_before": len(concept.evidence_ids) > 0,
             "confidence": concept.confidence,
             "concept": concept.to_public(),
-            "hierarchy": {"parents": parents, "children": children},
+            "hierarchy": {
+                "parents": parents,
+                "children": children,
+                "siblings": siblings,
+            },
             "prototype": concept.prototype.to_public(),
             "exemplars": list(concept.exemplar_ids[-8:]),
             "matches": matches,
@@ -194,23 +210,55 @@ class ConceptOrgan:
         return out
 
     def link_is_a(
-        self, child_id: str, parent_id: str, *, weight: float = 0.5
+        self,
+        child_id: str,
+        parent_id: str,
+        *,
+        weight: float = 0.5,
+        evidence_ids: tuple[str, ...] | list[str] = (),
+        kind: HierarchyKind = HierarchyKind.IS_A,
     ) -> HierarchyEdge | None:
+        """Create or reinforce an evidence-based taxonomic edge. Never invents Experiences."""
         if child_id == parent_id:
             return None
         child = self.store.concepts.get(child_id)
         parent = self.store.concepts.get(parent_id)
         if not child or not parent:
             return None
-        for edge in self.hierarchy.values():
+        if self._would_create_cycle(child_id, parent_id):
+            return None
+        evidence = tuple(eid for eid in evidence_ids if eid)
+        now = time()
+        for edge in list(self.hierarchy.values()):
             if edge.child_id == child_id and edge.parent_id == parent_id:
-                return edge
+                merged = tuple(dict.fromkeys([*edge.evidence_ids, *evidence]))
+                reinforced = HierarchyEdge(
+                    id=edge.id,
+                    child_id=edge.child_id,
+                    parent_id=edge.parent_id,
+                    kind=edge.kind if edge.kind != HierarchyKind.IS_A else kind,
+                    weight=min(1.0, edge.weight + 0.08 * max(weight, 0.2)),
+                    evidence_ids=merged,
+                    created=edge.created or now,
+                    last_reinforced=now,
+                )
+                self.hierarchy[edge.id] = reinforced
+                if self.associations is not None:
+                    evid = evidence[0] if evidence else ""
+                    self.associations.absorb_hierarchy_edge(
+                        child_id, parent_id, weight=reinforced.weight, evidence_id=evid
+                    )
+                    self.associations.absorb_siblings(parent_id, evidence_id=evid)
+                return reinforced
         edge = HierarchyEdge(
             id=new_id("hier"),
             child_id=child_id,
             parent_id=parent_id,
-            kind=HierarchyKind.IS_A,
+            kind=kind,
             weight=weight,
+            evidence_ids=evidence,
+            created=now,
+            last_reinforced=now,
         )
         self.hierarchy[edge.id] = edge
         if parent_id not in child.parent_ids:
@@ -226,13 +274,368 @@ class ConceptOrgan:
             parent_id=parent_id,
             hierarchy=1,
             abstraction=1,
+            evidence_count=len(evidence),
         )
         # Parent gains gentle abstraction reinforcement
         self._reinforce(parent, weight=weight * 0.4, reason="abstraction_parent")
         if self.associations is not None:
-            self.associations.absorb_hierarchy_edge(child_id, parent_id, weight=weight)
-            self.associations.absorb_siblings(parent_id)
+            evid = evidence[0] if evidence else ""
+            self.associations.absorb_hierarchy_edge(
+                child_id, parent_id, weight=weight, evidence_id=evid
+            )
+            self.associations.absorb_siblings(parent_id, evidence_id=evid)
         return edge
+
+    def parents(self, concept_id: str) -> list[dict[str, Any]]:
+        concept = self.store.concepts.get(concept_id)
+        if concept is None:
+            return []
+        out: list[dict[str, Any]] = []
+        for pid in concept.parent_ids:
+            parent = self.store.concepts.get(pid)
+            if parent is None:
+                continue
+            edge = self._edge_between(concept_id, pid)
+            out.append(
+                {
+                    "concept_id": pid,
+                    "label": parent.labels[0] if parent.labels else pid,
+                    "weight": edge.weight if edge else 0.0,
+                    "evidence_ids": list(edge.evidence_ids) if edge else [],
+                    "kind": edge.kind.value if edge else HierarchyKind.IS_A.value,
+                }
+            )
+        return out
+
+    def children(self, concept_id: str) -> list[dict[str, Any]]:
+        concept = self.store.concepts.get(concept_id)
+        if concept is None:
+            return []
+        out: list[dict[str, Any]] = []
+        for cid in concept.child_ids:
+            child = self.store.concepts.get(cid)
+            if child is None:
+                continue
+            edge = self._edge_between(cid, concept_id)
+            out.append(
+                {
+                    "concept_id": cid,
+                    "label": child.labels[0] if child.labels else cid,
+                    "weight": edge.weight if edge else 0.0,
+                    "evidence_ids": list(edge.evidence_ids) if edge else [],
+                    "kind": edge.kind.value if edge else HierarchyKind.IS_A.value,
+                }
+            )
+        return out
+
+    def siblings(self, concept_id: str) -> list[dict[str, Any]]:
+        concept = self.store.concepts.get(concept_id)
+        if concept is None:
+            return []
+        seen: set[str] = set()
+        out: list[dict[str, Any]] = []
+        for pid in concept.parent_ids:
+            parent = self.store.concepts.get(pid)
+            if parent is None:
+                continue
+            for cid in parent.child_ids:
+                if cid == concept_id or cid in seen:
+                    continue
+                sib = self.store.concepts.get(cid)
+                if sib is None:
+                    continue
+                seen.add(cid)
+                out.append(
+                    {
+                        "concept_id": cid,
+                        "label": sib.labels[0] if sib.labels else cid,
+                        "shared_parent_id": pid,
+                        "shared_parent": parent.labels[0] if parent.labels else pid,
+                    }
+                )
+        return out
+
+    def explain_hierarchy(self, cue_or_id: str) -> dict[str, Any]:
+        """Explain taxonomic placement: parents, children, siblings, supporting evidence."""
+        concept = self.store.concepts.get(cue_or_id)
+        if concept is None:
+            matches = self.recognize(cue_or_id, limit=1)
+            if not matches:
+                return {
+                    "question": "How is this concept organized?",
+                    "answer": "I don't have a stable concept hierarchy for that yet.",
+                    "known": False,
+                }
+            concept = self.store.concepts[matches[0]["concept_id"]]
+        parents = self.parents(concept.id)
+        children = self.children(concept.id)
+        siblings = self.siblings(concept.id)
+        edges = [
+            e.to_public()
+            for e in self.hierarchy.values()
+            if e.child_id == concept.id or e.parent_id == concept.id
+        ]
+        evidence: list[str] = []
+        for e in edges:
+            evidence.extend(e.get("evidence_ids") or [])
+        evidence = list(dict.fromkeys(evidence))
+        label = concept.labels[0] if concept.labels else concept.id
+        if parents:
+            answer = (
+                f"{label} specializes under {parents[0]['label']} "
+                f"({len(evidence)} supporting experience(s))."
+            )
+        elif children:
+            answer = (
+                f"{label} generalizes {len(children)} child concept(s) "
+                f"({len(evidence)} supporting experience(s))."
+            )
+        else:
+            answer = f"{label} has no taxonomic links yet."
+        return {
+            "question": "How is this concept organized?",
+            "answer": answer,
+            "known": True,
+            "concept_id": concept.id,
+            "label": label,
+            "parents": parents,
+            "children": children,
+            "siblings": siblings,
+            "edges": edges,
+            "evidence_ids": evidence,
+            "reversible": True,
+            "can_reverse": "Hierarchy edges can be weakened; Experiences are never rewritten.",
+        }
+
+    def inherit_attributes(
+        self,
+        child_id: str,
+        parent_id: str,
+        *,
+        evidence_ids: tuple[str, ...] | list[str] = (),
+        keys: tuple[str, ...] | list[str] | None = None,
+    ) -> list[dict[str, Any]]:
+        """Copy active parent attributes onto child — values already evidenced on parent only.
+
+        Never invents attribute values. Inherited attrs are marked and carry evidence lineage.
+        """
+        child = self.store.concepts.get(child_id)
+        parent = self.store.concepts.get(parent_id)
+        if not child or not parent:
+            return []
+        if parent_id not in child.parent_ids and not self.link_is_a(
+            child_id, parent_id, evidence_ids=evidence_ids, kind=HierarchyKind.SPECIALIZES
+        ):
+            # Still allow inherit if already linked or just linked; if cycle blocked, abort.
+            if parent_id not in child.parent_ids:
+                return []
+        allowed = {k.lower() for k in keys} if keys else None
+        evidence = tuple(eid for eid in evidence_ids if eid)
+        inherited: list[dict[str, Any]] = []
+        for attr in parent.attributes:
+            if not attr.active:
+                continue
+            if allowed is not None and attr.key.lower() not in allowed:
+                continue
+            # Skip if child already has an active same-key attribute (specialization wins).
+            if any(a.key == attr.key and a.active for a in child.attributes):
+                continue
+            child.attributes.append(
+                Attribute(
+                    key=attr.key,
+                    value=attr.value,
+                    confidence=min(0.7, attr.confidence * 0.85),
+                    importance=attr.importance * 0.8,
+                    context_tags=tuple(
+                        dict.fromkeys([*attr.context_tags, f"inherited_from:{parent_id}"])
+                    ),
+                    evidence_ids=list(
+                        dict.fromkeys([*attr.evidence_ids, *parent.evidence_ids[-4:], *evidence])
+                    ),
+                    active=True,
+                    version=1,
+                )
+            )
+            inherited.append({"key": attr.key, "value": attr.value, "from_parent": parent_id})
+            self._inheritances += 1
+        if inherited:
+            self.validation.record_concept(
+                action="inherit",
+                child_id=child_id,
+                parent_id=parent_id,
+                inherited=len(inherited),
+                hierarchy=1,
+            )
+            prop = ConceptProposal(
+                id=new_id("cprop"),
+                kind="inherit",
+                concept_ids=(child_id, parent_id),
+                reason=f"Inherited {len(inherited)} attribute(s) from parent (evidence-gated).",
+                status="accepted",
+                evidence_ids=evidence,
+                metadata={"inherited": inherited},
+            )
+            self.proposals[prop.id] = prop
+        return inherited
+
+    def specialize(
+        self,
+        child_id: str,
+        parent_id: str,
+        *,
+        evidence_ids: tuple[str, ...] | list[str] = (),
+    ) -> HierarchyEdge | None:
+        """Evidence-based specialization: child is_a / specializes parent."""
+        return self.link_is_a(
+            child_id,
+            parent_id,
+            weight=0.55,
+            evidence_ids=evidence_ids,
+            kind=HierarchyKind.SPECIALIZES,
+        )
+
+    def generalize_children(
+        self,
+        parent_id: str,
+        child_ids: list[str],
+        *,
+        evidence_ids: tuple[str, ...] | list[str] = (),
+    ) -> list[HierarchyEdge]:
+        """Link multiple evidenced children under an existing parent (generalization)."""
+        out: list[HierarchyEdge] = []
+        for cid in child_ids:
+            edge = self.link_is_a(
+                cid,
+                parent_id,
+                weight=0.5,
+                evidence_ids=evidence_ids,
+                kind=HierarchyKind.IS_A,
+            )
+            if edge:
+                out.append(edge)
+        if out:
+            prop = ConceptProposal(
+                id=new_id("cprop"),
+                kind="generalize",
+                concept_ids=(parent_id, *child_ids[:8]),
+                reason="Generalized children under shared parent from evidence.",
+                status="accepted",
+                evidence_ids=tuple(evidence_ids),
+            )
+            self.proposals[prop.id] = prop
+        return out
+
+    def propose_hierarchy_from_clusters(
+        self, *, min_cluster: int = 2, max_proposals: int = 8
+    ) -> list[ConceptProposal]:
+        """Observational clustering → hierarchy *proposals* only (never invent Concepts).
+
+        Uses Association clusters among Concepts that already share evidence mass.
+        Requires an existing candidate parent Concept (by shared label fragment) —
+        does not mint new category labels.
+        """
+        if self.associations is None:
+            return []
+        clusters = self.associations.clusters(min_strength=0.35)
+        created: list[ConceptProposal] = []
+        for cluster in clusters:
+            if len(created) >= max_proposals:
+                break
+            ids = [c for c in (cluster.get("concept_ids") or []) if c]
+            if len(ids) < min_cluster:
+                continue
+            # Prefer an existing parent already linked to ≥2 members; else skip (no invention).
+            parent_votes: dict[str, int] = {}
+            for cid in ids:
+                concept = self.store.concepts.get(cid)
+                if not concept:
+                    continue
+                for pid in concept.parent_ids:
+                    parent_votes[pid] = parent_votes.get(pid, 0) + 1
+            if not parent_votes:
+                continue
+            parent_id = max(parent_votes, key=parent_votes.get)
+            if parent_votes[parent_id] < 1:
+                continue
+            orphans = [
+                cid
+                for cid in ids
+                if cid != parent_id
+                and parent_id not in (self.store.concepts.get(cid).parent_ids if self.store.concepts.get(cid) else [])
+            ]
+            if not orphans:
+                continue
+            evidence: list[str] = []
+            for cid in orphans[:6]:
+                c = self.store.concepts.get(cid)
+                if c:
+                    evidence.extend(c.evidence_ids[-2:])
+            prop = ConceptProposal(
+                id=new_id("cprop"),
+                kind="hierarchy_link",
+                concept_ids=(parent_id, *orphans[:6]),
+                reason="Cluster shares structure; propose linking orphans under existing parent.",
+                status="pending",
+                evidence_ids=tuple(dict.fromkeys(evidence)),
+                metadata={"parent_id": parent_id, "child_ids": orphans[:6]},
+            )
+            self.proposals[prop.id] = prop
+            created.append(prop)
+        return created
+
+    def accept_hierarchy_proposal(self, proposal_id: str) -> HierarchyEdge | list[HierarchyEdge] | None:
+        """Apply a pending hierarchy_link / generalize proposal via ConceptOrgan only."""
+        prop = self.proposals.get(proposal_id)
+        if prop is None or prop.status != "pending":
+            return None
+        parent_id = str((prop.metadata or {}).get("parent_id") or "")
+        child_ids = list((prop.metadata or {}).get("child_ids") or [])
+        if not parent_id and len(prop.concept_ids) >= 2:
+            parent_id = prop.concept_ids[0]
+            child_ids = list(prop.concept_ids[1:])
+        if not parent_id or not child_ids:
+            prop.status = "rejected"
+            return None
+        edges = self.generalize_children(
+            parent_id, child_ids, evidence_ids=prop.evidence_ids
+        )
+        prop.status = "accepted"
+        return edges
+
+    def rebuild_hierarchy_index(self) -> int:
+        """Rebuild edge index from parent_ids/child_ids when edges were not persisted."""
+        rebuilt = 0
+        if self.hierarchy:
+            # Sync denormalized lists from edges.
+            for edge in self.hierarchy.values():
+                child = self.store.concepts.get(edge.child_id)
+                parent = self.store.concepts.get(edge.parent_id)
+                if not child or not parent:
+                    continue
+                if edge.parent_id not in child.parent_ids:
+                    child.parent_ids.append(edge.parent_id)
+                if edge.child_id not in parent.child_ids:
+                    parent.child_ids.append(edge.child_id)
+            return len(self.hierarchy)
+        for concept in self.store.concepts.values():
+            for pid in list(concept.parent_ids):
+                if pid not in self.store.concepts:
+                    continue
+                if self._edge_between(concept.id, pid):
+                    continue
+                edge = HierarchyEdge(
+                    id=new_id("hier"),
+                    child_id=concept.id,
+                    parent_id=pid,
+                    kind=HierarchyKind.IS_A,
+                    weight=0.45,
+                    evidence_ids=tuple(concept.evidence_ids[-3:]),
+                    created=concept.first_seen,
+                    last_reinforced=concept.last_activated,
+                )
+                self.hierarchy[edge.id] = edge
+                rebuilt += 1
+        return rebuilt
 
     def weaken(self, concept_id: str, *, amount: float = 0.05) -> Concept | None:
         concept = self.store.concepts.get(concept_id)
@@ -277,6 +680,7 @@ class ConceptOrgan:
                 "concept_ids": list(p.concept_ids),
                 "reason": p.reason,
                 "status": p.status,
+                "evidence_ids": list(p.evidence_ids),
             }
             for p in self.proposals.values()
             if p.status == "pending"
@@ -296,6 +700,7 @@ class ConceptOrgan:
             "weakenings": self._weakenings,
             "abstractions": self._abstractions,
             "stage_changes": self._stage_changes,
+            "inheritances": self._inheritances,
             "by_stage": by_stage,
             "pending_proposals": len(self.pending_proposals()),
         }
@@ -312,6 +717,49 @@ class ConceptOrgan:
         )
 
     # --- internals --------------------------------------------------------------
+
+    def _edge_between(self, child_id: str, parent_id: str) -> HierarchyEdge | None:
+        for edge in self.hierarchy.values():
+            if edge.child_id == child_id and edge.parent_id == parent_id:
+                return edge
+        return None
+
+    def _would_create_cycle(self, child_id: str, parent_id: str) -> bool:
+        """True if making parent_id a parent of child_id would cycle."""
+        stack = [parent_id]
+        seen: set[str] = set()
+        while stack:
+            cur = stack.pop()
+            if cur == child_id:
+                return True
+            if cur in seen:
+                continue
+            seen.add(cur)
+            concept = self.store.concepts.get(cur)
+            if concept is None:
+                continue
+            stack.extend(concept.parent_ids)
+        return False
+
+    def _stamp_hierarchy_evidence(self, concept_id: str, experience_id: str) -> None:
+        if not experience_id:
+            return
+        now = time()
+        for edge in list(self.hierarchy.values()):
+            if edge.child_id != concept_id and edge.parent_id != concept_id:
+                continue
+            if experience_id in edge.evidence_ids:
+                continue
+            self.hierarchy[edge.id] = HierarchyEdge(
+                id=edge.id,
+                child_id=edge.child_id,
+                parent_id=edge.parent_id,
+                kind=edge.kind,
+                weight=edge.weight,
+                evidence_ids=tuple([*edge.evidence_ids, experience_id]),
+                created=edge.created or now,
+                last_reinforced=now,
+            )
 
     def _upsert_from_cue(
         self,

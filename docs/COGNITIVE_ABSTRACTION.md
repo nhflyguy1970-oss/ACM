@@ -24,13 +24,18 @@ Zeus (instance)  ──is_a──▶ Golden Retriever
 
 ## Generalization & hierarchy
 
-| Mechanism | M3 support |
-|-----------|------------|
-| Category induction from “X is a Y” | Seed hierarchy candidates |
-| Sibling reinforcement under shared parent | Strengthens parent nucleus |
-| Taxonomy depth | Parent/child queries; no inference engine |
+| Mechanism | Support |
+|-----------|---------|
+| Category induction from “X is a Y” | Seed hierarchy candidates with Experience evidence |
+| Sibling reinforcement under shared parent | `resembles` traffic + sibling queries |
+| Taxonomy depth | Parent/child/ancestor-safe queries; cycle-blocked |
+| Specialization / generalization | ConceptOrgan `specialize` / `generalize_children` |
+| Attribute inheritance | Evidence-gated copy of parent attributes only |
 | Similarity | Label/feature overlap scores for recognition hints |
 | Difference | Distinct attributes / conflicting values remain on children |
+| Persistence | `hierarchy_edges` on CognitiveStore snapshots |
+
+See [`CONCEPT_HIERARCHIES.md`](CONCEPT_HIERARCHIES.md) (M5 Cap1).
 
 ## Prototype formation
 

@@ -9,7 +9,7 @@ from typing import Any
 from acm.analogy.model import AnalogyMapping
 from acm.associations.model import Association, RelationKind
 from acm.attention.model import PriorityEvent
-from acm.concepts.model import Concept, ConceptStage
+from acm.concepts.model import Concept, ConceptStage, HierarchyEdge
 from acm.confidence.model import ConfidenceEvent
 from acm.experiences.model import Experience
 from acm.forgetting.model import AccessibilityEvent
@@ -54,6 +54,7 @@ class CognitiveStore:
         self.experiences: dict[str, Experience] = {}
         self.concepts: dict[str, Concept] = {}
         self.associations: dict[str, Association] = {}
+        self.hierarchy_edges: dict[str, HierarchyEdge] = {}
         self.goals: dict[str, Goal] = {}
         self.envelopes: dict[str, EnvelopeRef] = {}
         self.adaptations: dict[str, Adaptation] = {}

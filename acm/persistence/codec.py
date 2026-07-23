@@ -11,7 +11,7 @@ from typing import Any
 from acm.analogy.model import AnalogyAlignment, AnalogyMapping
 from acm.associations.model import Association, AssociationStage, RelationKind
 from acm.attention.model import PriorityEvent
-from acm.concepts.model import Concept, ConceptStage, Prototype
+from acm.concepts.model import Concept, ConceptStage, HierarchyEdge, HierarchyKind, Prototype
 from acm.confidence.model import ConfidenceEvent
 from acm.core.store import CognitiveStore, Goal
 from acm.experiences.kinds import CognitiveKind, ExternalKind
@@ -52,6 +52,7 @@ def export_store(store: CognitiveStore) -> dict[str, Any]:
     body = {
         "experiences": {k: _jsonable(v) for k, v in store.experiences.items()},
         "concepts": {k: _jsonable(v) for k, v in store.concepts.items()},
+        "hierarchy_edges": {k: _jsonable(v) for k, v in store.hierarchy_edges.items()},
         "associations": {k: _jsonable(v) for k, v in store.associations.items()},
         "goals": {k: _jsonable(v) for k, v in store.goals.items()},
         "envelopes": {k: _jsonable(v) for k, v in store.envelopes.items()},
@@ -181,6 +182,7 @@ def import_store(payload: dict[str, Any], *, store: CognitiveStore | None = None
     target = store or CognitiveStore()
     target.experiences.clear()
     target.concepts.clear()
+    target.hierarchy_edges.clear()
     target.associations.clear()
     target.goals.clear()
     target.envelopes.clear()
@@ -200,6 +202,17 @@ def import_store(payload: dict[str, Any], *, store: CognitiveStore | None = None
         target.experiences[str(eid)] = _experience(d)
     for cid, d in (body.get("concepts") or {}).items():
         target.concepts[str(cid)] = _concept(d)
+    for hid, d in (body.get("hierarchy_edges") or {}).items():
+        target.hierarchy_edges[str(hid)] = HierarchyEdge(
+            id=str(d.get("id") or hid),
+            child_id=str(d["child_id"]),
+            parent_id=str(d["parent_id"]),
+            kind=HierarchyKind(d.get("kind", "is_a")),
+            weight=float(d.get("weight", 0.5)),
+            evidence_ids=tuple(d.get("evidence_ids") or ()),
+            created=float(d.get("created", 0.0)),
+            last_reinforced=float(d.get("last_reinforced", 0.0)),
+        )
     for aid, d in (body.get("associations") or {}).items():
         target.associations[str(aid)] = Association(
             id=str(d["id"]),
@@ -430,6 +443,8 @@ def migrate_body(body: dict[str, Any], *, from_version: int, to_version: int) ->
     version = from_version
     while version < to_version:
         out.setdefault("provenance", {})
+        out.setdefault("hierarchy_edges", {})
         version += 1
     out.setdefault("provenance", {})
+    out.setdefault("hierarchy_edges", {})
     return out

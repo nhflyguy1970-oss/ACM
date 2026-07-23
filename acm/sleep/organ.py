@@ -173,6 +173,24 @@ class OfflineCognitionOrgan:
                     f"identity_merge_requires_assent:{label}:{','.join(identity_ids)}"
                 )
 
+        # Hierarchy proposals from clustering (Concept organ owns taxonomy; never auto-invent).
+        concepts = getattr(self.learning, "concepts", None)
+        if concepts is not None:
+            for prop in concepts.propose_hierarchy_from_clusters(
+                min_cluster=2, max_proposals=6
+            ):
+                parent = (prop.metadata or {}).get("parent_id", "")
+                kids = (prop.metadata or {}).get("child_ids") or []
+                proposals.append(
+                    f"hierarchy_candidate:{parent}:{','.join(kids[:6])}:{prop.id}"
+                )
+                self.validation.record_offline(
+                    action="hierarchy_proposal",
+                    proposal=1,
+                    sleep_batch_id=batch_id,
+                    proposal_id=prop.id,
+                )
+
         # Identity stabilization: slight confidence toward mean of evidence mass
         for c in self.store.concepts.values():
             if not c.identity or not c.active:
