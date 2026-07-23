@@ -242,3 +242,16 @@ def test_previous_cognition_regression() -> None:
 
     _, projects = _speak(engine, "What projects am I working on?")
     assert "blackfly" not in projects.lower()
+
+
+def test_blackfly_part_of_survives_prior_project_teaching() -> None:
+    """Entity label must win over generic 'project' role label (cert failure)."""
+    engine = _engine()
+    engine.cognitive_respond("I'm building BlackFly.")
+    engine.cognitive_respond("BlackFly is part of my AI ecosystem.")
+    result, speech = _speak(engine, "How does BlackFly fit into my projects?")
+    assert result.get("status") == "known", speech
+    low = speech.lower()
+    assert "blackfly" in low
+    assert "ecosystem" in low
+    assert "project is part" not in low
