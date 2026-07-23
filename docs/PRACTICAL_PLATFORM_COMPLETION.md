@@ -2,7 +2,7 @@
 
 **Status:** Practical platform COMPLETE  
 **ACM:** v0.44.0  
-**Aria pin:** track `aria-acm-v0.44.0-1` after this closure promotion  
+**Aria pin:** `aria-acm-v0.44.0-1` @ ACM `f540593`  
 **Date:** 2026-07-23
 
 ## Practical items completed in this program
