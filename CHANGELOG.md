@@ -2,6 +2,13 @@
 
 All notable changes to ACM are documented here.
 
+## [0.45.1] — 2026-07-23
+
+### Fixed — Corrupt durable load must not wipe SoT
+
+- ``DurableCognitiveStore`` re-raises corrupt snapshot errors instead of
+  treating them as empty first-open (would auto_persist an empty graph).
+
 ## [0.45.0] — 2026-07-23
 
 ### Fixed — Production readiness audit (governance · persistence · assent)
